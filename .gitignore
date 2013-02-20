@@ -1,0 +1,6 @@
+*.pyc
+*.swp
+*.so
+
+g4/build/*
+machines/*
