@@ -22,7 +22,6 @@ import os
 import sys
 import time
 import socket
-import random 
 
 from pprint import pprint
 from math import *
@@ -30,18 +29,11 @@ from math import *
 import numpy
 import scipy
 
-import Geant4
-import g4 
-
-from Geant4 import G4RotationMatrix, G4ThreeVector, deg, mm, MeV
-from Geant4 import G4Color as G4Colour 
-
-
 
 if __name__ == "__main__":
     import pyublas
 
-    from linac import Linac
+    from linac import Linac, Simulation
 
     #linac = Linac("machines/Varian_iX_Clinac/Varian_iX_Clinac.yaml")  
     linac = Linac("machines/Elekta_Precise/Elekta_Precise.yaml") 

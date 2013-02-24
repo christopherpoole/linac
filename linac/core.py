@@ -1,12 +1,15 @@
 import math
+import random
+
 from math import *
 from itertools import repeat
 
 import yaml
 
 import Geant4
-from Geant4 import G4Tubs, G4Box, G4ThreeVector, G4RotationMatrix, G4Color, mm, deg
+from Geant4 import G4Tubs, G4Box, G4ThreeVector, G4RotationMatrix, G4Color, mm, deg, MeV
 
+import g4
 
 default_multiples = {
     'translation' : [0, 0, 0],

@@ -1,2 +1,2 @@
-from core import Linac
+from core import Linac, Simulation
 
