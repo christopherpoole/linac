@@ -28,58 +28,56 @@ from math import *
 
 import numpy
 import scipy
+import pyublas
+
+from linac import Linac, Simulation
 
 
-if __name__ == "__main__":
-    import pyublas
+#linac = Linac("machines/Varian_iX_Clinac/Varian_iX_Clinac.yaml")  
+linac = Linac("machines/Elekta_Precise/Elekta_Precise.yaml") 
 
-    from linac import Linac, Simulation
+energy = float(sys.argv[2])
+fwhm = float(sys.argv[3])
 
-    #linac = Linac("machines/Varian_iX_Clinac/Varian_iX_Clinac.yaml")  
-    linac = Linac("machines/Elekta_Precise/Elekta_Precise.yaml") 
+name = "%s_%f_%f" % (sys.argv[1], energy, fwhm)
 
-    energy = float(sys.argv[2])
-    fwhm = float(sys.argv[3])
+sim = Simulation(name, linac)
 
-    name = "%s_%f_%f" % (sys.argv[1], energy, fwhm)
+sim._update()
+sim.show()
+"""
+sim.phasespace = "chamber" 
+tic = time.time()
+sim.beam_on(int(1e5), fwhm=fwhm, energy=energy*MeV)
+print "t1: ", time.time() - tic
 
-    sim = Simulation(name, linac)
 
-    sim._update()
-    sim.show()
-    """
-    sim.phasespace = "chamber" 
+for field in [50, 100, 150, 200, 300, 400]:
+    sim.name = name
+    sim.source = "chamber"
+    sim.name = "%s_%ix%i" % (name, field, field)
+    sim.phasespace = "exit_window" 
+
+    sim.config.square_field(field)
+
+    sim.detector_construction.UsePhantom(False)
     tic = time.time()
-    sim.beam_on(int(1e5), fwhm=fwhm, energy=energy*MeV)
-    print "t1: ", time.time() - tic
+    sim.beam_on(2**30)
+    print "t2: ", time.time() - tic
 
+    sim.detector_construction.UsePhantom(True)
+    sim.source = "exit_window"
+    sim.phasespace = None
+    tic = time.time()
+    sim.beam_on(2**30)
+    print "t3: ", time.time() - tic
+   
+    energy_data = sim.detector_construction.GetEnergyHistogram()
+    counts_data = sim.detector_construction.GetCountsHistogram()
 
-    for field in [50, 100, 150, 200, 300, 400]:
-        sim.name = name
-        sim.source = "chamber"
-        sim.name = "%s_%ix%i" % (name, field, field)
-        sim.phasespace = "exit_window" 
+    numpy.save("output/energy_%s_%ix%i_%s_%i" % (name, field, field, socket.gethostname(), os.getpid()), energy_data) 
+    numpy.save("output/counts_%s_%ix%i_%s_%i" % (name, field, field, socket.gethostname(), os.getpid()), counts_data) 
 
-        sim.config.square_field(field)
-
-        sim.detector_construction.UsePhantom(False)
-        tic = time.time()
-        sim.beam_on(2**30)
-        print "t2: ", time.time() - tic
-
-        sim.detector_construction.UsePhantom(True)
-        sim.source = "exit_window"
-        sim.phasespace = None
-        tic = time.time()
-        sim.beam_on(2**30)
-        print "t3: ", time.time() - tic
-       
-        energy_data = sim.detector_construction.GetEnergyHistogram()
-        counts_data = sim.detector_construction.GetCountsHistogram()
-
-        numpy.save("output/energy_%s_%ix%i_%s_%i" % (name, field, field, socket.gethostname(), os.getpid()), energy_data) 
-        numpy.save("output/counts_%s_%ix%i_%s_%i" % (name, field, field, socket.gethostname(), os.getpid()), counts_data) 
-
-        sim.detector_construction.ZeroHistograms()
-    """
+    sim.detector_construction.ZeroHistograms()
+"""
 
