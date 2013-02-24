@@ -201,7 +201,6 @@ class Mother(Volume):
         
         return daughters 
 
-
                 
 class Linac:
     def __init__(self, filename):
@@ -282,8 +281,3 @@ register_transformer('mlc_diverge', mlc_diverge)
 register_transformer('mlc_interleave', mlc_interleave)
 register_transformer('mlc_arc', mlc_arc)
 
-
-if __name__ == "__main__":
-    #linac = Linac("machines/Varian_iX_Clinac/Varian_iX_Clinac.yaml")
-    linac = Linac("machines/Elekta_Precise/Elekta_Precise.yaml")
- 
