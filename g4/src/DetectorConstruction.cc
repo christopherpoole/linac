@@ -329,7 +329,7 @@ G4VPhysicalVolume* DetectorConstruction::AddCADComponent(char* name,
     rot->rotateZ(rotation.z()*deg);
 
     if (tessellated) {
-        CADMesh* mesh = new CADMesh(filename, "STL", scale, G4ThreeVector(), false);
+        CADMesh* mesh = new CADMesh(filename, (char*) "STL", scale, G4ThreeVector(), false);
         G4VSolid* solid = mesh->TessellatedMesh();
         G4LogicalVolume* logical = new G4LogicalVolume(solid, mat, name, 0, 0, 0);
         logical->SetVisAttributes(new G4VisAttributes(colour)); 
@@ -338,7 +338,7 @@ G4VPhysicalVolume* DetectorConstruction::AddCADComponent(char* name,
                                                         logical, name, mother_logical,
                                                         false, 0);
     } else {
-        CADMesh * mesh = new CADMesh(filename, "STL", mat);
+        CADMesh * mesh = new CADMesh(filename, (char*) "STL", mat);
         G4AssemblyVolume* assembly = mesh->TetrahedralMesh();
         G4Translate3D trans(translation.x(), translation.y(), translation.z());
         G4Transform3D rotation = G4Rotate3D(*rot);

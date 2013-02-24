@@ -40,7 +40,7 @@ class PhasespaceRecord {
   private:
     friend class boost::serialization::access;
     template<class Archive>
-    void serialize(Archive & ar, const unsigned int version) {
+    void serialize(Archive & ar, const unsigned int) {
         ar & position_x;
         ar & position_y;
         ar & position_z;
@@ -55,7 +55,7 @@ class PhasespaceRecord {
 
         ar & particle_type;
 
-    }; 
+    } 
 
   public:
     G4ThreeVector GetPosition();

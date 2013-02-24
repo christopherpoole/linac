@@ -253,8 +253,8 @@ if __name__ == "__main__":
     sim = Simulation(name, linac)
 
     sim._update()
-#    sim.show()
-
+    sim.show()
+    """
     sim.phasespace = "chamber" 
     tic = time.time()
     sim.beam_on(int(1e5), fwhm=fwhm, energy=energy*MeV)
@@ -288,3 +288,5 @@ if __name__ == "__main__":
         numpy.save("output/counts_%s_%ix%i_%s_%i" % (name, field, field, socket.gethostname(), os.getpid()), counts_data) 
 
         sim.detector_construction.ZeroHistograms()
+    """
+

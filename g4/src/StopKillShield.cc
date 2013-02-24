@@ -36,7 +36,7 @@ StopKillSheild::~StopKillSheild()
 }
 
 
-void StopKillSheild::Initialize(G4HCofThisEvent* HCE)
+void StopKillSheild::Initialize(G4HCofThisEvent*)
 {
 }
 

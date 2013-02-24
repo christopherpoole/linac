@@ -27,21 +27,19 @@ find_package(Boost REQUIRED COMPONENTS python serialization iostreams)
 include(${Geant4_USE_FILE})
 include_directories(${PYTHON_INCLUDE_DIRS})
 include_directories(${PROJECT_SOURCE_DIR}/include)
+include_directories(/usr/local/include)
 
-# bler
-include_directories(/usr/local/lib/python2.6/dist-packages/PyUblas-2011.1-py2.6-linux-x86_64.egg/include)
+find_package(cadmesh)
 
 # User code
 file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cc)
 file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
 
-find_package(cadmesh)
-
 SET(LIBRARY_OUTPUT_PATH "..")
 add_library(g4 "SHARED" libg4.cc ${sources} ${headers})
 
+target_link_libraries(g4 ${cadmesh_LIBRARIES})
 target_link_libraries(g4 ${Geant4_LIBRARIES})
 target_link_libraries(g4 ${Boost_LIBRARIES})
 target_link_libraries(g4 ${Python_LIBRARIES})
-target_link_libraries(g4 ${cadmesh_LIBRARIES})
 

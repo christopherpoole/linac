@@ -41,6 +41,6 @@ SteppingAction::SteppingAction()
 SteppingAction::~SteppingAction()
 {;}
 
-void SteppingAction::UserSteppingAction(const G4Step* step)
+void SteppingAction::UserSteppingAction(const G4Step*)
 {
 }
