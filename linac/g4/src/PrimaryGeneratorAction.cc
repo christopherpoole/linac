@@ -64,11 +64,6 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
 
 PrimaryGeneratorAction::~PrimaryGeneratorAction()
 {
-    delete input_file_stream;
-    delete phasespace_archive;
-
-    delete particle_gun;
-    delete phasespace_particle_gun;
 }
 
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event)
