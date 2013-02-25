@@ -224,21 +224,6 @@ class Linac:
         else:
             return (field_size / iso_position * radius_position) - delta
         
-    def rectangular_field_mlc(self, x1, x2, y1, y2):
-        for name, daughter in self.head.daughters.iteritems():
-            if name.startswith("mlc_1"):
-                daughter.x_position = self.rounded_leaf_position(150., 330.8, x1) 
-            if name.startswith("mlc_2"):
-                daughter.x_position = self.rounded_leaf_position(150., 330.8, x2)
-       
-    def rectangular_field_jaws(self, x1, x2, y1, y2):
-        self.head.daughters["jaw_x_1"].x_position = self.rounded_leaf_position(70., 412., x1)
-        self.head.daughters["jaw_x_0"].x_position = self.rounded_leaf_position(70., 412., x2)
-        self.head.daughters["jaw_y_0"].y_position = y1 * ((1000. - 569.) / 1000.)
-        #self.head.daughters["jaw_y_0"].y_position = y1 * ((1000. - 431.) / 1000.)
-        self.head.daughters["jaw_y_1"].y_position = y2 * ((1000. - 569.) / 1000.)
-        #self.head.daughters["jaw_y_1"].y_position = y2 * ((1000. - 431.) / 1000.)
-
     def rectangular_field(self, x1, x2, y1, y2):
         self.rectangular_field_jaws(x1, x2, y1, y2)
         self.rectangular_field_mlc(x1, x2, y1, y2)
@@ -254,12 +239,6 @@ class Linac:
     def square_field(self, size):
         self.square_field_jaws(size)
         self.square_field_mlc(size)
-
-    def arbitary_field_mlc(self, bank1_positions, bank2_positions):
-        for i in range(len(bank1_positions)):
-            self.head.daughters["mlc_1_%i" % i].x_position = self.rounded_leaf_position(150, 330.8, bank1_positions[i])
-        for i in range(len(bank2_positions)):
-            self.head.daughters["mlc_2_%i" % i].x_position = self.rounded_leaf_position(150, 330.8, bank2_positions[i])
 
     def rotate_gantry(self, angle):
         self.head.rotation = [0, angle, 0]

@@ -30,11 +30,10 @@ import numpy
 import scipy
 import pyublas
 
-from linac import Linac, Simulation
+from linac import Simulation
+from machines import Elekta
 
-
-#linac = Linac("machines/Varian_iX_Clinac/Varian_iX_Clinac.yaml")  
-linac = Linac("machines/Elekta_Precise/Elekta_Precise.yaml") 
+linac = Elekta("machines/Elekta_Precise/Elekta_Precise.yaml") 
 
 energy = float(sys.argv[2])
 fwhm = float(sys.argv[3])
