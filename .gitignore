@@ -2,5 +2,5 @@
 *.swp
 *.so
 
-g4/build/*
+linac/g4/build/*
 machines/*
