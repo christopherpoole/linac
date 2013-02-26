@@ -6,12 +6,16 @@ import yaml
 from Geant4 import G4Tubs, G4Box, G4ThreeVector, G4Color
 from Geant4 import mm, deg, keV, MeV
 
+
+# Default values for repeated properties
 default_multiples = {
     'translation' : [0, 0, 0],
     'rotation' : [0, 0, 0],
     'colour' : [0, 0, 0, 1],
 }
 
+# Register for functions that enable rotation/translation
+# of a component within the geomtry (jaws for example).
 transformers = {}
 
 def register_transformer(name, f):
@@ -19,6 +23,15 @@ def register_transformer(name, f):
 
 
 class Solid(object):
+    """Creates a G4Solid
+
+    Makes a G4VSolid of type `solid_type` specified by a string.
+
+    Attributes:
+        name: The desired name of the solid
+        solid_type: The name of the target G4VSolid, G4Tubs, G4Box for example
+        solid: An instance of the chosen `solid_type`
+    """
     def __init__(self, name, solid_type, **kwargs):
         for key, val in kwargs.iteritems():
             setattr(self, key, val)
@@ -30,6 +43,20 @@ class Solid(object):
 
 
 class Volume(object):
+    """A CAD tessellated solid placed within the geometry
+
+    Using CADMesh a CAD file is loaded into the geometry as a G4TessellatedSolid,
+    the user can specify if the volume is left as a normal tessellated solid or
+    loaded as a tetrahedral mesh (for fast/er navigation).
+
+    Attributes:
+        name: The desired name of the solid
+        translation: G4ThreeVector position of the solid within its mother volume
+        rotation: G4ThreeVector rotation of the solid about its center
+        colour: G4Colour as displayed by the VisManager
+        material: The name of the target G4Material (it has to already exist)
+        tessellated: If tetrahedralisation if not performed, otherwise
+    """
     def __init__(self, name, **kwargs):
         self.name = name
         self._translation = (0, 0, 0)
@@ -107,6 +134,12 @@ class Volume(object):
 
 
 class Daughter(Volume):
+    """A `Volume` within a `Volume`
+
+    Attributes:
+        name: The name of the volume
+        config; Loaded from **kwargs and used to build the daughter `Volume`
+    """
     def __init__(self, name, **kwargs):
         self._config = kwargs
         self.filename = ''
@@ -132,6 +165,16 @@ class Daughter(Volume):
    
 
 class Mother(Volume):
+    """A `Volume` with `Volume`'s in it
+
+    If a volume is a mother volume, we want to make sure all of its daughters
+    are correctly initialised. This is where the bulk of the geometry building
+    happens.
+
+    Attributtes:
+        name: The name of the volume
+        daughters: A list of `Volume`'s within the `Mother`
+    """
     def __init__(self, name, **kwargs):
         self.radius = 0
         self.length = 0
@@ -162,6 +205,18 @@ class Mother(Volume):
                 self.daughters[name] = Daughter(name, **daughter)
 
     def _unpack_repeats(self, name, daughter, repeats):
+        """Construct individual Volumes for those specified as repeats
+
+        The geometry configuration does not require all instances of volumes to be
+        explicity defined, repated volumes can be specified with lists provided for
+        the parameters that vary.
+
+        Args:
+            name: The base name of the volume
+            daughter: The instance of the base volume
+            repeasts: The number of copies to make
+        """
+        
         multiples = {}
         for m, default in default_multiples.iteritems():
             if not daughter.has_key(m):
@@ -201,6 +256,15 @@ class Mother(Volume):
 
                 
 class Linac:
+    """The Python object representation of the geometry configuration
+
+    Attributes:
+        config: configuration yaml loaded as a dict
+        head: Treatment head Mother volume
+        vacuum: Vacuum parts Mother volume
+        phasespaces: All phasespace files used or created
+        gun: The particle gun configuration
+    """
     def __init__(self, filename):
         self.config = yaml.load(file(filename))
           
@@ -210,7 +274,8 @@ class Linac:
 
         self.gun = self.config["gun"]
 
-    def rounded_leaf_position(self, leaf_radius, radius_position, field_size, iso_position=1000.):
+    def rounded_leaf_position(self, leaf_radius, radius_position,
+            field_size, iso_position=1000.):
         theta = atan(field_size / iso_position) 
         delta = (leaf_radius / cos(theta)) - leaf_radius
 
