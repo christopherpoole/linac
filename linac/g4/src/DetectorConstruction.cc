@@ -22,9 +22,12 @@
 // USER //
 #include "DetectorConstruction.hh"
 
-// THIRD PARTY //
+// CADMesh //
 #include "CADMesh.hh"
-//#include "G4VoxelData.hh"
+
+// G4VoxelData //
+#include "DicomDataIO.hh"
+#include "G4VoxelDataParameterisation.hh"
 
 // GEANT4 //
 #include "globals.hh"
@@ -41,9 +44,19 @@
 
 DetectorConstruction::DetectorConstruction()
 {
+    // Setpoints we will interpolate between for
+    // our materials ramp.
+    hounsfield.push_back(Hounsfield(-1050, "G4_AIR", 0.001 ));
+    hounsfield.push_back(Hounsfield(-950,"G4_AIR", 0.044));
+    hounsfield.push_back(Hounsfield(-700,"G4_LUNG_ICRP", 0.302));
+    hounsfield.push_back(Hounsfield(125,"G4_TISSUE_SOFT_ICRP", 1.101));
+    hounsfield.push_back(Hounsfield(2500,"G4_BONE_CORTICAL_ICRP", 2.088));
+
     nist_manager = G4NistManager::Instance();
     use_phantom = false;
     region = NULL;
+
+    ct_built = false;
 }
 
 DetectorConstruction::~DetectorConstruction()
@@ -158,6 +171,11 @@ void DetectorConstruction::SetupHead(G4double head_radius,
     if (use_phantom) {
         SetupPhantom();
     }
+
+    if (use_ct && !ct_built) {
+        SetupCT();
+        ct_built = true;
+    };
 
 	StopKillSheild* sheild_sensitive_detector = new StopKillSheild("sheild");
     G4SDManager* sensitive_detector_manager = G4SDManager::GetSDMpointer();
@@ -348,5 +366,74 @@ G4VPhysicalVolume* DetectorConstruction::AddCADComponent(char* name,
 
     G4RunManager::GetRunManager()->GeometryHasBeenModified();
     return NULL;
+}
+
+
+void DetectorConstruction::SetupCT() {
+    DicomDataIO* reader = new DicomDataIO();
+    G4VoxelData* data = reader->ReadDirectory(ct_directory);
+
+    // We can peek at the data type with data->type, however at some point
+    // we will have to nominate exactly what the type of the data is. For
+    // standard DICOM CT as in this example we are using int16's.
+    G4VoxelArray<int16_t>* array = new G4VoxelArray<int16_t>(data);
+
+    array->shape[0] = 16;
+    array->shape[1] = 16;
+    array->shape[2] = 16;
+
+    G4cout << array->spacing[0]*8 << G4endl;
+    G4cout << array->spacing[1]*8 << G4endl;
+    G4cout << array->spacing[2]*8 << G4endl;
+
+    // Make a mapping between the data in array and G4Materials
+    // at increaments of 25 HU.
+    G4int increment = 25;
+    materials = MakeMaterialsMap(increment);
+
+    G4VoxelDataParameterisation<int16_t>* voxeldata_param =
+        new G4VoxelDataParameterisation<int16_t>(array, materials, world_physical );
+    voxeldata_param->Construct(G4ThreeVector(), new G4RotationMatrix());
+    voxeldata_param->SetRounding(25, -1000, 2000);
+    /*
+    SensitiveDetector* detector = new SensitiveDetector("target_detector");
+
+    G4SDManager* sd_manager = G4SDManager::GetSDMpointer();
+    sd_manager->AddNewDetector(detector);
+    voxeldata_param->GetLogicalVolume()->SetSensitiveDetector(detector);
+    */
+}
+
+
+std::map<int16_t, G4Material*> DetectorConstruction::MakeMaterialsMap(G4int increment) {
+    // Our materials map or ramp
+    std::map<int16_t, G4Material*> ramp;
+    
+    // Calculate intermediate points in each segment
+    for (unsigned int i=0; i <hounsfield.size()-1; i++) { 
+        G4double hounsfield_rise = hounsfield[i+1].density - hounsfield[i].density;
+        G4double density_run = hounsfield[i+1].value - hounsfield[i].value;
+        G4double gradient = hounsfield_rise / density_run;
+
+        // Add each increment in the current segment to the ramp  
+        int count = 0;
+        for (int hf=hounsfield[i].value; hf<hounsfield[i+1].value; hf+=increment) {
+            G4double density = count*increment*gradient + hounsfield[i].density;
+            ramp[hf] = MakeNewMaterial(hounsfield[i].material_name, density);            
+            count++;
+        }
+    } 
+    // Add the last setpoint to the ramp
+    ramp[hounsfield.back().value] = MakeNewMaterial(hounsfield.back().material_name, 
+                                                    hounsfield.back().density);
+    return ramp;
+}
+
+
+G4Material* DetectorConstruction::MakeNewMaterial(G4String base_material_name, G4double density) {
+    G4NistManager* nist_manager = G4NistManager::Instance();
+    G4String new_name = base_material_name + G4UIcommand::ConvertToString(density);
+
+    return nist_manager->BuildMaterialWithNewDensity(new_name, base_material_name, density*g/cm3);
 }
 

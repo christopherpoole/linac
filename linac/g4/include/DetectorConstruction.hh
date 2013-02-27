@@ -47,6 +47,21 @@
 #include "boost/python.hpp"
 //#include "pyublas/numpy.hpp"
 
+// Simple data structure for setpoints in hounsfiled -> G4Material ramp
+class Hounsfield{
+  public:
+    Hounsfield(int value, G4String material_name, G4double density) {
+        this->value = value;
+        this->material_name = material_name;
+        this->density = density;
+    };
+
+  public:
+    G4int value;
+    G4String material_name;
+    G4double density;
+};
+
 
 class DetectorConstruction : public G4VUserDetectorConstruction
 {
@@ -88,8 +103,18 @@ class DetectorConstruction : public G4VUserDetectorConstruction
                     G4ThreeVector rotation,
                     G4Colour colour, G4bool tessellated);
 
+    void SetupCT();
+
+    std::map<int16_t, G4Material*> MakeMaterialsMap(G4int increment);
+    G4Material* MakeNewMaterial(G4String base_material_name, G4double density);
+
     void UsePhantom(G4bool use) {
         use_phantom = use;
+    }
+
+    void UseCT(G4String directory) {
+        use_ct = true;
+        ct_directory = directory;
     }
 
     pyublas::numpy_vector<float> GetEnergyHistogram() {
@@ -142,6 +167,12 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4double vacuum_length;
 
     G4bool use_phantom;
+    G4bool use_ct;
+    G4bool ct_built;
+    
+    G4String ct_directory;
+    std::map<int16_t, G4Material*> materials;
+    std::vector<Hounsfield> hounsfield;
 };
 
 #endif

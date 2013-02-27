@@ -29,7 +29,11 @@ include_directories(${PYTHON_INCLUDE_DIRS})
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(/usr/local/include)
 
+# CADMesh
 find_package(cadmesh)
+
+# G4VoxelData with DICIOM
+find_package(G4VoxelData)
 
 # User code
 file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cc)
@@ -42,4 +46,5 @@ target_link_libraries(g4 ${cadmesh_LIBRARIES})
 target_link_libraries(g4 ${Geant4_LIBRARIES})
 target_link_libraries(g4 ${Boost_LIBRARIES})
 target_link_libraries(g4 ${Python_LIBRARIES})
+target_link_libraries(g4 ${G4VOXELDATA_DICOM_LIBRARIES})
 
