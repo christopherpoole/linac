@@ -1,0 +1,20 @@
+head: 
+  - name: target
+    file: target.ply
+    translation: [0, 0, 0]
+    material: target_tungsten
+
+  - name: filter
+    file: filter.ply
+    translation: [0, 0, 100]
+    material: filter_tungsten
+
+vacuum:
+  - name: target_tungsten
+    density: 20
+  - name: filter_tunstent
+    density: 21
+
+gun:
+  spot_size: 1
+  fwhm: 2
