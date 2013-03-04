@@ -378,14 +378,6 @@ void DetectorConstruction::SetupCT() {
     // standard DICOM CT as in this example we are using int16's.
     G4VoxelArray<int16_t>* array = new G4VoxelArray<int16_t>(data);
 
-    array->shape[0] = 16;
-    array->shape[1] = 16;
-    array->shape[2] = 16;
-
-    G4cout << array->spacing[0]*8 << G4endl;
-    G4cout << array->spacing[1]*8 << G4endl;
-    G4cout << array->spacing[2]*8 << G4endl;
-
     // Make a mapping between the data in array and G4Materials
     // at increaments of 25 HU.
     G4int increment = 25;
