@@ -43,6 +43,11 @@
 
 #include "G4RotationMatrix.hh"
 
+// G4VoxelData//
+#include "G4VoxelData.hh"
+#include "G4VoxelArray.hh"
+#include "DicomDataIO.hh"
+
 // BOOST/PYTHON //
 #include "boost/python.hpp"
 //#include "pyublas/numpy.hpp"
@@ -115,6 +120,19 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     void UseCT(G4String directory) {
         use_ct = true;
         ct_directory = directory;
+        
+        DicomDataIO* reader = new DicomDataIO();
+        this->data = reader->ReadDirectory(ct_directory);
+
+        // We can peek at the data type with data->type, however at some point
+        // we will have to nominate exactly what the type of the data is. For
+        // standard DICOM CT as in this example we are using int16's.
+        this->array = new G4VoxelArray<int16_t>(this->data);
+
+        // Make a mapping between the data in array and G4Materials
+        // at increaments of 25 HU.
+        G4int increment = 25;
+        materials = MakeMaterialsMap(increment);
     }
 
     pyublas::numpy_vector<float> GetEnergyHistogram() {
@@ -171,6 +189,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4bool ct_built;
     
     G4String ct_directory;
+    G4VoxelData* data;
+    G4VoxelArray<int16_t>* array;
     std::map<int16_t, G4Material*> materials;
     std::vector<Hounsfield> hounsfield;
 };

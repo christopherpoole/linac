@@ -172,7 +172,7 @@ void DetectorConstruction::SetupHead(G4double head_radius,
         SetupPhantom();
     }
 
-    if (use_ct && !ct_built) {
+    if (use_ct) {
         SetupCT();
         ct_built = true;
     };
@@ -370,19 +370,6 @@ G4VPhysicalVolume* DetectorConstruction::AddCADComponent(char* name,
 
 
 void DetectorConstruction::SetupCT() {
-    DicomDataIO* reader = new DicomDataIO();
-    G4VoxelData* data = reader->ReadDirectory(ct_directory);
-
-    // We can peek at the data type with data->type, however at some point
-    // we will have to nominate exactly what the type of the data is. For
-    // standard DICOM CT as in this example we are using int16's.
-    G4VoxelArray<int16_t>* array = new G4VoxelArray<int16_t>(data);
-
-    // Make a mapping between the data in array and G4Materials
-    // at increaments of 25 HU.
-    G4int increment = 25;
-    materials = MakeMaterialsMap(increment);
-
     G4VoxelDataParameterisation<int16_t>* voxeldata_param =
         new G4VoxelDataParameterisation<int16_t>(array, materials, world_physical );
     voxeldata_param->Construct(G4ThreeVector(), new G4RotationMatrix());
