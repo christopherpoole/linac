@@ -1,21 +1,24 @@
 head: 
-  radius: 250
-  length: 250
+  radius: 500
+  length: 800
   translation: [0, 0, 500]
   rotation: [0, 0, 0]
   daughters:  
     filter:
       filename: machine/cone.stl
-      translation: [0, 0, 100]
+      translation: [0, 0, 600]
+      rotation: [90, 0, 0]
       material: G4_WATER
 
 vacuum:
-  radius: 100
-  length: 100
+  radius: 250
+  length: 250
+  translation: [0, 0, 800]
   daughters:
     target:
       filename: machine/target.ply
-      translation: [0, 0, 0]
+      translation: [0, 0, 900]
+      rotation: [90, 0, 0]
       material: G4_WATER 
 
 gun:

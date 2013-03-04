@@ -4,6 +4,11 @@
 /vis/open OGLIX 800x800-0+50
 /vis/drawVolume
 
+/vis/scene/add/axes      0 0 0 500 mm 
+/vis/scene/add/axes      0 0 0 600 mm 
+/vis/scene/add/axes      0 0 0 800 mm 
+/vis/scene/add/axes      0 0 0 900 mm 
+
 /vis/viewer/set/viewpointThetaPhi 60 30
 /vis/viewer/zoom 1
 #/vis/viewer/set/style solid
