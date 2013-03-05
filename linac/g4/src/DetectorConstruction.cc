@@ -26,7 +26,6 @@
 #include "CADMesh.hh"
 
 // G4VoxelData //
-#include "DicomDataIO.hh"
 #include "G4VoxelDataParameterisation.hh"
 
 // GEANT4 //
