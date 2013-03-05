@@ -371,7 +371,11 @@ G4VPhysicalVolume* DetectorConstruction::AddCADComponent(char* name,
 void DetectorConstruction::SetupCT() {
     G4VoxelDataParameterisation<int16_t>* voxeldata_param =
         new G4VoxelDataParameterisation<int16_t>(array, materials, world_physical );
-    voxeldata_param->Construct(G4ThreeVector(), new G4RotationMatrix());
+
+    G4RotationMatrix* rotation = new G4RotationMatrix();
+    rotation->rotateX(90*deg);
+
+    voxeldata_param->Construct(G4ThreeVector(), rotation);
     voxeldata_param->SetRounding(25, -1000, 2000);
     /*
     SensitiveDetector* detector = new SensitiveDetector("target_detector");
