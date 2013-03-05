@@ -117,6 +117,12 @@ class DetectorConstruction : public G4VUserDetectorConstruction
         use_phantom = use;
     }
 
+    G4ThreeVector GetCTOrigin() {
+        return G4ThreeVector(this->data->origin[0],
+                this->data->origin[1],
+                this->data->origin[2]);
+    }
+
     void UseCT(G4String ct_directory, G4ThreeVector ct_position) {
         this->use_ct = true;
         this->ct_directory = ct_directory;
