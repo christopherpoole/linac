@@ -117,12 +117,13 @@ class DetectorConstruction : public G4VUserDetectorConstruction
         use_phantom = use;
     }
 
-    void UseCT(G4String directory) {
-        use_ct = true;
-        ct_directory = directory;
-        
+    void UseCT(G4String ct_directory, G4ThreeVector ct_position) {
+        this->use_ct = true;
+        this->ct_directory = ct_directory;
+        this->ct_position = ct_position;
+
         DicomDataIO* reader = new DicomDataIO();
-        this->data = reader->ReadDirectory(ct_directory);
+        this->data = reader->ReadDirectory(this->ct_directory);
 
         // We can peek at the data type with data->type, however at some point
         // we will have to nominate exactly what the type of the data is. For
@@ -189,6 +190,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4bool ct_built;
     
     G4String ct_directory;
+    G4ThreeVector ct_position;
+
     G4VoxelData* data;
     G4VoxelArray<int16_t>* array;
     std::map<int16_t, G4Material*> materials;

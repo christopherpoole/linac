@@ -375,7 +375,7 @@ void DetectorConstruction::SetupCT() {
     G4RotationMatrix* rotation = new G4RotationMatrix();
     rotation->rotateX(90*deg);
 
-    voxeldata_param->Construct(G4ThreeVector(), rotation);
+    voxeldata_param->Construct(ct_position, rotation);
     voxeldata_param->SetRounding(25, -1000, 2000);
     /*
     SensitiveDetector* detector = new SensitiveDetector("target_detector");
