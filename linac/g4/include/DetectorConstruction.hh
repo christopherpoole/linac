@@ -123,13 +123,13 @@ class DetectorConstruction : public G4VUserDetectorConstruction
                 this->data->origin[2]);
     }
 
-    void UseCT(G4String ct_directory, G4ThreeVector ct_position) {
+    void UseCT(G4String ct_directory, G4ThreeVector ct_position, G4int aquisition_number) {
         this->use_ct = true;
         this->ct_directory = ct_directory;
         this->ct_position = ct_position;
 
         DicomDataIO* reader = new DicomDataIO();
-        this->data = reader->ReadDirectory(this->ct_directory);
+        this->data = reader->ReadDirectory(this->ct_directory, "CT", aquisition_number);
 
         // We can peek at the data type with data->type, however at some point
         // we will have to nominate exactly what the type of the data is. For
