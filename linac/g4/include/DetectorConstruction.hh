@@ -123,10 +123,13 @@ class DetectorConstruction : public G4VUserDetectorConstruction
                 this->data->origin[2]);
     }
 
-    void UseCT(G4String ct_directory, G4ThreeVector ct_position, G4int aquisition_number) {
+    void SetCTPosition(G4ThreeVector ct_position) {
+        this->ct_position = ct_position;
+    }
+
+    void UseCT(G4String ct_directory, G4int aquisition_number) {
         this->use_ct = true;
         this->ct_directory = ct_directory;
-        this->ct_position = ct_position;
 
         DicomDataIO* reader = new DicomDataIO();
         this->data = reader->ReadDirectory(this->ct_directory, "CT", aquisition_number);
