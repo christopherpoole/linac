@@ -127,22 +127,22 @@ class DetectorConstruction : public G4VUserDetectorConstruction
         this->ct_position = ct_position;
     }
 
-    void UseCT(G4String ct_directory, G4int aquisition_number) {
+    void UseCT(G4String ct_directory, G4int acquisition_number) {
         this->use_ct = true;
         this->ct_directory = ct_directory;
 
         DicomDataIO* reader = new DicomDataIO();
-        this->data = reader->ReadDirectory(this->ct_directory, "CT", aquisition_number);
-
-        // We can peek at the data type with data->type, however at some point
-        // we will have to nominate exactly what the type of the data is. For
-        // standard DICOM CT as in this example we are using int16's.
+        reader->SetAcquisitionNumber(acquisition_number);
+        
+        this->data = reader->ReadDirectory(this->ct_directory);
         this->array = new G4VoxelArray<int16_t>(this->data);
 
-        // Make a mapping between the data in array and G4Materials
-        // at increaments of 25 HU.
         G4int increment = 25;
         materials = MakeMaterialsMap(increment);
+    }
+
+    void CropCT(G4int xmin, G4int xmax, G4int ymin, G4int ymax, G4int zmin, G4int zmax) {
+        this->array->Crop(xmin, xmax, ymin, ymax, zmin, zmax);
     }
 
     pyublas::numpy_vector<float> GetEnergyHistogram() {
