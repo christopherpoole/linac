@@ -47,6 +47,8 @@ class Phasespace : public G4VSensitiveDetector {
     Phasespace(const G4String& name, G4double radius);
     virtual ~Phasespace();
 
+    void Close();
+
     void Initialize(G4HCofThisEvent*);
     G4bool ProcessHits(G4Step*, G4TouchableHistory*);
     void EndOfEvent(G4HCofThisEvent*);

@@ -1,4 +1,5 @@
 import math
+from math import *
 from itertools import repeat
 
 import yaml

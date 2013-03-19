@@ -113,6 +113,10 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     std::map<int16_t, G4Material*> MakeMaterialsMap(G4int increment);
     G4Material* MakeNewMaterial(G4String base_material_name, G4double density);
 
+    void ClosePhasespace() {
+        delete phasespace_sensitive_detector;
+    };
+
     void UsePhantom(G4bool use) {
         use_phantom = use;
     }
@@ -140,6 +144,22 @@ class DetectorConstruction : public G4VUserDetectorConstruction
         G4int increment = 25;
         materials = MakeMaterialsMap(increment);
     }
+
+    void HideCT(G4bool hide) {
+        this->use_ct = !hide;
+    };
+
+    void CropX(G4int xmin, G4int xmax) {
+        this->array->CropX(xmin, xmax);
+    };
+
+    void CropY(G4int ymin, G4int ymax) {
+        this->array->CropY(ymin, ymax);
+    };
+
+    void CropZ(G4int zmin, G4int zmax) {
+        this->array->CropZ(zmin, zmax);
+    };
 
     void CropCT(G4int xmin, G4int xmax, G4int ymin, G4int ymax, G4int zmin, G4int zmax) {
         this->array->Crop(xmin, xmax, ymin, ymax, zmin, zmax);
@@ -172,6 +192,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4VPhysicalVolume* phantom_physical;
 
     SensitiveDetector* detector;
+    Phasespace* phasespace_sensitive_detector;
 
     G4Tubs* head_solid;
     G4LogicalVolume* head_logical;

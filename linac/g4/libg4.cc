@@ -65,6 +65,7 @@ BOOST_PYTHON_MODULE(libg4) {
 //                      "rotation", "colour"),
 //                 "doc string"
 //             )[return_internal_reference<>()])
+        .def("ClosePhasespace", &DetectorConstruction::ClosePhasespace)
         .def("UsePhantom", &DetectorConstruction::UsePhantom)
         .def("SetupHead", &DetectorConstruction::SetupHead)
 //             _SetupHead(
@@ -77,7 +78,11 @@ BOOST_PYTHON_MODULE(libg4) {
         .def("GetCTOrigin", &DetectorConstruction::GetCTOrigin)
         .def("ZeroHistograms", &DetectorConstruction::ZeroHistograms)
         .def("UseCT", &DetectorConstruction::UseCT)
+        .def("HideCT", &DetectorConstruction::HideCT)
         .def("CropCT", &DetectorConstruction::CropCT)
+        .def("CropX", &DetectorConstruction::CropX)
+        .def("CropY", &DetectorConstruction::CropY)
+        .def("CropZ", &DetectorConstruction::CropZ)
         .def("SetCTPosition", &DetectorConstruction::SetCTPosition)
         ;   // End DetectorConstruction
 

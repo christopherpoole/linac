@@ -64,9 +64,9 @@ DetectorConstruction::~DetectorConstruction()
 
 G4VPhysicalVolume* DetectorConstruction::Construct()
 {
-//    G4SolidStore::GetInstance()->Clean();
-//    G4LogicalVolumeStore::GetInstance()->Clean();
-//    G4PhysicalVolumeStore::GetInstance()->Clean();
+    G4SolidStore::GetInstance()->Clean();
+    G4LogicalVolumeStore::GetInstance()->Clean();
+    G4PhysicalVolumeStore::GetInstance()->Clean();
 
     G4NistManager* nist_manager = G4NistManager::Instance();
     G4Material* air = nist_manager->FindOrBuildMaterial("G4_AIR");
@@ -141,7 +141,7 @@ void DetectorConstruction::SetupHead(G4double head_radius,
     head_logical = new G4LogicalVolume(head_solid, head_material, "head_logical", 0, 0, 0);
     head_physical = new G4PVPlacement(this->head_rotation, head_position, head_logical, "head_physical",
                                       world_logical, false, 0);
-//    head_logical->SetVisAttributes(G4VisAttributes::Invisible); 
+    head_logical->SetVisAttributes(G4VisAttributes::Invisible); 
     
     this->vacuum_length = vacuum_length;
     this->vacuum_position = vacuum_position;
@@ -157,7 +157,7 @@ void DetectorConstruction::SetupHead(G4double head_radius,
                                          0, 0, 0);
     vacuum_physical = new G4PVPlacement(0, vacuum_position, vacuum_logical, "vacuum_physical",
                                         head_logical, false, 0);
-//    vacuum_logical->SetVisAttributes(G4VisAttributes::Invisible); 
+    vacuum_logical->SetVisAttributes(G4VisAttributes::Invisible); 
 
     sheild_solid = new G4Tubs("sheild_solid", head_radius*mm,
                                (head_radius+1)*mm, head_length/2.*mm, 0*deg, 360*deg);
@@ -165,7 +165,7 @@ void DetectorConstruction::SetupHead(G4double head_radius,
                                          0, 0, 0);
     sheild_physical = new G4PVPlacement(this->head_rotation, head_position, sheild_logical, "sheild_physical",
                                         world_logical, false, 0);
-//    sheild_logical->SetVisAttributes(G4VisAttributes::Invisible); 
+    sheild_logical->SetVisAttributes(G4VisAttributes::Invisible); 
 
     if (use_phantom) {
         SetupPhantom();
@@ -213,7 +213,7 @@ G4VPhysicalVolume* DetectorConstruction::AddPhasespace(char* name, double radius
                                                      G4ThreeVector(), G4Colour(1, 0, 1, 0.5));
 
     // Active scoring area is 1% smaller than actual plane - avoids navigation errors when point on edge with direction (0,0,0)
-	Phasespace* phasespace_sensitive_detector = new Phasespace(name, radius - (radius*0.01));
+    phasespace_sensitive_detector = new Phasespace(name, radius - (radius*0.01));
     G4SDManager* sensitive_detector_manager = G4SDManager::GetSDMpointer();
     sensitive_detector_manager->AddNewDetector(phasespace_sensitive_detector);
     phasespace_physical->GetLogicalVolume()->SetSensitiveDetector(phasespace_sensitive_detector);
@@ -377,6 +377,25 @@ void DetectorConstruction::SetupCT() {
 
     voxeldata_param->Construct(ct_position, rotation);
     voxeldata_param->SetRounding(25, -1000, 2000);
+    voxeldata_param->ShowMidPlanes();
+
+    std::map<int16_t, G4Colour*> colours;
+    for (int i=-2500; i<5000; i++) {
+        double gray = (double) (i + 2500) / 7500.;
+        double alpha = 1;
+
+        if (i < -500) {
+            gray = 0;
+            alpha = 0;
+        }
+
+        if (gray > 1)
+            gray = 1;
+
+        colours[i] = new G4Colour(gray, gray, gray, alpha);
+    }
+    voxeldata_param->SetColourMap(colours);
+
     /*
     SensitiveDetector* detector = new SensitiveDetector("target_detector");
 
