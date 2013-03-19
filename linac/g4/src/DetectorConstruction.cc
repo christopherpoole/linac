@@ -54,7 +54,7 @@ DetectorConstruction::DetectorConstruction()
     nist_manager = G4NistManager::Instance();
     use_phantom = false;
     region = NULL;
-
+    use_ct = false;
     ct_built = false;
 }
 
