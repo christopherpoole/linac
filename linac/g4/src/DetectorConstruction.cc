@@ -396,13 +396,11 @@ void DetectorConstruction::SetupCT() {
     }
     voxeldata_param->SetColourMap(colours);
 
-    /*
-    SensitiveDetector* detector = new SensitiveDetector("target_detector");
+    detector = new SensitiveDetector("target_detector");
 
     G4SDManager* sd_manager = G4SDManager::GetSDMpointer();
     sd_manager->AddNewDetector(detector);
     voxeldata_param->GetLogicalVolume()->SetSensitiveDetector(detector);
-    */
 }
 
 

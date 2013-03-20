@@ -114,7 +114,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4Material* MakeNewMaterial(G4String base_material_name, G4double density);
 
     void ClosePhasespace() {
-        delete phasespace_sensitive_detector;
+        phasespace_sensitive_detector->Close();
     };
 
     void UsePhantom(G4bool use) {

@@ -112,7 +112,7 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
                 from_phasespace = true;
                 G4cout << "Using phasespace file as particle source: " << phasespace << G4endl;
                 
-                input_file_stream = new std::ifstream(phasespace);
+                input_file_stream = new std::ifstream(phasespace, std::ios::binary);
                 phasespace_archive = new boost::archive::binary_iarchive(*input_file_stream);
 
                 particle_gun->GetCurrentSource()->GetPosDist()->SetPosDisType("Point");

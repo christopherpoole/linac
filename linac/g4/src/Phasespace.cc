@@ -43,7 +43,7 @@ Phasespace::Phasespace(const G4String& name, G4double radius) : G4VSensitiveDete
 
 //    debug = false;
     
-    output_file_stream = new std::ofstream(name);
+    output_file_stream = new std::ofstream(name, std::ios::binary);
     phasespace_archive = new boost::archive::binary_oarchive(*output_file_stream);
     
     detector_construction = (DetectorConstruction*) (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
