@@ -50,6 +50,32 @@ public:
 
     DetectorConstruction* detector_construction;
 
+    void SetDimensions(G4int x, G4int y, G4int z) {
+        x_dim = x;
+        y_dim = y;
+        z_dim = z;
+    };
+
+    void SetMinimumCutoff(G4int x, G4int y, G4int z) {
+        x_min = x;
+        y_min = y;
+        z_min = z;
+    };
+
+    void SetMaximumCutoff(G4int x, G4int y, G4int z) {
+        x_max = x;
+        y_max = y;
+        z_max = z;
+    };
+
+    void SetResolution(G4float x, G4float y, G4float z) {
+        x_res = x;
+        y_res = y;
+        z_res = z;
+
+        volume = x * y * z;
+    };
+
 public:
 
     pyublas::numpy_vector<float> energy_histogram;
