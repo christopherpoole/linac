@@ -82,6 +82,28 @@ class Simulation(object):
         self.run_id = run_id
         self.phasespace = phasespace
 
+    def set_ct(self, directory, acquisition=1):
+        self.detector_construction.UseCT(directory, acquisition)
+
+    def set_ct_position(self, position):
+        pos = G4ThreeVector(*position)
+        self.detector_construction.SetCTPosition(pos)
+
+    def crop_ct_x(self, xmin, xmax):
+        self.detector_construction.CropX(xmin, xmax)
+
+    def crop_ct_y(self, ymin, ymax):
+        self.detector_construction.CropY(ymin, ymax)
+
+    def crop_ct_z(self, zmin, zmax):
+        self.detector_construction.CropZ(zmin, zmax)
+
+    def get_ct_origin(self):
+        return self.detector_construction.GetCTOrigin()
+
+    def hide_ct(self, hide):
+        self.detector_construction.HideCT(hide)
+
     def _update(self):
         Geant4.gGeometryManager.OpenGeometry()
 
@@ -175,6 +197,7 @@ class Simulation(object):
         Geant4.HepRandom.setTheSeed(self.seed)
 
         Geant4.gRunManager.BeamOn(int(histories))
+        self.detector_construction.ClosePhasespace()
 
     def show(self):
         self._update()
