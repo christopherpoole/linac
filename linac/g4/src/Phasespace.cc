@@ -54,7 +54,6 @@ Phasespace::Phasespace(const G4String& name, G4double radius) : G4VSensitiveDete
 
 Phasespace::~Phasespace() {
     Close();
-    G4cout << "destructor" << G4endl; 
 //    delete output_file_stream;
 //    delete phasespace_archive;
 }

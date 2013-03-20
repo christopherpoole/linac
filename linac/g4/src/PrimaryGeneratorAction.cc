@@ -77,7 +77,6 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event)
 
 void PrimaryGeneratorAction::GeneratePhasespacePrimaries(G4Event* event)
 {
-            G4cout << "reading" << G4endl;
     if (phasespace_record_repeat == 0) {
 
         phasespace_record = PhasespaceRecord();

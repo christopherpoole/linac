@@ -9,6 +9,8 @@ import g4
 class Simulation(object):
     def __init__(self, name, config):
         self.name = name
+        self.run_id = 0
+
         self.config = config
         self.geometry_modified = False
 
@@ -54,9 +56,13 @@ class Simulation(object):
         self._source = s
         if s is not None:
             # TODO: Specify source phasespace dynamically
-            self.source_file = "/media/localscratch/phsp/%s_%s.phsp" % (s, self.name)
+            self.source_file = "/media/localscratch/phsp/%s_%s_%i.phsp" % (s, self.name, self.run_id)
         else:
             self.source_file = None
+
+    def set_source(self, source, run_id=0):
+        self.run_id = run_id
+        self.source = source
 
     @property
     def phasespace(self):
@@ -68,9 +74,13 @@ class Simulation(object):
         self._phasespace = p
         if p is not None:
             # TODO: Specify save phasespace dynamically
-            self.phasespace_file = "/media/localscratch/phsp/%s_%s.phsp" % (p, self.name)
+            self.phasespace_file = "/media/localscratch/phsp/%s_%s_%i.phsp" % (p, self.name, self.run_id)
         else:
             self.phasespace_file = None
+
+    def set_phasespace(self, phasespace, run_id=0):
+        self.run_id = run_id
+        self.phasespace = phasespace
 
     def _update(self):
         Geant4.gGeometryManager.OpenGeometry()
