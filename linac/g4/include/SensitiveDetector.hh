@@ -76,6 +76,14 @@ public:
         volume = x * y * z;
     };
 
+    pyublas::numpy_vector<float> GetEnergyHistogram() {
+        return this->energy_histogram;
+    }
+
+    pyublas::numpy_vector<float> GetCountsHistogram() {
+        return this->counts_histogram;
+    }
+
 public:
 
     pyublas::numpy_vector<float> energy_histogram;
