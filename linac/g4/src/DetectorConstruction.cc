@@ -395,8 +395,9 @@ void DetectorConstruction::SetupCT() {
         colours[i] = new G4Colour(gray, gray, gray, alpha);
     }
     voxeldata_param->SetColourMap(colours);
+    voxeldata_param->SetVisibility(false);
 
-    detector = new SensitiveDetector("target_detector");
+    detector = new SensitiveDetector("ct_detector");
 
     G4SDManager* sd_manager = G4SDManager::GetSDMpointer();
     sd_manager->AddNewDetector(detector);
