@@ -47,6 +47,7 @@
 #include "G4VoxelData.hh"
 #include "G4VoxelArray.hh"
 #include "DicomDataIO.hh"
+#include "NumpyDataIO.hh"
 
 // BOOST/PYTHON //
 #include "boost/python.hpp"
@@ -144,6 +145,22 @@ class DetectorConstruction : public G4VUserDetectorConstruction
         G4int increment = 25;
         materials = MakeMaterialsMap(increment);
     }
+
+    void UseArray(G4String filename, G4double x, G4double y, G4double z) {
+        this->use_ct = true;
+
+        NumpyDataIO* reader = new NumpyDataIO();
+        
+        this->data = reader->Read(filename);
+        this->array = new G4VoxelArray<int16_t>(this->data);
+
+        std::vector<double> spacing;
+        spacing.push_back(x); spacing.push_back(y); spacing.push_back(z);
+        //this->array->SetSpacing(spacing);
+
+        G4int increment = 25;
+        materials = MakeMaterialsMap(increment);
+    };
 
     void HideCT(G4bool hide) {
         this->use_ct = !hide;

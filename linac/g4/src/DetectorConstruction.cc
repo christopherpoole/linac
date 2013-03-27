@@ -373,6 +373,7 @@ void DetectorConstruction::SetupCT() {
         new G4VoxelDataParameterisation<int16_t>(array, materials, world_physical );
 
     G4RotationMatrix* rotation = new G4RotationMatrix();
+    rotation->rotateZ(90*deg);
     rotation->rotateX(90*deg);
 
     voxeldata_param->Construct(ct_position, rotation);

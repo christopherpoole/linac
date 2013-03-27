@@ -85,6 +85,9 @@ class Simulation(object):
     def set_ct(self, directory, acquisition=1):
         self.detector_construction.UseCT(directory, acquisition)
 
+    def set_array(self, filename, x=1., y=1., z=1.):
+        self.detector_construction.UseArray(filename, x, y, z)
+
     def set_ct_position(self, position):
         pos = G4ThreeVector(*position)
         self.detector_construction.SetCTPosition(pos)
