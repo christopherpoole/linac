@@ -48,7 +48,6 @@ class PhysicsList: public G4VModularPhysicsList
         this->e_cuts = e_cuts;
 
         SetCuts();
-        G4RunManager::GetRunManager()->GeometryHasBeenModified();
     };
 
   private:
