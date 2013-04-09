@@ -80,7 +80,7 @@ G4bool Phasespace::ProcessHits(G4Step* aStep, G4TouchableHistory* touchable) {
 
     *phasespace_archive << record;
 
-    aStep->GetTrack()->SetTrackStatus(fStopAndKill);
+    //aStep->GetTrack()->SetTrackStatus(fStopAndKill);
 
     record_count ++;
 //    if (record_count % 1000 == 0)

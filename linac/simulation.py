@@ -16,6 +16,8 @@ class Simulation(object):
 
         self._source = None
         self._phasespace = None
+        self.phasespaces = []
+        self.phasespace_files = []
 
         self.detector_construction = g4.DetectorConstruction()
         Geant4.gRunManager.SetUserInitialization(self.detector_construction)
@@ -81,6 +83,12 @@ class Simulation(object):
     def set_phasespace(self, phasespace, run_id=0):
         self.run_id = run_id
         self.phasespace = phasespace
+
+    # Hack
+    def set_phasespaces(self, phasespace, run_id=0):
+        self.set_phasespace(phasespace, run_id)
+        self.phasespaces.append(self.phasespace)
+        self.phasespace_files.append(self.phasespace_file)
 
     def set_ct(self, directory, acquisition=1):
         self.detector_construction.UseCT(directory, acquisition)
@@ -173,10 +181,13 @@ class Simulation(object):
                             params.thickness, params.material,
                         False, params.translation, params.rotation, params.colour) 
 
-        if self.phasespace:
-            ps = self.config.phasespaces[self.phasespace]
-            self.detector_construction.AddPhasespace(self.phasespace_file,
-                    ps["radius"], ps["z_position"], ps["material"])
+        print self.phasespaces
+
+        if len(self.phasespaces) > 0:
+            for phasespace, phasespace_file in zip(self.phasespaces, self.phasespace_files):
+                ps = self.config.phasespaces[phasespace]
+                self.detector_construction.AddPhasespace(phasespace_file,
+                        ps["radius"], ps["z_position"], ps["material"])
 
     def beam_on(self, histories, fwhm=2.0*mm, energy=6*MeV):
         self.primary_generator.SetGantryRotation(self.config.head.rotation)
