@@ -98,6 +98,8 @@ PhysicsList::PhysicsList()
 {
 
     defaultCutValue = 1*cm;
+    gamma_cuts = defaultCutValue;
+    e_cuts = defaultCutValue;
 
     //RegisterPhysics(new G4EmStandardPhysics_option1());
     //RegisterPhysics(new G4EmStandardPhysics_option2());
