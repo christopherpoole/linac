@@ -1,5 +1,8 @@
 import sys
+
 import pyublas
+import numpy
+import pylab
 
 from phsp_inspector import PhasespaceInspector
 
@@ -10,5 +13,6 @@ if __name__ == "__main__":
     inspector = PhasespaceInspector()
     inspector.Read(filename)
 
-    inspector.energy
+    pylab.hist(inspector.energy, bins=numpy.arange(0, 6, 0.1))
+    pylab.show()
 
