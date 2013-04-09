@@ -3,4 +3,5 @@
 *.so
 
 linac/g4/build/*
+utils/phsp_inspector/build/*
 machines/*
