@@ -8,11 +8,12 @@ from phsp_inspector import PhasespaceInspector
 
 
 if __name__ == "__main__":
-    filename = sys.argv[1]
+    filenames = sys.argv[1:]
     
-    inspector = PhasespaceInspector()
-    inspector.Read(filename)
+    for f in filenames:
+        inspector = PhasespaceInspector()
+        inspector.Read(f)
 
-    pylab.hist(inspector.energy, bins=numpy.arange(0, 6, 0.1))
+        pylab.hist(inspector.energy, bins=numpy.arange(0, 6, 0.1), alpha=1./len(filenames))
     pylab.show()
 
