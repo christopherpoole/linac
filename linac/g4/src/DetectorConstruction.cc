@@ -214,6 +214,8 @@ G4VPhysicalVolume* DetectorConstruction::AddPhasespace(char* name, double radius
 
     // Active scoring area is 1% smaller than actual plane - avoids navigation errors when point on edge with direction (0,0,0)
     Phasespace* phasespace_sensitive_detector = new Phasespace(name, radius - (radius*0.01));
+    this->phasespaces.push_back(phasespace_sensitive_detector);
+
     G4SDManager* sensitive_detector_manager = G4SDManager::GetSDMpointer();
     sensitive_detector_manager->AddNewDetector(phasespace_sensitive_detector);
     phasespace_physical->GetLogicalVolume()->SetSensitiveDetector(phasespace_sensitive_detector);

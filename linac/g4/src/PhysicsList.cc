@@ -205,8 +205,8 @@ void PhysicsList::SetCuts()
 
     region->SetProductionCuts(cuts);
 */
-//    SetCutValue(0.1*mm, "gamma");
-//    SetCutValue(0.01*mm, "e-");
-//    SetCutValue(0.01*mm, "e+");
+    SetCutValue(gamma_cuts, "gamma");
+    SetCutValue(e_cuts, "e-");
+    SetCutValue(e_cuts, "e+");
 }
 

@@ -26,6 +26,8 @@
 #include "globals.hh"
 #include "G4VModularPhysicsList.hh"
 #include "G4VUserPhysicsList.hh"
+#include "G4RunManager.hh"
+#include "G4ProductionCutsTable.hh"
 
 
 //class PhysicsList: public G4VUserPhysicsList
@@ -39,6 +41,19 @@ class PhysicsList: public G4VModularPhysicsList
         void ConstructParticle();
         void ConstructProcess();
         void SetCuts();
+
+  public:
+    void OverrideCuts(double gamma_cuts, double e_cuts){
+        this->gamma_cuts = gamma_cuts;
+        this->e_cuts = e_cuts;
+
+        SetCuts();
+        G4RunManager::GetRunManager()->GeometryHasBeenModified();
+    };
+
+  private:
+    double gamma_cuts;
+    double e_cuts;
 };
 
 #endif

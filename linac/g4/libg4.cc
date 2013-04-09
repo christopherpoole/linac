@@ -91,6 +91,7 @@ BOOST_PYTHON_MODULE(libg4) {
         //bases<G4VModularPhysicsList> >
         bases<G4VUserPhysicsList> >
         ("PhysicsList", "physics list")
+        .def("OverrideCuts", &PhysicsList::OverrideCuts)
         ;   // End PhysicsList
 
     class_<SteppingAction, SteppingAction*,

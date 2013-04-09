@@ -116,6 +116,11 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
     void ClosePhasespace() {
 //        phasespace_sensitive_detector->Close();
+        for(int i=0; i<phasespaces.size(); i++) {
+            (phasespaces[i])->Close();
+        }
+    
+        phasespaces.clear();
     };
 
     void UsePhantom(G4bool use) {
@@ -209,6 +214,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
     SensitiveDetector* detector;
     //Phasespace* phasespace_sensitive_detector;
+    std::vector<Phasespace*> phasespaces;
 
     G4Tubs* head_solid;
     G4LogicalVolume* head_logical;

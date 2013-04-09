@@ -39,6 +39,7 @@ class Simulation(object):
         self.seed = random.randint(0, 2**32)
         Geant4.HepRandom.setTheSeed(self.seed)
 
+        Geant4.gUImanager.ApplyCommand("/run/verbose 2")
         Geant4.gRunManager.Initialize()
 
     #@property
@@ -90,6 +91,9 @@ class Simulation(object):
         self.phasespaces.append(self.phasespace)
         self.phasespace_files.append(self.phasespace_file)
 
+    def set_cuts(self, gamma=1., electron=1.):
+        self.physics_list.OverrideCuts(gamma, electron)
+
     def set_ct(self, directory, acquisition=1):
         self.detector_construction.UseCT(directory, acquisition)
 
@@ -140,6 +144,8 @@ class Simulation(object):
                                                     material["density"], cb)
 
     def build_geometry(self):
+        self.detector_construction.ClosePhasespace()
+
         self.detector_construction.SetupHead( 
             self.config.head.radius,
             self.config.head.length,
