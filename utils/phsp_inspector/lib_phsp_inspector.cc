@@ -56,7 +56,13 @@ class PhasespaceInspector {
             phasespace_record = PhasespaceRecord();
             try {
                 *phasespace_archive >> phasespace_record;
-                this->energy.push_back((float)phasespace_record.GetKineticEnergy());
+                this->energy.push_back(phasespace_record.GetKineticEnergy());
+                this->weight.push_back(phasespace_record.GetWeight());
+                this->direction_x.push_back(phasespace_record.GetMomentum().x());
+                this->direction_y.push_back(phasespace_record.GetMomentum().y());
+                this->direction_z.push_back(phasespace_record.GetMomentum().z());
+                this->position.push_back(phasespace_record.GetPosition());
+                this->particle_type.push_back(phasespace_record.GetParticleType());
             } catch (...) {
                 std::cout << "Reached end of archive. Aborting." << std::endl;
                 break;
@@ -65,17 +71,44 @@ class PhasespaceInspector {
     };
 
     pyublas::numpy_vector<float> GetEnergy() {
+        return Get<float>(this->energy); 
+    };
 
-        pyublas::numpy_vector<float> energy(this->energy.size());
-        std::copy(this->energy.begin(), this->energy.end(), energy.begin());
-        return energy; 
+    pyublas::numpy_vector<float> GetWeight() {
+        return Get<float>(this->weight); 
+    };
+
+    pyublas::numpy_vector<float> GetDirectionX() {
+        return Get<float>(this->direction_x); 
+    };
+
+    pyublas::numpy_vector<float> GetDirectionY() {
+        return Get<float>(this->direction_y); 
+    };
+
+    pyublas::numpy_vector<float> GetDirectionZ() {
+        return Get<float>(this->direction_z); 
     };
 
   private:
+    template <typename T>
+    pyublas::numpy_vector<T> Get(std::vector<T> target) {
+        pyublas::numpy_vector<T> return_target(target.size());
+        std::copy(target.begin(), target.end(), return_target.begin());
+        return return_target; 
+    };
+  
+  private: 
     std::ifstream* input_file_stream;
     boost::archive::binary_iarchive* phasespace_archive;
        
     std::vector<float> energy;
+    std::vector<float> weight;
+    std::vector<float> direction_x;
+    std::vector<float> direction_y;
+    std::vector<float> direction_z;
+    std::vector<G4ThreeVector> position;
+    std::vector<int> particle_type;
 };
 
 
@@ -83,6 +116,10 @@ BOOST_PYTHON_MODULE(libphsp_inspector) {
     class_<PhasespaceInspector, PhasespaceInspector*>("PhasespaceInspector")
         .def("Read", &PhasespaceInspector::Read)
         .add_property("energy", &PhasespaceInspector::GetEnergy)
+        .add_property("weight", &PhasespaceInspector::GetWeight)
+        .add_property("direction_x", &PhasespaceInspector::GetDirectionX)
+        .add_property("direction_y", &PhasespaceInspector::GetDirectionY)
+        .add_property("direction_z", &PhasespaceInspector::GetDirectionZ)
     ; 
 }
 
