@@ -14,6 +14,8 @@ if __name__ == "__main__":
         inspector = PhasespaceInspector()
         inspector.Read(f)
 
-        pylab.hist(inspector.energy, bins=numpy.arange(0, 6, 0.1), alpha=1./len(filenames))
+        pylab.hist(inspector.energy, bins=numpy.arange(0, 6, 0.1), alpha=1./len(filenames), label=f)
+
+    pylab.legend()
     pylab.show()
 
