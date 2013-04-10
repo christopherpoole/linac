@@ -23,7 +23,7 @@
 #include "PhysicsList.hh"
 
 // GEANT4 //
-//#include "G4EmStandardPhysics_option1.hh"
+#include "G4EmStandardPhysics_option1.hh"
 //#include "G4EmStandardPhysics_option2.hh"
 //#include "G4EmStandardPhysics_option3.hh"
 //#include "G4EmDNAPhysics.hh"
@@ -101,7 +101,7 @@ PhysicsList::PhysicsList()
     gamma_cuts = defaultCutValue;
     e_cuts = defaultCutValue;
 
-    //RegisterPhysics(new G4EmStandardPhysics_option1());
+    RegisterPhysics(new G4EmStandardPhysics_option1());
     //RegisterPhysics(new G4EmStandardPhysics_option2());
     //RegisterPhysics(new G4EmStandardPhysics_option3());
     //RegisterPhysics(new G4EmLivermorePhysics());
@@ -113,19 +113,19 @@ PhysicsList::~PhysicsList()
 
 void PhysicsList::ConstructParticle()
 {
-    //G4VModularPhysicsList::ConstructParticle();
-
+    G4VModularPhysicsList::ConstructParticle();
+/*
     G4Gamma::GammaDefinition();
     G4Electron::ElectronDefinition();
     G4Positron::PositronDefinition();
     G4Proton::ProtonDefinition();//needed for range cuts apparently!!!!!!!!!
-
+*/
 }
 
 void PhysicsList::ConstructProcess()
 {
-    //G4VModularPhysicsList::ConstructProcess();
-
+    G4VModularPhysicsList::ConstructProcess();
+/*
     AddTransportation();
 
     theParticleIterator->reset();
@@ -190,7 +190,7 @@ void PhysicsList::ConstructProcess()
     emOptions.SetMaxEnergy(100*MeV);
     //opt.SetDEDXBinning(100);
     //opt.SetLambdaBinning(100);
-
+*/
 }
 
 
