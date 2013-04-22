@@ -199,7 +199,7 @@ void DetectorConstruction::SetupPhantom() {
 }
 
 
-G4VPhysicalVolume* DetectorConstruction::AddPhasespace(char* name, double radius, double z_position, char* material)
+G4VPhysicalVolume* DetectorConstruction::AddPhasespace(char* name, double radius, double z_position, char* material, bool kill)
 {
 //    G4Material* phasespace_material = nist_manager->FindOrBuildMaterial(material);
     
@@ -214,6 +214,7 @@ G4VPhysicalVolume* DetectorConstruction::AddPhasespace(char* name, double radius
 
     // Active scoring area is 1% smaller than actual plane - avoids navigation errors when point on edge with direction (0,0,0)
     Phasespace* phasespace_sensitive_detector = new Phasespace(name, radius - (radius*0.01));
+    phasespace_sensitive_detector->SetKillAtPlane(kill);
     this->phasespaces.push_back(phasespace_sensitive_detector);
 
     G4SDManager* sensitive_detector_manager = G4SDManager::GetSDMpointer();

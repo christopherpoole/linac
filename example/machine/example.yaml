@@ -1,5 +1,5 @@
 head: 
-  radius: 500
+  radius: 5000
   length: 800
   translation: [0, 0, 500]
   rotation: [0, 0, 0]
@@ -28,7 +28,15 @@ gun:
       
 phasespaces:
   exitwindow:
-    z_position: 250
-    radius: 200
+    z_position: 250 
+    radius: 2000
     material: G4_AIR
     redistrubute: false
+    kill: true 
+
+  iso:
+    z_position: 0
+    radius: 5000
+    material: G4_AIR
+    redistrubute: false
+    kill: true

@@ -49,6 +49,14 @@ class Phasespace : public G4VSensitiveDetector {
 
     void Close();
 
+    void SetKillAtPlane(G4bool kill) {
+        this->kill = kill;
+    };
+   
+    G4bool GetKillAtPlane() {
+        return this->kill;
+    };
+ 
     void Initialize(G4HCofThisEvent*);
     G4bool ProcessHits(G4Step*, G4TouchableHistory*);
     void EndOfEvent(G4HCofThisEvent*);
@@ -62,6 +70,7 @@ class Phasespace : public G4VSensitiveDetector {
 
     G4double radius;
     G4int record_count;
+    G4bool kill;
 };
 
 

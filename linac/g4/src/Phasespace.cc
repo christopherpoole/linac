@@ -42,7 +42,8 @@
 Phasespace::Phasespace(const G4String& name, G4double radius) : G4VSensitiveDetector(name) {
 
 //    debug = false;
-    
+    kill = true;   
+ 
     output_file_stream = new std::ofstream(name, std::ios::binary);
     phasespace_archive = new boost::archive::binary_oarchive(*output_file_stream);
     
@@ -80,7 +81,8 @@ G4bool Phasespace::ProcessHits(G4Step* aStep, G4TouchableHistory* touchable) {
 
     *phasespace_archive << record;
 
-    //aStep->GetTrack()->SetTrackStatus(fStopAndKill);
+    if (kill)
+        aStep->GetTrack()->SetTrackStatus(fStopAndKill);
 
     record_count ++;
 //    if (record_count % 1000 == 0)

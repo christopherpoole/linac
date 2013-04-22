@@ -85,7 +85,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
     void SetupPhantom();
 
-    G4VPhysicalVolume* AddPhasespace(char* name, double radius, double z_position, char* material);
+    G4VPhysicalVolume* AddPhasespace(char* name, double radius, double z_position, char* material, bool kill);
 
     G4VPhysicalVolume* AddCylinder(char* name,
                       double radius, double thickness,

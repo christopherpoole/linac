@@ -193,7 +193,7 @@ class Simulation(object):
             for phasespace, phasespace_file in zip(self.phasespaces, self.phasespace_files):
                 ps = self.config.phasespaces[phasespace]
                 self.detector_construction.AddPhasespace(phasespace_file,
-                        ps["radius"], ps["z_position"], ps["material"])
+                        ps["radius"], ps["z_position"], ps["material"], ps["kill"])
 
     def beam_on(self, histories, fwhm=2.0*mm, energy=6*MeV):
         self.primary_generator.SetGantryRotation(self.config.head.rotation)
