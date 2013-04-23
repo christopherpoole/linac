@@ -120,6 +120,9 @@ class Simulation(object):
     def hide_ct(self, hide):
         self.detector_construction.HideCT(hide)
 
+    def use_phantom(self, use):
+        self.detector_construction.UsePhantom(use)
+
     def _update(self):
         Geant4.gGeometryManager.OpenGeometry()
 
@@ -188,13 +191,16 @@ class Simulation(object):
                             params.thickness, params.material,
                         False, params.translation, params.rotation, params.colour) 
 
-        print self.phasespaces
-
         if len(self.phasespaces) > 0:
             for phasespace, phasespace_file in zip(self.phasespaces, self.phasespace_files):
                 ps = self.config.phasespaces[phasespace]
                 self.detector_construction.AddPhasespace(phasespace_file,
                         ps["radius"], ps["z_position"], ps["material"], ps["kill"])
+        elif hasattr(self, "phasespace_file") and self.phasespace is not None:
+            ps = self.config.phasespaces[self.phasespace]
+            self.detector_construction.AddPhasespace(self.phasespace_file,
+                    ps["radius"], ps["z_position"], ps["material"], ps["kill"])
+        
 
     def beam_on(self, histories, fwhm=2.0*mm, energy=6*MeV):
         self.primary_generator.SetGantryRotation(self.config.head.rotation)

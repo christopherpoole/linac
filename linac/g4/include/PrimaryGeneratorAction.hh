@@ -83,11 +83,11 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
         };
 
         void SetEnergy(G4double energy) {
-            particle_gun->GetCurrentSource()->GetEneDist()->SetMonoEnergy(energy);
+            particle_gun->GetCurrentSource()->GetEneDist()->SetMonoEnergy(energy*MeV);
         };
 
         void SetFWHM(G4double fwhm) {
-            particle_gun->GetCurrentSource()->GetPosDist()->SetBeamSigmaInR(fwhm); 
+            particle_gun->GetCurrentSource()->GetPosDist()->SetBeamSigmaInR(fwhm*mm); 
         };
 
         void SetRecyclingNumber(G4int number) {
