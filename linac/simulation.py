@@ -7,13 +7,14 @@ import g4
 
 
 class Simulation(object):
-    def __init__(self, name, config):
+    def __init__(self, name, config, phsp_dir='.'):
         self.name = name
         self.run_id = 0
 
         self.config = config
         self.geometry_modified = False
 
+        self.phsp_dir = phsp_dir
         self._source = None
         self._phasespace = None
         self.phasespaces = []
@@ -59,7 +60,7 @@ class Simulation(object):
         self._source = s
         if s is not None:
             # TODO: Specify source phasespace dynamically
-            self.source_file = "/media/localscratch/phsp/%s_%s_%i.phsp" % (s, self.name, self.run_id)
+            self.source_file = "%s/%s_%s_%i.phsp" % (self.phsp_dir, s, self.name, self.run_id)
         else:
             self.source_file = None
 
@@ -77,7 +78,7 @@ class Simulation(object):
         self._phasespace = p
         if p is not None:
             # TODO: Specify save phasespace dynamically
-            self.phasespace_file = "/media/localscratch/phsp/%s_%s_%i.phsp" % (p, self.name, self.run_id)
+            self.phasespace_file = "%s/%s_%s_%i.phsp" % (self.phsp_dir, p, self.name, self.run_id)
         else:
             self.phasespace_file = None
 
