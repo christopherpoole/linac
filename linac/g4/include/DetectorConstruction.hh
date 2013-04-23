@@ -191,6 +191,10 @@ class DetectorConstruction : public G4VUserDetectorConstruction
         return detector->GetEnergyHistogram();
     }
 
+    pyublas::numpy_vector<float> GetEnergySqHistogram() {
+        return detector->GetEnergySqHistogram();
+    }
+
     pyublas::numpy_vector<float> GetCountsHistogram() {
         return detector->GetCountsHistogram();
     }

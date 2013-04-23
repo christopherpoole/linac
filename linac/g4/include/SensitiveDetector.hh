@@ -80,6 +80,10 @@ public:
         return this->energy_histogram;
     }
 
+    pyublas::numpy_vector<float> GetEnergySqHistogram() {
+        return this->energysq_histogram;
+    }
+
     pyublas::numpy_vector<float> GetCountsHistogram() {
         return this->counts_histogram;
     }
@@ -87,6 +91,7 @@ public:
 public:
 
     pyublas::numpy_vector<float> energy_histogram;
+    pyublas::numpy_vector<float> energysq_histogram;
     pyublas::numpy_vector<float> counts_histogram;
 
     //G4double voxel_mass;

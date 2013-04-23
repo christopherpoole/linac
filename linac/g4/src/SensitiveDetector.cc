@@ -45,19 +45,19 @@ SensitiveDetector::SensitiveDetector(const G4String& name) : G4VSensitiveDetecto
 
     debug = false;
 
-    x_dim = 201;
+    x_dim = 501;
     y_dim = x_dim;
-    z_dim = x_dim;
+    z_dim = 500;
 
     x_min = 0;
     y_min = 0;
     z_min = 0;
 
     x_max = x_dim;
-    y_max = x_max;
-    z_max = x_max;
+    y_max = y_dim;
+    z_max = z_dim;
 
-    x_res = 2*mm;
+    x_res = 1*mm;
     y_res = x_res;
     z_res = x_res;
 
@@ -69,6 +69,9 @@ SensitiveDetector::SensitiveDetector(const G4String& name) : G4VSensitiveDetecto
 
     energy_histogram = pyublas::numpy_vector<float> (3, dims);
     std::fill(energy_histogram.begin(), energy_histogram.end(), 0.0);
+
+    energysq_histogram = pyublas::numpy_vector<float> (3, dims);
+    std::fill(energysq_histogram.begin(), energysq_histogram.end(), 0.0);
 
     counts_histogram = pyublas::numpy_vector<float> (3, dims);
     std::fill(counts_histogram.begin(), counts_histogram.end(), 0.0);
@@ -149,6 +152,7 @@ G4bool SensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory* touchab
         G4cout << "New index: " << x_index << " " << y_index << " " << z_index << " " << G4endl;
     }
     energy_histogram.sub(x_index, y_index, z_index) += energy_deposit;
+    energysq_histogram.sub(x_index, y_index, z_index) += std::pow(energy_deposit, 2.);
     counts_histogram.sub(x_index, y_index, z_index) += aTrack->GetWeight();
     
     if (debug) G4cout << G4endl;
