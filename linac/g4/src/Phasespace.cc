@@ -42,6 +42,7 @@
 Phasespace::Phasespace(const G4String& name, G4double radius) : G4VSensitiveDetector(name) {
 
 //    debug = false;
+    this->name = name;
     kill = true;   
  
     output_file_stream = new std::ofstream(name, std::ios::binary);

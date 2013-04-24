@@ -47,6 +47,13 @@ class Phasespace : public G4VSensitiveDetector {
     Phasespace(const G4String& name, G4double radius);
     virtual ~Phasespace();
 
+    void Initialize(G4HCofThisEvent*);
+    G4bool ProcessHits(G4Step*, G4TouchableHistory*);
+    void EndOfEvent(G4HCofThisEvent*);
+    void clear();
+    void PrintAll();
+
+  public:
     void Close();
 
     void SetKillAtPlane(G4bool kill) {
@@ -56,18 +63,18 @@ class Phasespace : public G4VSensitiveDetector {
     G4bool GetKillAtPlane() {
         return this->kill;
     };
- 
-    void Initialize(G4HCofThisEvent*);
-    G4bool ProcessHits(G4Step*, G4TouchableHistory*);
-    void EndOfEvent(G4HCofThisEvent*);
-    void clear();
-    void PrintAll();
 
+    G4String GetName() {
+        return this->name;
+    };
+
+  private: 
     DetectorConstruction* detector_construction;
 
     std::ofstream* output_file_stream;
     boost::archive::binary_oarchive* phasespace_archive;
 
+    G4String name;
     G4double radius;
     G4int record_count;
     G4bool kill;
