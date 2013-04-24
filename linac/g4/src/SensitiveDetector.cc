@@ -97,7 +97,10 @@ G4bool SensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory* touchab
     G4double voxel_mass = aTrack->GetMaterial()->GetDensity() * volume;
 
 
-    G4ThreeVector position = aTrack->GetPosition();
+    G4ThreeVector world_position = aTrack->GetPosition();
+    //G4ThreeVector world_position = aStep->GetPreStepPoint()->GetPosition();
+    G4ThreeVector position = aStep->GetPreStepPoint()->GetTouchableHandle()->
+            GetHistory()->GetTopTransform().TransformPoint(world_position);
 
     int x_index = std::floor((position.x() + (x_dim/2. * x_res)) / x_res);
     int y_index = std::floor((position.y() + (y_dim/2. * y_res)) / y_res);
