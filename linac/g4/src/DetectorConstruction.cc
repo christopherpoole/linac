@@ -56,6 +56,8 @@ DetectorConstruction::DetectorConstruction()
     region = NULL;
     use_ct = false;
     ct_built = false;
+
+    detector = NULL;
 }
 
 DetectorConstruction::~DetectorConstruction()
@@ -192,7 +194,9 @@ void DetectorConstruction::SetupPhantom() {
                                        "phantom_physical", world_logical, false, 0);
 //    phantom_logical->SetVisAttributes(new G4VisAttributes(G4Colour(0, 0.6, 0.9, 1))); 
 
-    detector = new SensitiveDetector("phantom_detector");
+    if (!this->detector)
+        detector = new SensitiveDetector("phantom_detector");
+
     G4SDManager* sd_manager = G4SDManager::GetSDMpointer();
     sd_manager->AddNewDetector(detector);
     phantom_logical->SetSensitiveDetector(detector);
