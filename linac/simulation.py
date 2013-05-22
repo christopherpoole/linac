@@ -60,7 +60,7 @@ class Simulation(object):
         self._source = s
         if s is not None:
             # TODO: Specify source phasespace dynamically
-            self.source_file = "%s/%s_%s_%i.phsp" % (self.phsp_dir, s, self.name, self.run_id)
+            self.source_file = "%s/%s_%s_%s.phsp" % (self.phsp_dir, s, self.name, self.run_id)
         else:
             self.source_file = None
 
@@ -78,7 +78,7 @@ class Simulation(object):
         self._phasespace = p
         if p is not None:
             # TODO: Specify save phasespace dynamically
-            self.phasespace_file = "%s/%s_%s_%i.phsp" % (self.phsp_dir, p, self.name, self.run_id)
+            self.phasespace_file = "%s/%s_%s_%s.phsp" % (self.phsp_dir, p, self.name, self.run_id)
         else:
             self.phasespace_file = None
 
