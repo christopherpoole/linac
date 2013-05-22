@@ -188,9 +188,9 @@ void DetectorConstruction::SetupHead(G4double head_radius,
 void DetectorConstruction::SetupPhantom() {
     G4Material* water = nist_manager->FindOrBuildMaterial("G4_WATER");
 
-    phantom_solid = new G4Box("phantom_solid", 250*mm, 250*mm, 250*mm);
+    phantom_solid = new G4Box("phantom_solid", 200*mm, 200*mm, 200*mm);
     phantom_logical = new G4LogicalVolume(phantom_solid, water, "phantom_logical", 0, 0, 0);
-    phantom_physical = new G4PVPlacement(0, G4ThreeVector(0, 0, -200*mm), phantom_logical, 
+    phantom_physical = new G4PVPlacement(0, G4ThreeVector(0, 0, -150*mm), phantom_logical, 
                                        "phantom_physical", world_logical, false, 0);
 //    phantom_logical->SetVisAttributes(new G4VisAttributes(G4Colour(0, 0.6, 0.9, 1))); 
 
