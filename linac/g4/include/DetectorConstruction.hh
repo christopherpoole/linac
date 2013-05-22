@@ -201,6 +201,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
     void ZeroHistograms() {
         std::fill(detector->energy_histogram.begin(), detector->energy_histogram.end(), 0.0);
+        std::fill(detector->energysq_histogram.begin(), detector->energysq_histogram.end(), 0.0);
         std::fill(detector->counts_histogram.begin(), detector->counts_histogram.end(), 0.0);
     }
 
