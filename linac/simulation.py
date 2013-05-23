@@ -4,6 +4,8 @@ import Geant4
 from Geant4 import G4ThreeVector, G4RotationMatrix, G4Color, mm, deg, MeV
 
 import g4
+import numpy
+import pyublas
 
 
 class Simulation(object):
@@ -130,17 +132,29 @@ class Simulation(object):
 
         #self.build_materials()
         self.build_geometry()
+        Geant4.gGeometryManager.CloseGeometry()
 
         Geant4.gRunManager.DefineWorldVolume(world)
         Geant4.gRunManager.GeometryHasBeenModified()
         #Geant4.gRunManager.PhysicsHasBeenModified()
 
-        Geant4.gGeometryManager.CloseGeometry()
-
         self.primary_generator.SetRecyclingNumber(self.config.gun["recycling_number"])       
  
         self.primary_generator.SetPosition(G4ThreeVector(0., 0., 1050.))
         self.primary_generator.SetDirection(G4ThreeVector(0, 0, -1))
+
+    def save_histograms(self, directory, name, runid):
+        energy_data = self.detector_construction.GetEnergyHistogram()
+        numpy.save("%s/energy_%s_%s_%s" % (directory, self.name, name, runid), energy_data)
+
+        energy2_data = self.detector_construction.GetEnergySqHistogram()
+        numpy.save("%s/energy2_%s_%s_%s" % (directory, self.name, name, runid), energy2_data)
+
+        counts_data = self.detector_construction.GetCountsHistogram()
+        numpy.save("%s/counts_%s_%s_%s" % (directory, self.name, name, runid), counts_data)
+
+    def zero_histograms(self):
+        self.detector_construction.ZeroHistograms()
 
     def build_materials(self):
         for material in self.config["materials"]:
