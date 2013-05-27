@@ -118,6 +118,30 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     return world_physical;
 }
 
+
+G4LogicalVolume* DetectorConstruction::FindVolume(G4String name, G4LogicalVolume * mother)
+{
+    if(mother->GetName() == name) {
+        return mother;
+    }
+
+    int count = mother->GetNoDaughters();
+    for(int i=0; i<count; i++) {
+        G4LogicalVolume * daughter = mother->GetDaughter(i)->GetLogicalVolume();
+        if(daughter->GetName() == name) {
+            return daughter;
+        } else {
+            G4LogicalVolume * volume = FindVolume(name, daughter);
+
+            if(volume){
+                return volume;
+            }
+        }
+    }
+    return NULL;
+}
+
+
 void DetectorConstruction::SetupHead(G4double head_radius,
                                      G4double head_length,
                                      G4ThreeVector head_position,

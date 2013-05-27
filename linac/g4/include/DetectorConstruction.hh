@@ -113,11 +113,12 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     void TranslateCADComponent(char* name, G4ThreeVector translation);
     void RotateCADComponent(char* name, G4ThreeVector rotation);
     
-
     void SetupCT();
 
     std::map<int16_t, G4Material*> MakeMaterialsMap(G4int increment);
     G4Material* MakeNewMaterial(G4String base_material_name, G4double density);
+
+    G4LogicalVolume* FindVolume(G4String name, G4LogicalVolume * mother); 
 
     void ClosePhasespace() {
 //        phasespace_sensitive_detector->Close();
