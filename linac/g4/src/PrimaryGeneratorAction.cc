@@ -38,13 +38,11 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
     particle_gun = new G4GeneralParticleSource();
 
     G4ParticleTable* particle_table = G4ParticleTable::GetParticleTable();
-    G4ParticleDefinition* particle = particle_table->FindParticle("e-");
-
     electron = particle_table->FindParticle("e-");
     gamma = particle_table->FindParticle("gamma");
     positron = particle_table->FindParticle("e+");
  
-    particle_gun->GetCurrentSource()->SetParticleDefinition(particle);
+    particle_gun->GetCurrentSource()->SetParticleDefinition(electron);
     particle_gun->GetCurrentSource()->GetPosDist()->SetPosDisType("Beam");
     particle_gun->GetCurrentSource()->GetPosDist()->SetBeamSigmaInR(1*mm);
     particle_gun->GetCurrentSource()->GetEneDist()->SetMonoEnergy(6*MeV);
