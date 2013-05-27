@@ -417,6 +417,8 @@ void DetectorConstruction::TranslateCADComponent(char* name, G4ThreeVector trans
 {
     G4VPhysicalVolume* physical = FindVolume(name, head_physical);
     physical->SetTranslation(translation);
+    
+    G4RunManager::GetRunManager()->GeometryHasBeenModified();
 }
 
 
@@ -429,6 +431,8 @@ void DetectorConstruction::RotateCADComponent(char* name, G4ThreeVector rotation
     rot->rotateY(rotation.y()*deg);
     rot->rotateZ(rotation.z()*deg);
     physical->SetRotation(rot);
+    
+    G4RunManager::GetRunManager()->GeometryHasBeenModified();
 }
 
 
