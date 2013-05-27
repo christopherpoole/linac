@@ -129,9 +129,8 @@ void DetectorConstruction::SetupHead(G4double head_radius,
     this->head_length = head_length;
     this->head_position = G4ThreeVector(head_position);
     head_position += G4ThreeVector(0, 0, head_length/2.);
-
     head_position.rotate(0, head_rotation.y()*deg, 0);
-    
+   
     this->head_rotation = new G4RotationMatrix();
     //this->head_rotation->rotateZ(head_rotation.z()*deg);
     this->head_rotation->rotateX(head_rotation.y()*deg);
@@ -182,6 +181,21 @@ void DetectorConstruction::SetupHead(G4double head_radius,
     G4SDManager* sensitive_detector_manager = G4SDManager::GetSDMpointer();
     sensitive_detector_manager->AddNewDetector(sheild_sensitive_detector);
     sheild_logical->SetSensitiveDetector(sheild_sensitive_detector);
+}
+
+
+void DetectorConstruction::SetGantryAngle(G4double angle)
+{
+    G4ThreeVector head_position = this->head_position + G4ThreeVector(0, 0, head_length/2.);
+    head_position.rotate(0, angle*deg, 0);
+   
+    this->head_rotation = new G4RotationMatrix();
+    this->head_rotation->rotateX(angle*deg);
+
+    this->head_physical->SetTranslation(head_position);
+    this->head_physical->SetRotation(this->head_rotation);
+
+    G4RunManager::GetRunManager()->GeometryHasBeenModified();
 }
 
 
