@@ -49,7 +49,7 @@ PhasespaceRecord::PhasespaceRecord(G4Step* step) {
 
     weight = track->GetWeight();    
     
-    G4String type = track->GetParticleDefinition()->GetParticleType();
+    G4String type = track->GetParticleDefinition()->GetParticleName();
     if (type == "e+") {
         particle_type = 1;
     } else if (type == "e-") {
@@ -57,7 +57,6 @@ PhasespaceRecord::PhasespaceRecord(G4Step* step) {
     } else {
         particle_type = 0;
     }
-
 }
 
 PhasespaceRecord::~PhasespaceRecord() {
