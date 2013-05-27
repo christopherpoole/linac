@@ -78,6 +78,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4VPhysicalVolume* Construct();
   
   public:
+    G4VPhysicalVolume* FindVolume(G4String name, G4VPhysicalVolume * mother); 
+    
     void SetupHead(G4double head_radius, G4double head_length,
                    G4ThreeVector head_position, G4ThreeVector head_rotation,
                    G4double vacuum_radius, G4double vacuum_length, G4ThreeVector vacuum_position);
@@ -117,8 +119,6 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
     std::map<int16_t, G4Material*> MakeMaterialsMap(G4int increment);
     G4Material* MakeNewMaterial(G4String base_material_name, G4double density);
-
-    G4LogicalVolume* FindVolume(G4String name, G4LogicalVolume * mother); 
 
     void ClosePhasespace() {
 //        phasespace_sensitive_detector->Close();
