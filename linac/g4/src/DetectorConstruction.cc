@@ -415,13 +415,20 @@ G4VPhysicalVolume* DetectorConstruction::AddCADComponent(char* name,
 
 void DetectorConstruction::TranslateCADComponent(char* name, G4ThreeVector translation)
 {
-
+    G4VPhysicalVolume* physical = FindVolume(name, head_physical);
+    physical->SetTranslation(translation);
 }
 
 
 void DetectorConstruction::RotateCADComponent(char* name, G4ThreeVector rotation)
 {
+    G4VPhysicalVolume* physical = FindVolume(name, head_physical);
 
+    G4RotationMatrix* rot = new G4RotationMatrix();
+    rot->rotateX(rotation.x()*deg);
+    rot->rotateY(rotation.y()*deg);
+    rot->rotateZ(rotation.z()*deg);
+    physical->SetRotation(rot);
 }
 
 
