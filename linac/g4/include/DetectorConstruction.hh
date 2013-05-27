@@ -110,6 +110,9 @@ class DetectorConstruction : public G4VUserDetectorConstruction
                     G4ThreeVector translation,
                     G4ThreeVector rotation,
                     G4Colour colour, G4bool tessellated);
+    void TranslateCADComponent(char* name, G4ThreeVector translation);
+    void RotateCADComponent(char* name, G4ThreeVector rotation);
+    
 
     void SetupCT();
 

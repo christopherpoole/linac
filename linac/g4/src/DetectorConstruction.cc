@@ -389,6 +389,18 @@ G4VPhysicalVolume* DetectorConstruction::AddCADComponent(char* name,
 }
 
 
+void DetectorConstruction::TranslateCADComponent(char* name, G4ThreeVector translation)
+{
+
+}
+
+
+void DetectorConstruction::RotateCADComponent(char* name, G4ThreeVector rotation)
+{
+
+}
+
+
 void DetectorConstruction::SetupCT() {
     G4VoxelDataParameterisation<int16_t>* voxeldata_param =
         new G4VoxelDataParameterisation<int16_t>(array, materials, world_physical );
