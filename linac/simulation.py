@@ -9,7 +9,7 @@ import pyublas
 
 
 class Simulation(object):
-    def __init__(self, name, config, phsp_dir='.'):
+    def __init__(self, name, config, phsp_dir='.', use_phantom=True):
         self.name = name
         self.run_id = 0
 
@@ -24,6 +24,7 @@ class Simulation(object):
 
         self.detector_construction = g4.DetectorConstruction()
         Geant4.gRunManager.SetUserInitialization(self.detector_construction)
+        self.detector_construction.UsePhantom(use_phantom)
 
         self.physics_list = g4.PhysicsList()
         Geant4.gRunManager.SetUserInitialization(self.physics_list)
@@ -44,6 +45,8 @@ class Simulation(object):
 
         Geant4.gUImanager.ApplyCommand("/run/verbose 2")
         Geant4.gRunManager.Initialize()
+
+        self.build_geometry()
 
     #@property
     #def config(self):
@@ -69,6 +72,8 @@ class Simulation(object):
     def set_source(self, source, run_id=0):
         self.run_id = run_id
         self.source = source
+
+        self.detector_construction.RemovePhasespace(self.source_file)
 
     @property
     def phasespace(self):
@@ -126,17 +131,7 @@ class Simulation(object):
         self.detector_construction.UsePhantom(use)
 
     def _update(self):
-        Geant4.gGeometryManager.OpenGeometry()
-
-        world = self.detector_construction.Construct()
-
-        #self.build_materials()
-        self.build_geometry()
-        Geant4.gGeometryManager.CloseGeometry()
-
-        Geant4.gRunManager.DefineWorldVolume(world)
-        Geant4.gRunManager.GeometryHasBeenModified()
-        #Geant4.gRunManager.PhysicsHasBeenModified()
+        self.update_geometry()
 
         self.primary_generator.SetRecyclingNumber(self.config.gun["recycling_number"])       
  
@@ -172,7 +167,7 @@ class Simulation(object):
             self.config.vacuum.radius,
             self.config.vacuum.length,
             self.config.vacuum.translation)
- 
+         
         for name, params in self.config.vacuum.daughters.iteritems():
             if params.filename != "":
                 self.detector_construction.AddCADComponent(name, params.filename,
@@ -204,7 +199,7 @@ class Simulation(object):
                     self.detector_construction.AddSlab(name, params.side,
                             params.thickness, params.material,
                         False, params.translation, params.rotation, params.colour) 
-
+        
         if len(self.phasespaces) > 0:
             for phasespace, phasespace_file in zip(self.phasespaces, self.phasespace_files):
                 ps = self.config.phasespaces[phasespace]
@@ -215,7 +210,49 @@ class Simulation(object):
             self.detector_construction.AddPhasespace(self.phasespace_file,
                     ps["radius"], ps["z_position"], ps["material"], ps["kill"])
         
+    def update_geometry(self):
+        self.detector_construction.ClosePhasespace()
 
+        self.detector_construction.SetGantryAngle(self.config.head.rotation.y)
+         
+        for name, params in self.config.vacuum.daughters.iteritems():
+            if params.filename != "":
+                self.detector_construction.TranslateCADComponent(name, params.translation, True)
+                self.detector_construction.RotateCADComponent(name, params.rotation)
+            if hasattr(params, "solid"):
+                if params.solid == "cylinder":
+                    self.detector_construction.UpdateCylinder(name, params.radius,
+                            params.thickness, params.material,
+                            params.translation, params.rotation) 
+                if params.solid == "slab":
+                    self.detector_construction.UpdateSlab(name, params.side,
+                            params.thickness, params.material,
+                            params.translation, params.rotation) 
+
+        for name, params in self.config.head.daughters.iteritems():
+            if params.filename != "":
+                self.detector_construction.TranslateCADComponent(name, params.translation, False)
+                self.detector_construction.RotateCADComponent(name, params.rotation)
+            if hasattr(params, "solid"):
+                if params.solid == "cylinder":
+                    self.detector_construction.UpdateCylinder(name, params.radius,
+                            params.thickness, params.material,
+                            params.translation, params.rotation) 
+                if params.solid == "slab":
+                    self.detector_construction.UpdateSlab(name, params.side,
+                            params.thickness, params.material,
+                            params.translation, params.rotation) 
+ 
+        if len(self.phasespaces) > 0:
+            for phasespace, phasespace_file in zip(self.phasespaces, self.phasespace_files):
+                ps = self.config.phasespaces[phasespace]
+                self.detector_construction.AddPhasespace(phasespace_file,
+                        ps["radius"], ps["z_position"], ps["material"], ps["kill"])
+        elif hasattr(self, "phasespace_file") and self.phasespace is not None:
+            ps = self.config.phasespaces[self.phasespace]
+            self.detector_construction.AddPhasespace(self.phasespace_file,
+                    ps["radius"], ps["z_position"], ps["material"], ps["kill"])
+ 
     def beam_on(self, histories, fwhm=2.0*mm, energy=6*MeV):
         self.primary_generator.SetGantryRotation(self.config.head.rotation)
 
