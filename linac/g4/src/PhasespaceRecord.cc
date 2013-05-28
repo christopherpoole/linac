@@ -75,6 +75,39 @@ void PhasespaceRecord::serialize(Archive & ar, const unsigned int version);
     ar & kinetic_energy;
 }
 */
+G4bool PhasespaceRecord::CheckIt(G4double xlow, G4double xhigh,
+        G4double ylow, G4double yhigh,
+        G4double zlow, G4double zhigh)
+{
+    if ((isnan(position_x)) ||
+        (isnan(position_y)) ||
+        (isnan(position_z))) { 
+        return false;
+    }
+    
+    G4double tol_low = 1e-100;
+    if (((std::abs(position_x) < tol_low) && (std::abs(position_x) > 0)) ||
+        ((std::abs(position_y) < tol_low) && (std::abs(position_y) > 0)) ||
+        ((std::abs(position_z) < tol_low) && (std::abs(position_z) > 0))) {
+        return false;
+    }
+
+    G4double tol_high = 1e10; 
+    if ((std::abs(position_x) > tol_high) ||
+        (std::abs(position_y) > tol_high) ||
+        (std::abs(position_z) > tol_high)) {
+        return false;
+    }
+
+    if ((position_x < xlow) || (position_x > xhigh) ||
+        (position_y < ylow) || (position_y > yhigh) ||
+        (position_z < zlow) || (position_z > zhigh)) {
+        return false;
+    }
+
+    return true;
+}
+
 G4ThreeVector PhasespaceRecord::GetPosition() {
     return G4ThreeVector(position_x, position_y, position_z);
 }

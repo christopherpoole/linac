@@ -58,6 +58,8 @@ class PhasespaceRecord {
     } 
 
   public:
+    G4bool CheckIt(G4double xlow, G4double xhigh, G4double ylow,
+            G4double yhigh, G4double zlow, G4double zhigh);
     G4ThreeVector GetPosition();
     G4ThreeVector GetMomentum();
     G4double GetKineticEnergy();
