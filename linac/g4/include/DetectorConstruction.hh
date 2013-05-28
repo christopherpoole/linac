@@ -250,6 +250,10 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4LogicalVolume* sheild_logical;
     G4VPhysicalVolume* sheild_physical;
 
+    G4Tubs* lid_solid;
+    G4LogicalVolume* lid_logical;
+    G4VPhysicalVolume* lid_physical;
+
     G4NistManager* nist_manager;
     G4Material* StainlessSteel;
 

@@ -190,7 +190,16 @@ void DetectorConstruction::SetupHead(G4double head_radius,
                                          0, 0, 0);
     sheild_physical = new G4PVPlacement(this->head_rotation, head_position, sheild_logical, "sheild_physical",
                                         world_logical, false, 0);
-    sheild_logical->SetVisAttributes(G4VisAttributes::Invisible); 
+//    sheild_logical->SetVisAttributes(G4VisAttributes::Invisible); 
+
+    lid_solid = new G4Tubs("lid_solid", 0,
+                               head_radius*mm, 1.*mm, 0*deg, 360*deg);
+    lid_logical = new G4LogicalVolume(lid_solid, head_material, "lid_logical",
+                                         0, 0, 0);
+    G4ThreeVector lid_offset = G4ThreeVector(0, 0, (head_length/2.) + 0.5);
+    lid_physical = new G4PVPlacement(this->head_rotation, head_position+lid_offset, lid_logical, "lid_physical",
+                                        world_logical, false, 0);
+//    sheild_logical->SetVisAttributes(G4VisAttributes::Invisible); 
 
     if (use_phantom) {
         SetupPhantom();
@@ -205,6 +214,7 @@ void DetectorConstruction::SetupHead(G4double head_radius,
     G4SDManager* sensitive_detector_manager = G4SDManager::GetSDMpointer();
     sensitive_detector_manager->AddNewDetector(sheild_sensitive_detector);
     sheild_logical->SetSensitiveDetector(sheild_sensitive_detector);
+    lid_logical->SetSensitiveDetector(sheild_sensitive_detector);
 }
 
 
