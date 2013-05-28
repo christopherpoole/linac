@@ -98,7 +98,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
                       G4ThreeVector translation,
                       G4ThreeVector rotation,
                       G4Colour colour);
-
+ 
     G4VPhysicalVolume* AddSlab(char* name,
                       double side, double thickness,
                       char* material,
@@ -106,13 +106,13 @@ class DetectorConstruction : public G4VUserDetectorConstruction
                       G4ThreeVector translation,
                       G4ThreeVector rotation,
                       G4Colour colour);
-
+ 
     G4VPhysicalVolume* AddCADComponent(char* name, char* filename, char* material,
                     G4bool in_vacuum, double scale,
                     G4ThreeVector translation,
                     G4ThreeVector rotation,
                     G4Colour colour, G4bool tessellated);
-    void TranslateCADComponent(char* name, G4ThreeVector translation);
+    void TranslateCADComponent(char* name, G4ThreeVector translation, G4bool in_vacuum);
     void RotateCADComponent(char* name, G4ThreeVector rotation);
     
     void SetupCT();

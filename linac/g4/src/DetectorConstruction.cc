@@ -266,6 +266,7 @@ G4VPhysicalVolume* DetectorConstruction::AddPhasespace(char* name, double radius
     return phasespace_physical;
 }
 
+
 void DetectorConstruction::AddMaterial(G4String name, G4double density,
                                         boost::python::object move)
 {
@@ -317,6 +318,7 @@ G4VPhysicalVolume* DetectorConstruction::AddCylinder(char* name,
     return physical;
 }
 
+
 G4VPhysicalVolume* DetectorConstruction::AddSlab(char* name,
                                                    double side, double thickness,
                                                    char* material,
@@ -357,7 +359,6 @@ G4VPhysicalVolume* DetectorConstruction::AddSlab(char* name,
 
     return physical;
 }
-
 
 
 G4VPhysicalVolume* DetectorConstruction::AddCADComponent(char* name,
@@ -413,8 +414,16 @@ G4VPhysicalVolume* DetectorConstruction::AddCADComponent(char* name,
 }
 
 
-void DetectorConstruction::TranslateCADComponent(char* name, G4ThreeVector translation)
+void DetectorConstruction::TranslateCADComponent(char* name, G4ThreeVector translation, G4bool in_vacuum)
 {
+    if (in_vacuum == true) {
+        translation -= vacuum_position;
+        translation -= G4ThreeVector(0, 0, vacuum_length/2.);
+    } else {
+        translation -= head_position;
+        translation -= G4ThreeVector(0, 0, head_length/2.);
+    }
+
     G4VPhysicalVolume* physical = FindVolume(name, head_physical);
     physical->SetTranslation(translation);
     
