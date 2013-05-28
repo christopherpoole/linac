@@ -110,6 +110,11 @@ void PrimaryGeneratorAction::GeneratePhasespacePrimaries(G4Event* event)
         phasespace_record_repeat = 0;
     }
 
+    // Sanity check
+    if (phasespace_record.CheckIt(xlow, xhigh, ylow, yhigh, zlow, zhigh) == false) { 
+       return;
+    } 
+
     G4ThreeVector pos = G4ThreeVector(phasespace_record.GetPosition());
     G4ThreeVector mom = G4ThreeVector(phasespace_record.GetMomentum());
 

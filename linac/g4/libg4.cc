@@ -122,6 +122,7 @@ BOOST_PYTHON_MODULE(libg4) {
         .def("SetRecyclingNumber", &PrimaryGeneratorAction::SetRecyclingNumber)
         .def("SetRedistribute", &PrimaryGeneratorAction::SetRedistribute)
         .def("SetGantryRotation", &PrimaryGeneratorAction::SetGantryRotation)
+        .def("SetPhasespaceLimits", &PrimaryGeneratorAction::SetPhasespaceLimits)
         ;   // End PrimaryGeneratorAction
 }
 

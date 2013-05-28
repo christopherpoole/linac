@@ -120,6 +120,16 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
             }
         }
     
+        void SetPhasespaceLimits(G4double xlow, G4double xhigh,
+                G4double ylow, G4double yhigh, G4double zlow, G4double zhigh) {
+            this->xlow = xlow;
+            this->xhigh = xhigh;
+            this->ylow = ylow;
+            this->yhigh = yhigh;
+            this->zlow = zlow;
+            this->zhigh = zhigh;
+        }   
+ 
     public:
         void GeneratePrimaries(G4Event* event);
         void GeneratePhasespacePrimaries(G4Event* event);
@@ -147,6 +157,13 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
         G4int phasespace_record_repeat;
 
         G4int count;
+
+        G4double xlow;
+        G4double xhigh;
+        G4double ylow;
+        G4double yhigh;
+        G4double zlow;
+        G4double zhigh;
 };
 
 #endif
