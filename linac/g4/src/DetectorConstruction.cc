@@ -319,6 +319,16 @@ G4VPhysicalVolume* DetectorConstruction::AddCylinder(char* name,
 }
 
 
+void DetectorConstruction::UpdateCylinder(char* name,
+                      double radius, double thickness,
+                      char* material,
+                      G4ThreeVector translation,
+                      G4ThreeVector rotation)
+{
+
+}
+
+
 G4VPhysicalVolume* DetectorConstruction::AddSlab(char* name,
                                                    double side, double thickness,
                                                    char* material,
@@ -358,6 +368,15 @@ G4VPhysicalVolume* DetectorConstruction::AddSlab(char* name,
                                                     false, 0);
 
     return physical;
+}
+
+
+void DetectorConstruction::UpdateSlab(char* name,
+                      double side, double thickness,
+                      char* material,
+                      G4ThreeVector translation,
+                      G4ThreeVector rotation){
+
 }
 
 

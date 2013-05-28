@@ -59,8 +59,10 @@ BOOST_PYTHON_MODULE(libg4) {
         .def("RotateCADComponent", &DetectorConstruction::RotateCADComponent)
         .def("AddCylinder", &DetectorConstruction::AddCylinder,
             return_internal_reference<>())
+        .def("UpdateCylinder", &DetectorConstruction::UpdateCylinder)
         .def("AddSlab", &DetectorConstruction::AddSlab,
             return_internal_reference<>())
+        .def("UpdateSlab", &DetectorConstruction::UpdateSlab)
 //        .def("AddCADComponent", &DetectorConstruction::AddCADComponent,
 //             _AddCADComponent(
 //                 args("name", "filename", "material", "in_vacuum", "scale", "translation",
