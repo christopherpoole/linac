@@ -267,6 +267,12 @@ G4VPhysicalVolume* DetectorConstruction::AddPhasespace(char* name, double radius
 }
 
 
+void DetectorConstruction::RemovePhasespace(char* name) {
+    G4VPhysicalVolume* physical = FindVolume(name, head_physical);
+    delete physical;
+}
+
+
 void DetectorConstruction::AddMaterial(G4String name, G4double density,
                                         boost::python::object move)
 {

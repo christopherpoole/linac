@@ -53,6 +53,7 @@ BOOST_PYTHON_MODULE(libg4) {
         .def("AddMaterial", &DetectorConstruction::AddMaterial)
         .def("AddPhasespace", &DetectorConstruction::AddPhasespace,
             return_internal_reference<>())
+        .def("RemovePhasespace", &DetectorConstruction::RemovePhasespace)
         .def("AddCADComponent", &DetectorConstruction::AddCADComponent,
             return_internal_reference<>())
         .def("TranslateCADComponent", &DetectorConstruction::TranslateCADComponent)
