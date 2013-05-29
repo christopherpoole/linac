@@ -224,6 +224,7 @@ class Simulation(object):
         self.detector_construction.ClosePhasespace()
 
         self.detector_construction.SetGantryAngle(self.config.head.rotation.y)
+        self.detector_construction.SetCollimatorAngle(self.config.head.rotation.z)
          
         for name, params in self.config.vacuum.daughters.iteritems():
             if params.filename != "":

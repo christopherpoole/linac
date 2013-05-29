@@ -74,6 +74,7 @@ BOOST_PYTHON_MODULE(libg4) {
         .def("UsePhantom", &DetectorConstruction::UsePhantom)
         .def("SetupHead", &DetectorConstruction::SetupHead)
         .def("SetGantryAngle", &DetectorConstruction::SetGantryAngle)
+        .def("SetCollimatorAngle", &DetectorConstruction::SetCollimatorAngle)
 //             _SetupHead(
 //                 args("head_radius", "head_length", "head_position",
 //                      "vacuum_radius", "vacuum_length", "vacuum_position"),

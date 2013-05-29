@@ -304,6 +304,8 @@ class Linac:
     def rotate_gantry(self, angle):
         self.head.rotation = [0, angle, 0]
     
+    def rotate_collimator(self, angle):
+        self.head.rotation = [0, 0, angle]
 
 def mlc_diverge(i, interval=None, position=None, shift=0, z_rotation=0, centre=0, repeat=0):
     offset = -(interval * repeat / 2. - interval + shift)

@@ -84,6 +84,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
                    G4ThreeVector head_position, G4ThreeVector head_rotation,
                    G4double vacuum_radius, G4double vacuum_length, G4ThreeVector vacuum_position);
     void SetGantryAngle(G4double angle);
+    void SetCollimatorAngle(G4double angle);
 
     void AddMaterial(G4String name, G4double density, boost::python::object move);
 

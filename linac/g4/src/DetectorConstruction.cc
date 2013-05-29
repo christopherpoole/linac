@@ -237,6 +237,28 @@ void DetectorConstruction::SetGantryAngle(G4double angle)
 }
 
 
+void DetectorConstruction::SetCollimatorAngle(G4double angle)
+{
+    G4ThreeVector head_position = this->head_position + G4ThreeVector(0, 0, head_length/2.);
+    G4ThreeVector lid_position = head_position + G4ThreeVector(0, 0, (head_length/2.) + 0.5);
+
+    head_position.rotate(0, 0, angle*deg);
+    lid_position.rotate(0, 0, angle*deg);
+   
+    this->head_rotation = new G4RotationMatrix();
+    this->head_rotation->rotateZ(angle*deg);
+
+    this->head_physical->SetTranslation(head_position);
+    this->sheild_physical->SetTranslation(head_position);
+    this->lid_physical->SetTranslation(lid_position);
+
+    this->head_physical->SetRotation(this->head_rotation);
+    this->sheild_physical->SetRotation(this->head_rotation);
+    this->lid_physical->SetRotation(this->head_rotation);
+
+    G4RunManager::GetRunManager()->GeometryHasBeenModified();
+}
+
 void DetectorConstruction::SetupPhantom() {
     G4Material* water = nist_manager->FindOrBuildMaterial("G4_WATER");
 
@@ -485,6 +507,7 @@ void DetectorConstruction::RotateCADComponent(char* name, G4ThreeVector rotation
 
 
 void DetectorConstruction::SetupCT() {
+
     G4VoxelDataParameterisation<int16_t>* voxeldata_param =
         new G4VoxelDataParameterisation<int16_t>(array, materials, world_physical );
 
@@ -511,8 +534,8 @@ void DetectorConstruction::SetupCT() {
 
         colours[i] = new G4Colour(gray, gray, gray, alpha);
     }
-    //voxeldata_param->SetColourMap(colours);
-    voxeldata_param->SetVisibility(false);
+    voxeldata_param->SetColourMap(colours);
+    //voxeldata_param->SetVisibility(false);
 
     detector = new SensitiveDetector("ct_detector");
 
