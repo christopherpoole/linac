@@ -164,6 +164,7 @@ void DetectorConstruction::SetupHead(G4double head_radius,
     head_solid = new G4Tubs("head_solid", 0*mm, head_radius*mm, head_length/2.*mm,
                             0*deg, 360*deg);
     head_logical = new G4LogicalVolume(head_solid, head_material, "head_logical", 0, 0, 0);
+    head_logical->SetSmartless(5);
     head_physical = new G4PVPlacement(this->head_rotation, head_position, head_logical, "head_physical",
                                       world_logical, false, 0);
     //head_logical->SetVisAttributes(G4VisAttributes::Invisible); 
@@ -204,11 +205,6 @@ void DetectorConstruction::SetupHead(G4double head_radius,
     if (use_phantom) {
         SetupPhantom();
     }
-
-    if (use_ct) {
-        SetupCT();
-        ct_built = true;
-    };
 
 	StopKillSheild* sheild_sensitive_detector = new StopKillSheild("sheild");
     G4SDManager* sensitive_detector_manager = G4SDManager::GetSDMpointer();
@@ -444,7 +440,7 @@ G4VPhysicalVolume* DetectorConstruction::AddCADComponent(char* name,
                                                         logical, name, mother_logical,
                                                         false, 0);
     } else {
-        CADMesh * mesh = new CADMesh(filename, (char*) "STL", mat);
+        CADMesh * mesh = new CADMesh(filename, (char*) "PLY", mat);
         G4AssemblyVolume* assembly = mesh->TetrahedralMesh();
         G4Translate3D trans(translation.x(), translation.y(), translation.z());
         G4Transform3D rotation = G4Rotate3D(*rot);
@@ -515,7 +511,7 @@ void DetectorConstruction::SetupCT() {
 
         colours[i] = new G4Colour(gray, gray, gray, alpha);
     }
-    voxeldata_param->SetColourMap(colours);
+    //voxeldata_param->SetColourMap(colours);
     voxeldata_param->SetVisibility(false);
 
     detector = new SensitiveDetector("ct_detector");
@@ -523,6 +519,8 @@ void DetectorConstruction::SetupCT() {
     G4SDManager* sd_manager = G4SDManager::GetSDMpointer();
     sd_manager->AddNewDetector(detector);
     voxeldata_param->GetLogicalVolume()->SetSensitiveDetector(detector);
+
+    G4RunManager::GetRunManager()->GeometryHasBeenModified();
 }
 
 
