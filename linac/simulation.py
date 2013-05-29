@@ -77,6 +77,9 @@ class Simulation(object):
         z = self.config.phasespaces[source]["z_position"]
         self.primary_generator.SetPhasespaceLimits(-200, 200, -200, 200, z-0.1, z+0.1) 
 
+    def reset_source(self):
+        self.primary_generator.Reset()
+
     @property
     def phasespace(self):
         return self._phasespace
@@ -219,8 +222,9 @@ class Simulation(object):
          
         for name, params in self.config.vacuum.daughters.iteritems():
             if params.filename != "":
-                self.detector_construction.TranslateCADComponent(name, params.translation, True)
-                self.detector_construction.RotateCADComponent(name, params.rotation)
+                if params.tessellated:
+                    self.detector_construction.TranslateCADComponent(name, params.translation, True)
+                    self.detector_construction.RotateCADComponent(name, params.rotation)
             if hasattr(params, "solid"):
                 if params.solid == "cylinder":
                     self.detector_construction.UpdateCylinder(name, params.radius,
@@ -233,8 +237,9 @@ class Simulation(object):
 
         for name, params in self.config.head.daughters.iteritems():
             if params.filename != "":
-                self.detector_construction.TranslateCADComponent(name, params.translation, False)
-                self.detector_construction.RotateCADComponent(name, params.rotation)
+                if params.tessellated:
+                    self.detector_construction.TranslateCADComponent(name, params.translation, False)
+                    self.detector_construction.RotateCADComponent(name, params.rotation)
             if hasattr(params, "solid"):
                 if params.solid == "cylinder":
                     self.detector_construction.UpdateCylinder(name, params.radius,
