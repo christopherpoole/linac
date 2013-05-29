@@ -73,6 +73,8 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
         PrimaryGeneratorAction();
         ~PrimaryGeneratorAction();
 
+        void Reset();
+
         void SetPosition(G4ThreeVector position) {
             particle_gun->GetCurrentSource()->GetPosDist()->SetCentreCoords(position);
         };

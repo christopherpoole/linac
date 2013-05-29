@@ -51,18 +51,25 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
 //    particle_gun->SetParticlePosition(G4ThreeVector(0., 0., 1005.));
 //    particle_gun->SetParticleEnergy(6.*MeV);
 //    particle_gun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,-1.));
-
-    rotation = G4ThreeVector();
-
-    recycling_number = 1;
+    
     redistribute = false;
+    rotation = G4ThreeVector();
+    Reset();
+}
+
+
+void PrimaryGeneratorAction::Reset()
+{
+    recycling_number = 1;
     phasespace_record_repeat = 0;
     count = 0;
 }
 
+
 PrimaryGeneratorAction::~PrimaryGeneratorAction()
 {
 }
+
 
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event)
 {
