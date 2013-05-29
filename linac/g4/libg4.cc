@@ -114,6 +114,7 @@ BOOST_PYTHON_MODULE(libg4) {
     class_<PrimaryGeneratorAction, PrimaryGeneratorAction*,
         bases<G4VUserPrimaryGeneratorAction>, boost::noncopyable>
         ("PrimaryGeneratorAction", "PrimaryGeneratorAction")
+        .def("Reset", &PrimaryGeneratorAction::Reset)
         .def("SetPosition", &PrimaryGeneratorAction::SetPosition)
         .def("SetDirection", &PrimaryGeneratorAction::SetDirection)
         .def("SetEnergy", &PrimaryGeneratorAction::SetEnergy)
