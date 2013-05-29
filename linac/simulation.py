@@ -9,7 +9,7 @@ import pyublas
 
 
 class Simulation(object):
-    def __init__(self, name, config, phsp_dir='.', use_phantom=True):
+    def __init__(self, name, config, phsp_dir='.', use_phantom=False):
         self.name = name
         self.run_id = 0
 
