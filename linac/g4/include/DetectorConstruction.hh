@@ -166,8 +166,6 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
         G4int increment = 25;
         materials = MakeMaterialsMap(increment);
-
-        SetupCT();
     }
 
     void UseArray(G4String filename, G4double x, G4double y, G4double z) {

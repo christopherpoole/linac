@@ -85,6 +85,7 @@ BOOST_PYTHON_MODULE(libg4) {
         .def("GetCTOrigin", &DetectorConstruction::GetCTOrigin)
         .def("ZeroHistograms", &DetectorConstruction::ZeroHistograms)
         .def("UseCT", &DetectorConstruction::UseCT)
+        .def("SetupCT", &DetectorConstruction::SetupCT)
         .def("UseArray", &DetectorConstruction::UseArray)
         .def("HideCT", &DetectorConstruction::HideCT)
         .def("CropCT", &DetectorConstruction::CropCT)
