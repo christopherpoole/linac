@@ -73,12 +73,17 @@ class Simulation(object):
         self.run_id = run_id
         self.source = source
 
-        self.detector_construction.RemovePhasespace(self.source_file)
+        if self.source_file == self.phasespace_file:
+            self.detector_construction.RemovePhasespace(self.source_file)
+
         z = self.config.phasespaces[source]["z_position"]
         self.primary_generator.SetPhasespaceLimits(-200, 200, -200, 200, z-0.1, z+0.1) 
 
     def reset_source(self):
         self.primary_generator.Reset()
+
+    def close_phasespace(self):
+        self.detector_construction.RemovePhasespace(self.phasespace_file)
 
     @property
     def phasespace(self):
