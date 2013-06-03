@@ -100,7 +100,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     world_logical = new G4LogicalVolume(world_solid, air, "world_logical", 0, 0, 0);
     world_physical = new G4PVPlacement(0, G4ThreeVector(), world_logical, 
                                        "world_physical", 0, false, 0);
-    //world_logical->SetVisAttributes(G4VisAttributes::Invisible); 
+    world_logical->SetVisAttributes(G4VisAttributes::Invisible); 
 
 /*
     if (region) {
@@ -167,7 +167,7 @@ void DetectorConstruction::SetupHead(G4double head_radius,
     head_logical->SetSmartless(5);
     head_physical = new G4PVPlacement(this->head_rotation, head_position, head_logical, "head_physical",
                                       world_logical, false, 0);
-    //head_logical->SetVisAttributes(G4VisAttributes::Invisible); 
+    head_logical->SetVisAttributes(G4VisAttributes::Invisible); 
     
     this->vacuum_length = vacuum_length;
     this->vacuum_position = vacuum_position;
