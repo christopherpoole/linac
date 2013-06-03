@@ -22,6 +22,9 @@ class Simulation(object):
         self.phasespaces = []
         self.phasespace_files = []
 
+        self.source_file = ""
+        self.phasespace_file = ""
+
         self.detector_construction = g4.DetectorConstruction()
         Geant4.gRunManager.SetUserInitialization(self.detector_construction)
         self.detector_construction.UsePhantom(use_phantom)
