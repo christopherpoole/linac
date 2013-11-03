@@ -46,6 +46,7 @@
 // G4VoxelData//
 #include "G4VoxelData.hh"
 #include "G4VoxelArray.hh"
+#include "G4VoxelDataParameterisation.hh"
 #include "DicomDataIO.hh"
 #include "NumpyDataIO.hh"
 
@@ -89,6 +90,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     void AddMaterial(G4String name, G4double density, boost::python::object move);
 
     void SetupPhantom();
+    void SetupCADPhantom(char* filename, G4ThreeVector offset);
 
     G4VPhysicalVolume* AddPhasespace(char* name, double radius, double z_position, char* material, bool kill);
     void RemovePhasespace(char* name);
@@ -132,6 +134,17 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     std::map<int16_t, G4Material*> MakeMaterialsMap(G4int increment);
     G4Material* MakeNewMaterial(G4String base_material_name, G4double density);
 
+    void RemoveHead() {
+        if (head_physical)
+            delete head_physical;
+        if (sheild_physical)
+            delete sheild_physical;
+        if (lid_physical)
+            delete lid_physical; 
+
+        headless = true;
+    };
+
     void ClosePhasespace() {
 //        phasespace_sensitive_detector->Close();
         for(int i=0; i<phasespaces.size(); i++) {
@@ -143,6 +156,14 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
     void UsePhantom(G4bool use) {
         use_phantom = use;
+    }
+
+    void UseCADPhantom(char* filename, G4ThreeVector offset) {
+        phantom_filename = filename;
+        phantom_offset = offset;
+        use_cad_phantom = true;
+
+        SetupCADPhantom(filename, offset);
     }
 
     G4ThreeVector GetCTOrigin() {
@@ -164,6 +185,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
         
         this->data = reader->ReadDirectory(this->ct_directory);
         this->array = new G4VoxelArray<int16_t>(this->data);
+        this->array->Merge(2, 2, 2);
 
         G4int increment = 25;
         materials = MakeMaterialsMap(increment);
@@ -268,11 +290,18 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4bool use_ct;
     G4bool ct_built;
     
+    G4bool use_cad_phantom;
+    char* phantom_filename;
+    G4ThreeVector phantom_offset;    
+
     G4String ct_directory;
     G4ThreeVector ct_position;
 
+    G4bool headless;
+
     G4VoxelData* data;
     G4VoxelArray<int16_t>* array;
+    G4VoxelDataParameterisation<int16_t>* voxeldata_param;
     std::map<int16_t, G4Material*> materials;
     std::vector<Hounsfield> hounsfield;
 };

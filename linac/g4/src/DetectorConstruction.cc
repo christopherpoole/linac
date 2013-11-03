@@ -25,9 +25,6 @@
 // CADMesh //
 #include "CADMesh.hh"
 
-// G4VoxelData //
-#include "G4VoxelDataParameterisation.hh"
-
 // GEANT4 //
 #include "globals.hh"
 #include "G4Material.hh"
@@ -53,11 +50,15 @@ DetectorConstruction::DetectorConstruction()
 
     nist_manager = G4NistManager::Instance();
     use_phantom = false;
+    use_cad_phantom = false;
     region = NULL;
     use_ct = false;
     ct_built = false;
 
+    headless = false;
+
     detector = NULL;
+    voxeldata_param = NULL;
 }
 
 DetectorConstruction::~DetectorConstruction()
@@ -96,7 +97,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     StainlessSteel->AddElement(Ni, fractionmass=0.09);
 
 
-    world_solid = new G4Box("world_solid", 2*m, 2*m, 2*m);
+    world_solid = new G4Box("world_solid", 1.0*m, 1.5*m, 1.5*m);
     world_logical = new G4LogicalVolume(world_solid, air, "world_logical", 0, 0, 0);
     world_physical = new G4PVPlacement(0, G4ThreeVector(), world_logical, 
                                        "world_physical", 0, false, 0);
@@ -150,67 +151,73 @@ void DetectorConstruction::SetupHead(G4double head_radius,
                                      G4double vacuum_length,
                                      G4ThreeVector vacuum_position)
 {
-    this->head_length = head_length;
-    this->head_position = G4ThreeVector(head_position);
-    head_position += G4ThreeVector(0, 0, head_length/2.);
-    head_position.rotate(0, head_rotation.y()*deg, 0);
-   
-    this->head_rotation = new G4RotationMatrix();
-    //this->head_rotation->rotateZ(head_rotation.z()*deg);
-    this->head_rotation->rotateX(head_rotation.y()*deg);
-    //this->head_rotation->rotateX(head_rotation.x()*deg);
+    if (!headless) {
+        this->head_length = head_length;
+        this->head_position = G4ThreeVector(head_position);
+        head_position += G4ThreeVector(0, 0, head_length/2.);
+        head_position.rotate(0, head_rotation.y()*deg, 0);
+       
+        this->head_rotation = new G4RotationMatrix();
+        //this->head_rotation->rotateZ(head_rotation.z()*deg);
+        this->head_rotation->rotateX(head_rotation.y()*deg);
+        //this->head_rotation->rotateX(head_rotation.x()*deg);
 
-    G4Material* head_material = nist_manager->FindOrBuildMaterial("G4_AIR");
-    head_solid = new G4Tubs("head_solid", 0*mm, head_radius*mm, head_length/2.*mm,
-                            0*deg, 360*deg);
-    head_logical = new G4LogicalVolume(head_solid, head_material, "head_logical", 0, 0, 0);
-    head_logical->SetSmartless(5);
-    head_physical = new G4PVPlacement(this->head_rotation, head_position, head_logical, "head_physical",
-                                      world_logical, false, 0);
-    head_logical->SetVisAttributes(G4VisAttributes::Invisible); 
-    
-    this->vacuum_length = vacuum_length;
-    this->vacuum_position = vacuum_position;
-    vacuum_position -= (this->head_position + G4ThreeVector(0, 0, head_length/2.));
-    vacuum_position += G4ThreeVector(0, 0, vacuum_length/2.);
-//    vacuum_position.rotate(head_rotation.x()*deg, head_rotation.y()*deg, head_rotation.z()*deg);
-    
-    G4Material* vacuum_material = nist_manager->FindOrBuildMaterial("G4_Galactic");
+        G4Material* head_material = nist_manager->FindOrBuildMaterial("G4_AIR");
+        head_solid = new G4Tubs("head_solid", 0*mm, head_radius*mm, head_length/2.*mm,
+                                0*deg, 360*deg);
+        head_logical = new G4LogicalVolume(head_solid, head_material, "head_logical", 0, 0, 0);
+        head_logical->SetSmartless(5);
+        head_physical = new G4PVPlacement(this->head_rotation, head_position, head_logical, "head_physical",
+                                          world_logical, false, 0);
+        head_logical->SetVisAttributes(G4VisAttributes::Invisible); 
+        
+        this->vacuum_length = vacuum_length;
+        this->vacuum_position = vacuum_position;
+        vacuum_position -= (this->head_position + G4ThreeVector(0, 0, head_length/2.));
+        vacuum_position += G4ThreeVector(0, 0, vacuum_length/2.);
+    //    vacuum_position.rotate(head_rotation.x()*deg, head_rotation.y()*deg, head_rotation.z()*deg);
+        
+        G4Material* vacuum_material = nist_manager->FindOrBuildMaterial("G4_Galactic");
 
-    vacuum_solid = new G4Tubs("vacuum_solid", 0*mm, vacuum_radius*mm, vacuum_length/2.*mm,
-                              0*deg, 360*deg);
-    vacuum_logical = new G4LogicalVolume(vacuum_solid, vacuum_material, "vacuum_logical",
-                                         0, 0, 0);
-    vacuum_physical = new G4PVPlacement(0, vacuum_position, vacuum_logical, "vacuum_physical",
-                                        head_logical, false, 0);
-    vacuum_logical->SetVisAttributes(G4VisAttributes::Invisible); 
+        vacuum_solid = new G4Tubs("vacuum_solid", 0*mm, vacuum_radius*mm, vacuum_length/2.*mm,
+                                  0*deg, 360*deg);
+        vacuum_logical = new G4LogicalVolume(vacuum_solid, vacuum_material, "vacuum_logical",
+                                             0, 0, 0);
+        vacuum_physical = new G4PVPlacement(0, vacuum_position, vacuum_logical, "vacuum_physical",
+                                            head_logical, false, 0);
+        vacuum_logical->SetVisAttributes(G4VisAttributes::Invisible); 
 
-    sheild_solid = new G4Tubs("sheild_solid", head_radius*mm,
-                               (head_radius+1)*mm, head_length/2.*mm, 0*deg, 360*deg);
-    sheild_logical = new G4LogicalVolume(sheild_solid, head_material, "sheild_logical",
-                                         0, 0, 0);
-    sheild_physical = new G4PVPlacement(this->head_rotation, head_position, sheild_logical, "sheild_physical",
-                                        world_logical, false, 0);
-//    sheild_logical->SetVisAttributes(G4VisAttributes::Invisible); 
+        sheild_solid = new G4Tubs("sheild_solid", head_radius*mm,
+                                   (head_radius+1)*mm, head_length/2.*mm, 0*deg, 360*deg);
+        sheild_logical = new G4LogicalVolume(sheild_solid, head_material, "sheild_logical",
+                                             0, 0, 0);
+        sheild_physical = new G4PVPlacement(this->head_rotation, head_position, sheild_logical, "sheild_physical",
+                                            world_logical, false, 0);
+    //    sheild_logical->SetVisAttributes(G4VisAttributes::Invisible); 
 
-    lid_solid = new G4Tubs("lid_solid", 0,
-                               head_radius*mm, 1.*mm, 0*deg, 360*deg);
-    lid_logical = new G4LogicalVolume(lid_solid, head_material, "lid_logical",
-                                         0, 0, 0);
-    G4ThreeVector lid_offset = G4ThreeVector(0, 0, (head_length/2.) + 0.5);
-    lid_physical = new G4PVPlacement(this->head_rotation, head_position+lid_offset, lid_logical, "lid_physical",
-                                        world_logical, false, 0);
-//    sheild_logical->SetVisAttributes(G4VisAttributes::Invisible); 
+        lid_solid = new G4Tubs("lid_solid", 0,
+                                   head_radius*mm, 1.*mm, 0*deg, 360*deg);
+        lid_logical = new G4LogicalVolume(lid_solid, head_material, "lid_logical",
+                                             0, 0, 0);
+        G4ThreeVector lid_offset = G4ThreeVector(0, 0, (head_length/2.) + 0.5);
+        lid_physical = new G4PVPlacement(this->head_rotation, head_position+lid_offset, lid_logical, "lid_physical",
+                                            world_logical, false, 0);
+    //    sheild_logical->SetVisAttributes(G4VisAttributes::Invisible); 
+
+        StopKillSheild* sheild_sensitive_detector = new StopKillSheild("sheild");
+        G4SDManager* sensitive_detector_manager = G4SDManager::GetSDMpointer();
+        sensitive_detector_manager->AddNewDetector(sheild_sensitive_detector);
+        sheild_logical->SetSensitiveDetector(sheild_sensitive_detector);
+        lid_logical->SetSensitiveDetector(sheild_sensitive_detector);
+    }
 
     if (use_phantom) {
         SetupPhantom();
     }
 
-	StopKillSheild* sheild_sensitive_detector = new StopKillSheild("sheild");
-    G4SDManager* sensitive_detector_manager = G4SDManager::GetSDMpointer();
-    sensitive_detector_manager->AddNewDetector(sheild_sensitive_detector);
-    sheild_logical->SetSensitiveDetector(sheild_sensitive_detector);
-    lid_logical->SetSensitiveDetector(sheild_sensitive_detector);
+    if (use_cad_phantom) {
+        SetupCADPhantom(phantom_filename, phantom_offset);
+    }
 }
 
 
@@ -276,6 +283,30 @@ void DetectorConstruction::SetupPhantom() {
     phantom_logical->SetSensitiveDetector(detector);
 }
 
+void DetectorConstruction::SetupCADPhantom(char* filename, G4ThreeVector offset) {
+    G4Material* water = nist_manager->FindOrBuildMaterial("G4_WATER");
+
+    G4RotationMatrix* rot = new G4RotationMatrix();
+    rot->rotateZ(90*deg);
+    rot->rotateX(-90*deg);
+
+    CADMesh* mesh = new CADMesh(filename, (char*) "STL", 1, offset, false);
+    G4VSolid* solid = mesh->TessellatedMesh();
+    G4LogicalVolume* logical = new G4LogicalVolume(solid, water, filename, 0, 0, 0);
+
+    G4VPhysicalVolume* physical = new G4PVPlacement(rot, G4ThreeVector(),
+                                                    logical, filename, world_logical,
+                                                    false, 0);
+
+    if (!this->detector)
+        detector = new SensitiveDetector("phantom_detector");
+
+    G4SDManager* sd_manager = G4SDManager::GetSDMpointer();
+    sd_manager->AddNewDetector(detector);
+    logical->SetSensitiveDetector(detector);
+
+    G4RunManager::GetRunManager()->GeometryHasBeenModified();
+}
 
 G4VPhysicalVolume* DetectorConstruction::AddPhasespace(char* name, double radius, double z_position, char* material, bool kill)
 {
@@ -421,7 +452,6 @@ void DetectorConstruction::UpdateSlab(char* name,
 
 }
 
-
 G4VPhysicalVolume* DetectorConstruction::AddCADComponent(char* name,
                                                    char* filename,
                                                    char* material,
@@ -508,42 +538,43 @@ void DetectorConstruction::RotateCADComponent(char* name, G4ThreeVector rotation
 
 void DetectorConstruction::SetupCT() {
 
-    G4VoxelDataParameterisation<int16_t>* voxeldata_param =
-        new G4VoxelDataParameterisation<int16_t>(array, materials, world_physical );
+    if (!voxeldata_param) {
+        voxeldata_param =
+            new G4VoxelDataParameterisation<int16_t>(array, materials, world_physical );
 
-    G4RotationMatrix* rotation = new G4RotationMatrix();
-    rotation->rotateZ(90*deg);
-    rotation->rotateX(90*deg);
+        G4RotationMatrix* rotation = new G4RotationMatrix();
+        rotation->rotateZ(90*deg);
+        rotation->rotateX(-90*deg);
 
-    voxeldata_param->Construct(ct_position, rotation);
-    voxeldata_param->SetRounding(25, -1000, 2000);
-    voxeldata_param->ShowMidPlanes();
+        voxeldata_param->Construct(ct_position, rotation);
+        voxeldata_param->SetRounding(25, -1000, 2000);
 
-    std::map<int16_t, G4Colour*> colours;
-    for (int i=-2500; i<5000; i++) {
-        double gray = (double) (i + 2500) / 7500.;
-        double alpha = 1;
+        std::map<int16_t, G4Colour*> colours;
+        for (int i=-2500; i<5000; i++) {
+            double gray = (double) (i + 2500) / 7500.;
+            double alpha = 1;
 
-        if (i < -500) {
-            gray = 0;
-            alpha = 0;
+            if (i < -500) {
+                gray = 0;
+                alpha = 0;
+            }
+
+            if (gray > 1)
+                gray = 1;
+
+            colours[i] = new G4Colour(gray, gray, gray, alpha);
         }
+        voxeldata_param->SetColourMap(colours);
+        voxeldata_param->SetVisibility(false);
 
-        if (gray > 1)
-            gray = 1;
+        detector = new SensitiveDetector("ct_detector");
 
-        colours[i] = new G4Colour(gray, gray, gray, alpha);
+        G4SDManager* sd_manager = G4SDManager::GetSDMpointer();
+        sd_manager->AddNewDetector(detector);
+        voxeldata_param->GetLogicalVolume()->SetSensitiveDetector(detector);
+        
+        G4RunManager::GetRunManager()->GeometryHasBeenModified();
     }
-    voxeldata_param->SetColourMap(colours);
-    //voxeldata_param->SetVisibility(false);
-
-    detector = new SensitiveDetector("ct_detector");
-
-    G4SDManager* sd_manager = G4SDManager::GetSDMpointer();
-    sd_manager->AddNewDetector(detector);
-    voxeldata_param->GetLogicalVolume()->SetSensitiveDetector(detector);
-
-    G4RunManager::GetRunManager()->GeometryHasBeenModified();
 }
 
 

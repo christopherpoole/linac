@@ -72,7 +72,9 @@ BOOST_PYTHON_MODULE(libg4) {
 //             )[return_internal_reference<>()])
         .def("ClosePhasespace", &DetectorConstruction::ClosePhasespace)
         .def("UsePhantom", &DetectorConstruction::UsePhantom)
+        .def("UseCADPhantom", &DetectorConstruction::UseCADPhantom)
         .def("SetupHead", &DetectorConstruction::SetupHead)
+        .def("RemoveHead", &DetectorConstruction::RemoveHead)
         .def("SetGantryAngle", &DetectorConstruction::SetGantryAngle)
         .def("SetCollimatorAngle", &DetectorConstruction::SetCollimatorAngle)
 //             _SetupHead(

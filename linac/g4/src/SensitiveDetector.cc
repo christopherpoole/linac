@@ -45,9 +45,9 @@ SensitiveDetector::SensitiveDetector(const G4String& name) : G4VSensitiveDetecto
 
     debug = false;
 
-    x_dim = 401;
+    x_dim = 101;
     y_dim = x_dim;
-    z_dim = 400;
+    z_dim = 100;
 
     x_min = 0;
     y_min = 0;
@@ -57,7 +57,7 @@ SensitiveDetector::SensitiveDetector(const G4String& name) : G4VSensitiveDetecto
     y_max = y_dim;
     z_max = z_dim;
 
-    x_res = 1*mm;
+    x_res = 4*mm;
     y_res = x_res;
     z_res = x_res;
 
@@ -97,10 +97,11 @@ G4bool SensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory* touchab
     G4double voxel_mass = aTrack->GetMaterial()->GetDensity() * volume;
 
 
-    G4ThreeVector world_position = aTrack->GetPosition();
-    //G4ThreeVector world_position = aStep->GetPreStepPoint()->GetPosition();
-    G4ThreeVector position = aStep->GetPreStepPoint()->GetTouchableHandle()->
-            GetHistory()->GetTopTransform().TransformPoint(world_position);
+    G4ThreeVector position = aTrack->GetPosition();
+    //G4ThreeVector world_position = aTrack->GetPosition();
+    ////G4ThreeVector world_position = aStep->GetPreStepPoint()->GetPosition();
+    //G4ThreeVector position = aStep->GetPreStepPoint()->GetTouchableHandle()->
+    //        GetHistory()->GetTopTransform().TransformPoint(world_position);
 
     int x_index = std::floor((position.x() + (x_dim/2. * x_res)) / x_res);
     int y_index = std::floor((position.y() + (y_dim/2. * y_res)) / y_res);
@@ -154,7 +155,7 @@ G4bool SensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory* touchab
     if (debug){
         G4cout << "New index: " << x_index << " " << y_index << " " << z_index << " " << G4endl;
     }
-    energy_histogram.sub(x_index, y_index, z_index) += energy_deposit;
+    energy_histogram.sub(x_index, y_index, z_index) += energy_deposit/voxel_mass;
     energysq_histogram.sub(x_index, y_index, z_index) += std::pow(energy_deposit, 2.);
     counts_histogram.sub(x_index, y_index, z_index) += aTrack->GetWeight();
     

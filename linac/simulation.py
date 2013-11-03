@@ -9,7 +9,7 @@ import pyublas
 
 
 class Simulation(object):
-    def __init__(self, name, config, phsp_dir='.', use_phantom=False):
+    def __init__(self, name, config, phsp_dir='.', use_phantom=False, phantom_file=""):
         self.name = name
         self.run_id = 0
 
@@ -25,9 +25,13 @@ class Simulation(object):
         self.source_file = ""
         self.phasespace_file = ""
 
+        self.no_head = False
+
         self.detector_construction = g4.DetectorConstruction()
         Geant4.gRunManager.SetUserInitialization(self.detector_construction)
         self.detector_construction.UsePhantom(use_phantom)
+        if phantom_file != "":
+            self.detector_construction.UseCADPhantom(phantom_file, G4ThreeVector())
 
         self.physics_list = g4.PhysicsList()
         Geant4.gRunManager.SetUserInitialization(self.physics_list)
@@ -144,7 +148,8 @@ class Simulation(object):
         self.detector_construction.UsePhantom(use)
 
     def _update(self):
-        self.update_geometry()
+        if not self.no_head:
+            self.update_geometry()
 
         self.primary_generator.SetRecyclingNumber(self.config.gun["recycling_number"])       
  
@@ -171,7 +176,6 @@ class Simulation(object):
 
     def build_geometry(self):
         self.detector_construction.ClosePhasespace()
-
         self.detector_construction.SetupHead( 
             self.config.head.radius,
             self.config.head.length,
@@ -225,9 +229,9 @@ class Simulation(object):
         
     def update_geometry(self):
         self.detector_construction.ClosePhasespace()
-
+        print "ROTATION: ", self.config.head.rotation
         self.detector_construction.SetGantryAngle(self.config.head.rotation.y)
-        self.detector_construction.SetCollimatorAngle(self.config.head.rotation.z)
+        self.detector_construction.SetCollimatorAngle(self.config.head.rotation.x)
          
         for name, params in self.config.vacuum.daughters.iteritems():
             if params.filename != "":
@@ -268,6 +272,10 @@ class Simulation(object):
             ps = self.config.phasespaces[self.phasespace]
             self.detector_construction.AddPhasespace(self.phasespace_file,
                     ps["radius"], ps["z_position"], ps["material"], ps["kill"])
+
+    def remove_head(self):
+        self.detector_construction.RemoveHead()
+        self.no_head = True
  
     def beam_on(self, histories, fwhm=2.0*mm, energy=6*MeV):
         self.primary_generator.SetGantryRotation(self.config.head.rotation)
