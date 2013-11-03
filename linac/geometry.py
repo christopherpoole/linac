@@ -295,17 +295,17 @@ class Linac:
         self.rectangular_field_jaws(x1, x2, y1, y2)
         self.rectangular_field_mlc(x1, x2, y1, y2)
 
-    def square_field_jaws(self, size):
+    def square_field_jaws(self, size, x_offset=0, y_offset=0):
         size = size/2.
-        self.rectangular_field_jaws(size, -size, size, -size)
+        self.rectangular_field_jaws(size + x_offset, (-size) + x_offset, size + y_offset, (-size) + y_offset)
 
-    def square_field_mlc(self, size):
+    def square_field_mlc(self, size, x_offset=0, y_offset=0):
         size = size/2.
-        self.rectangular_field_mlc(size, -size, size, -size)
+        self.rectangular_field_mlc(size + x_offset, (-size) + x_offset, size + y_offset, (-size) + y_offset)
 
-    def square_field(self, size):
-        self.square_field_jaws(size)
-        self.square_field_mlc(size)
+    def square_field(self, size, x_offset=0, y_offset=0):
+        self.square_field_jaws(size, x_offset, y_offset)
+        self.square_field_mlc(size, x_offset, y_offset)
 
     def arbitary_field_mlc(self, bank1_positions, bank2_positions):
         raise NotImplementedError("Definition of an arbitary MLC field must be implemented by the user")
