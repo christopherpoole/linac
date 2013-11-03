@@ -256,7 +256,7 @@ class Mother(Volume):
         return daughters 
 
                 
-class Linac:
+class Linac(object):
     """The Python object representation of the geometry configuration
 
     Attributes:
