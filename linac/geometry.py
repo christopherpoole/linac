@@ -284,7 +284,13 @@ class Linac:
             return (field_size / iso_position * radius_position) + delta
         else:
             return (field_size / iso_position * radius_position) - delta
-        
+
+    def rectangular_field_jaws(self, x1, x2, y1, y2):
+        raise NotImplementedError("Definition of a rectangular jaw field must be implemented by the user")
+
+    def rectangular_field_mlc(self, x1, x2, y1, y2):
+        raise NotImplementedError("Definition of a rectangular MLC field must be implemented by the user")
+ 
     def rectangular_field(self, x1, x2, y1, y2):
         self.rectangular_field_jaws(x1, x2, y1, y2)
         self.rectangular_field_mlc(x1, x2, y1, y2)
@@ -301,11 +307,15 @@ class Linac:
         self.square_field_jaws(size)
         self.square_field_mlc(size)
 
+    def arbitary_field_mlc(self, bank1_positions, bank2_positions):
+        raise NotImplementedError("Definition of an arbitary MLC field must be implemented by the user")
+
     def rotate_gantry(self, angle):
         self.head.rotation = (self.head.rotation.x, angle, self.head.rotation.z)
     
     def rotate_collimator(self, angle):
         self.head.rotation = (angle, self.head.rotation.y, self.head.rotation.z)
+
 
 def mlc_diverge(i, interval=None, position=None, shift=0, z_rotation=0, centre=0, repeat=0):
     offset = -(interval * repeat / 2. - interval + shift)
@@ -316,6 +326,7 @@ def mlc_diverge(i, interval=None, position=None, shift=0, z_rotation=0, centre=0
 def mlc_interleave(i, interval=None, position=None, shift=0):
     offset = -(interval * 20 / 2. - interval + shift)
     return (10, i*interval + offset, position)
+
 
 def mlc_arc(i, interval=None, position=None, shift=0, repeat=0):
     offset = -(interval * repeat / 2. - interval + shift)
