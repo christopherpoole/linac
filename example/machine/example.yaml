@@ -1,6 +1,7 @@
 head: 
-  radius: 5000
-  length: 800
+  cylinder:
+    radius: 500
+    length: 800
   translation: [0, 0, 500]
   rotation: [0, 0, 0]
   daughters:  
@@ -11,8 +12,9 @@ head:
       material: G4_WATER
 
 vacuum:
-  radius: 250
-  length: 250
+  cylinder:
+    radius: 250
+    length: 250
   translation: [0, 0, 800]
   daughters:
     target:

@@ -38,14 +38,17 @@ class Solid(object):
             setattr(self, key, val)
 
         if solid_type == 'cylinder':
-            self.solid = G4Tubs(name, 0, self.radius, self.thickness, 0, 360*deg)
+            self.solid = G4Tubs(name, 0, self.radius, self.length, 0, 360*deg)
         if solid_type == 'box':
             self.solid = G4Box(name, self.side, self.side, self.thickness)
 
 
 class Volume(object):
-    """A CAD tessellated solid placed within the geometry
+    """A solid placed within the geometry
 
+    A solid can be any GEANT4 primitive.
+    
+    CAD Files:
     Using CADMesh a CAD file is loaded into the geometry as a G4TessellatedSolid,
     the user can specify if the volume is left as a normal tessellated solid or
     loaded as a tetrahedral mesh (for fast/er navigation).
@@ -60,6 +63,10 @@ class Volume(object):
     """
     def __init__(self, name, **kwargs):
         self.name = name
+
+        self._config = kwargs
+        self.filename = ''
+        self.scale = 1
         self._translation = (0, 0, 0)
         self._rotation = (0, 0, 0)
         self._colour = (1, 0, 0, 1)
@@ -73,12 +80,31 @@ class Volume(object):
             if key == "cylinder":
                 self.solid = "cylinder"
                 self.radius = val["radius"]
-                self.thickness = val["thickness"]
+                self.length = val["length"]
             if key == "slab":
                 self.solid = "slab"
                 self.side = val["side"]
                 self.thickness = val["thickness"]
 
+        for key, val in kwargs.iteritems():
+            if hasattr(self, key):
+                setattr(self, key, val)
+
+        self.daughters = {}
+        if kwargs.has_key("daughters"):
+            self._init_daughters(**kwargs)
+
+    @property
+    def config(self):
+    #    return dict(zip(self._config.keys(),
+    #                    [getattr(self, a) for a in self._config.keys()
+    #                                      if hasattr(self, a)]))
+        d = {}
+        for k in self._config.keys():
+            if hasattr(self, k):
+                d[k] = getattr(self, k)
+        return d
+ 
     @property
     def translation(self):
         return G4ThreeVector(*self._translation)
@@ -133,60 +159,7 @@ class Volume(object):
     def material(self, value):
         self._material = value
 
-
-class Daughter(Volume):
-    """A `Volume` within a `Volume`
-
-    Attributes:
-        name: The name of the volume
-        config; Loaded from **kwargs and used to build the daughter `Volume`
-    """
-    def __init__(self, name, **kwargs):
-        self._config = kwargs
-        self.filename = ''
-        self.scale = 1
-
-        super(Daughter, self).__init__(name, **kwargs)
-
-        for key, val in kwargs.iteritems():
-            if hasattr(self, key):
-                setattr(self, key, val)
-
-    @property
-    def config(self):
-#        return dict(zip(self._config.keys(),
-#                        [getattr(self, a) for a in self._config.keys()
-#                                          if hasattr(self, a)]))
-        d = {}
-        for k in self._config.keys():
-            if hasattr(self, k):
-                d[k] = getattr(self, k)
-
-        return d
-   
-
-class Mother(Volume):
-    """A `Volume` with `Volume`'s in it
-
-    If a volume is a mother volume, we want to make sure all of its daughters
-    are correctly initialised. This is where the bulk of the geometry building
-    happens.
-
-    Attributtes:
-        name: The name of the volume
-        daughters: A list of `Volume`'s within the `Mother`
-    """
-    def __init__(self, name, **kwargs):
-        self.radius = 0
-        self.length = 0
- 
-        super(Mother, self).__init__(name)
-        
-        for key, val in kwargs.iteritems():
-            if hasattr(self, key):
-                setattr(self, key, val)
-
-        self.daughters = {}
+    def _init_daughters(self, **kwargs):
         for name, daughter in kwargs['daughters'].iteritems():
             if daughter.has_key('inherit'):
                 d = kwargs['daughters'][daughter['inherit']].copy()
@@ -203,7 +176,7 @@ class Mother(Volume):
                 daughters = self._unpack_repeats(name, daughter, repeats)
                 self.daughters.update(daughters)
             else:
-                self.daughters[name] = Daughter(name, **daughter)
+                self.daughters[name] = Volume(name, **daughter)
 
     def _unpack_repeats(self, name, daughter, repeats):
         """Construct individual Volumes for those specified as repeats
@@ -255,7 +228,9 @@ class Mother(Volume):
         
         return daughters 
 
-                
+
+
+               
 class Linac(object):
     """The Python object representation of the geometry configuration
 
@@ -269,8 +244,8 @@ class Linac(object):
     def __init__(self, filename):
         self.config = yaml.load(file(filename))
           
-        self.head = Mother('head', **self.config['head'])
-        self.vacuum = Mother('vacuum', **self.config['vacuum'])
+        self.head = Volume('head', **self.config['head'])
+        self.vacuum = Volume('vacuum', **self.config['vacuum'])
         self.phasespaces = self.config['phasespaces']
 
         self.gun = self.config["gun"]
