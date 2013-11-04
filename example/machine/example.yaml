@@ -1,27 +1,33 @@
-head: 
-  cylinder:
-    radius: 500
-    length: 800
-  translation: [0, 0, 500]
-  rotation: [0, 0, 0]
-  daughters:  
-    filter:
-      filename: machine/cone.stl
-      translation: [0, 0, 600]
-      rotation: [90, 0, 0]
-      material: G4_WATER
-
-vacuum:
-  cylinder:
-    radius: 250
-    length: 250
-  translation: [0, 0, 800]
+world:
   daughters:
-    target:
-      filename: machine/target.ply
-      translation: [0, 0, 900]
-      rotation: [90, 0, 0]
-      material: G4_WATER 
+    head: 
+      cylinder:
+        radius: 500
+        length: 800
+      translation: [0, 0, 500]
+      rotation: [0, 0, 0]
+      colour: [0, 1, 0]
+      daughters:  
+        filter:
+          filename: machine/cone.stl
+          translation: [0, 0, -200]
+          rotation: [90, 0, 0]
+          material: G4_WATER
+          colour: [0, 0, 1]
+
+        vacuum:
+          cylinder:
+            radius: 250
+            length: 250
+          translation: [0, 0, 100]
+          colour: [1, 1, 0]
+          daughters:
+            target:
+              filename: machine/target.ply
+              translation: [0, 0, 0]
+              rotation: [90, 0, 0]
+              material: G4_WATER 
+              colour: [0, 1, 1]
 
 gun:
   spot_size: 1
