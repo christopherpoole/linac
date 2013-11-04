@@ -40,6 +40,11 @@
 
 DetectorConstruction::DetectorConstruction()
 {
+    verbose = 4;
+
+    if (verbose >= 4)
+        G4cout << "DetectorConstruction::DetectorConstruction" << G4endl;
+
     // Setpoints we will interpolate between for
     // our materials ramp.
     hounsfield.push_back(Hounsfield(-1050, "G4_AIR", 0.001 ));
@@ -67,6 +72,9 @@ DetectorConstruction::~DetectorConstruction()
 
 G4VPhysicalVolume* DetectorConstruction::Construct()
 {
+    if (verbose >= 4)
+        G4cout << "DetectorConstruction::Construct" << G4endl;
+
     G4SolidStore::GetInstance()->Clean();
     G4LogicalVolumeStore::GetInstance()->Clean();
     G4PhysicalVolumeStore::GetInstance()->Clean();
@@ -122,6 +130,9 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
 G4VPhysicalVolume* DetectorConstruction::FindVolume(G4String name, G4VPhysicalVolume * mother)
 {
+    if (verbose >= 4)
+        G4cout << "DetectorConstruction::FindVolume" << G4endl;
+
     if(mother->GetName() == name) {
         return mother;
     }
@@ -151,6 +162,9 @@ void DetectorConstruction::SetupHead(G4double head_radius,
                                      G4double vacuum_length,
                                      G4ThreeVector vacuum_position)
 {
+    if (verbose >= 4)
+        G4cout << "DetectorConstruction::SetupHead" << G4endl;
+
     if (!headless) {
         this->head_length = head_length;
         this->head_position = G4ThreeVector(head_position);
@@ -223,6 +237,9 @@ void DetectorConstruction::SetupHead(G4double head_radius,
 
 void DetectorConstruction::SetGantryAngle(G4double angle)
 {
+    if (verbose >= 4)
+        G4cout << "DetectorConstruction::SetGantryAngle" << G4endl;
+
     G4ThreeVector head_position = this->head_position + G4ThreeVector(0, 0, head_length/2.);
     G4ThreeVector lid_position = head_position + G4ThreeVector(0, 0, (head_length/2.) + 0.5);
 
@@ -246,6 +263,9 @@ void DetectorConstruction::SetGantryAngle(G4double angle)
 
 void DetectorConstruction::SetCollimatorAngle(G4double angle)
 {
+    if (verbose >= 4)
+        G4cout << "DetectorConstruction::SetCollimatorAngle" << G4endl;
+
     G4ThreeVector head_position = this->head_position + G4ThreeVector(0, 0, head_length/2.);
     G4ThreeVector lid_position = head_position + G4ThreeVector(0, 0, (head_length/2.) + 0.5);
 
@@ -266,7 +286,11 @@ void DetectorConstruction::SetCollimatorAngle(G4double angle)
     G4RunManager::GetRunManager()->GeometryHasBeenModified();
 }
 
-void DetectorConstruction::SetupPhantom() {
+void DetectorConstruction::SetupPhantom()
+{
+    if (verbose >= 4)
+        G4cout << "DetectorConstruction::SetupPhantom" << G4endl;
+
     G4Material* water = nist_manager->FindOrBuildMaterial("G4_WATER");
 
     phantom_solid = new G4Box("phantom_solid", 200*mm, 200*mm, 200*mm);
@@ -283,7 +307,11 @@ void DetectorConstruction::SetupPhantom() {
     phantom_logical->SetSensitiveDetector(detector);
 }
 
-void DetectorConstruction::SetupCADPhantom(char* filename, G4ThreeVector offset) {
+void DetectorConstruction::SetupCADPhantom(char* filename, G4ThreeVector offset)
+{
+    if (verbose >= 4)
+        G4cout << "DetectorConstruction::SetupCADPhantom" << G4endl;
+
     G4Material* water = nist_manager->FindOrBuildMaterial("G4_WATER");
 
     G4RotationMatrix* rot = new G4RotationMatrix();
@@ -310,6 +338,9 @@ void DetectorConstruction::SetupCADPhantom(char* filename, G4ThreeVector offset)
 
 G4VPhysicalVolume* DetectorConstruction::AddPhasespace(char* name, double radius, double z_position, char* material, bool kill)
 {
+    if (verbose >= 4)
+        G4cout << "DetectorConstruction::AddPhasespace" << G4endl;
+
 //    G4Material* phasespace_material = nist_manager->FindOrBuildMaterial(material);
     
 //    G4Box* phasespace_solid = new G4Box(name, radius, radius, 1*um);
@@ -335,6 +366,9 @@ G4VPhysicalVolume* DetectorConstruction::AddPhasespace(char* name, double radius
 
 
 void DetectorConstruction::RemovePhasespace(char* name) {
+    if (verbose >=4)
+        G4cout << "DetectorConstruction::RemovePhasespace" << G4endl;
+
     G4VPhysicalVolume* physical = FindVolume(name, head_physical);
     delete physical;
 }
@@ -343,6 +377,9 @@ void DetectorConstruction::RemovePhasespace(char* name) {
 void DetectorConstruction::AddMaterial(G4String name, G4double density,
                                         boost::python::object move)
 {
+    if (verbose >= 4)
+        G4cout << "DetectorConstruction::AddMaterial" << G4endl;
+
     G4cout << "adding material " << name << " with density : " << density << G4endl;
     boost::python::object a = move();
     int b = boost::python::extract<int>(a);
@@ -358,8 +395,11 @@ G4VPhysicalVolume* DetectorConstruction::AddCylinder(char* name,
                                                    G4ThreeVector rotation,
                                                    G4Colour colour)
 {
+    if (verbose >= 4)
+        G4cout << "DetectorConstruction::AddCylinder" << G4endl;
+
     G4Material* mat = nist_manager->FindOrBuildMaterial(material);
-    
+   
     G4LogicalVolume* mother_logical;
     if (in_vacuum == true) {
         G4cout << "added volume to vacuum" << G4endl;
@@ -372,14 +412,12 @@ G4VPhysicalVolume* DetectorConstruction::AddCylinder(char* name,
         translation -= G4ThreeVector(0, 0, head_length/2.);
         mother_logical = head_logical;
     }
-
+ 
     G4RotationMatrix* rot = new G4RotationMatrix();
     rot->rotateX(rotation.x()*deg);
     rot->rotateY(rotation.y()*deg);
     rot->rotateZ(rotation.z()*deg);
    
-    G4cout << name << G4endl;
- 
     G4Tubs* solid = new G4Tubs(name, 0, radius, thickness/2., 0, 360*deg);
     G4LogicalVolume* logical = new G4LogicalVolume(solid, mat, name, 0, 0, 0);
     logical->SetVisAttributes(new G4VisAttributes(colour)); 
@@ -398,7 +436,8 @@ void DetectorConstruction::UpdateCylinder(char* name,
                       G4ThreeVector translation,
                       G4ThreeVector rotation)
 {
-
+    if (verbose >= 4)
+        G4cout << "DetectorConstruction::UpdateCylinder" << G4endl;
 }
 
 
@@ -410,8 +449,11 @@ G4VPhysicalVolume* DetectorConstruction::AddSlab(char* name,
                                                    G4ThreeVector rotation,
                                                    G4Colour colour)
 {
+    if (verbose >= 4)
+        G4cout << "DetectorConstruction::AddSlab" << G4endl;
+
     G4Material* mat = nist_manager->FindOrBuildMaterial(material);
-    
+   
     G4LogicalVolume* mother_logical;
     if (in_vacuum == true) {
         G4cout << "added volume to vacuum" << G4endl;
@@ -430,8 +472,6 @@ G4VPhysicalVolume* DetectorConstruction::AddSlab(char* name,
     rot->rotateY(rotation.y()*deg);
     rot->rotateZ(rotation.z()*deg);
    
-    G4cout << name << G4endl;
- 
     G4Box* solid = new G4Box(name, side/2., side/2., thickness/2.);
     G4LogicalVolume* logical = new G4LogicalVolume(solid, mat, name, 0, 0, 0);
     logical->SetVisAttributes(new G4VisAttributes(colour)); 
@@ -448,8 +488,10 @@ void DetectorConstruction::UpdateSlab(char* name,
                       double side, double thickness,
                       char* material,
                       G4ThreeVector translation,
-                      G4ThreeVector rotation){
-
+                      G4ThreeVector rotation)
+{
+    if (verbose >= 4)
+        G4cout << "DetectorConstruction::UpdateSlab" << G4endl;
 }
 
 G4VPhysicalVolume* DetectorConstruction::AddCADComponent(char* name,
@@ -462,6 +504,9 @@ G4VPhysicalVolume* DetectorConstruction::AddCADComponent(char* name,
                                                    G4Colour colour,
                                                    G4bool tessellated)
 {
+    if (verbose >= 4)
+        G4cout << "DetectorConstruction::AddCADComponent" << G4endl;
+
     G4Material* mat = nist_manager->FindOrBuildMaterial(material);
 
     G4LogicalVolume* mother_logical;
@@ -507,6 +552,9 @@ G4VPhysicalVolume* DetectorConstruction::AddCADComponent(char* name,
 
 void DetectorConstruction::TranslateCADComponent(char* name, G4ThreeVector translation, G4bool in_vacuum)
 {
+    if (verbose >=4)
+        G4cout << "DetectorConstruction::TranslateCADComponent" << G4endl;
+
     if (in_vacuum == true) {
         translation -= vacuum_position;
         translation -= G4ThreeVector(0, 0, vacuum_length/2.);
@@ -524,6 +572,9 @@ void DetectorConstruction::TranslateCADComponent(char* name, G4ThreeVector trans
 
 void DetectorConstruction::RotateCADComponent(char* name, G4ThreeVector rotation)
 {
+    if (verbose >= 4)
+        G4cout << "DetectorConstruction::RotateCADComponent" << G4endl;
+
     G4VPhysicalVolume* physical = FindVolume(name, head_physical);
 
     G4RotationMatrix* rot = new G4RotationMatrix();
@@ -536,7 +587,10 @@ void DetectorConstruction::RotateCADComponent(char* name, G4ThreeVector rotation
 }
 
 
-void DetectorConstruction::SetupCT() {
+void DetectorConstruction::SetupCT()
+{
+    if (verbose >= 4)
+        G4cout << "DetectorConstruction::SetupCT" << G4endl;
 
     if (!voxeldata_param) {
         voxeldata_param =
@@ -578,7 +632,11 @@ void DetectorConstruction::SetupCT() {
 }
 
 
-std::map<int16_t, G4Material*> DetectorConstruction::MakeMaterialsMap(G4int increment) {
+std::map<int16_t, G4Material*> DetectorConstruction::MakeMaterialsMap(G4int increment)
+{
+    if (verbose >= 4)
+        G4cout << "DetectorConstruction::MakeMaterialsMap" << G4endl;
+
     // Our materials map or ramp
     std::map<int16_t, G4Material*> ramp;
     
@@ -603,7 +661,11 @@ std::map<int16_t, G4Material*> DetectorConstruction::MakeMaterialsMap(G4int incr
 }
 
 
-G4Material* DetectorConstruction::MakeNewMaterial(G4String base_material_name, G4double density) {
+G4Material* DetectorConstruction::MakeNewMaterial(G4String base_material_name, G4double density)
+{
+    if (verbose >= 4)
+        G4cout << "DetectorConstruction::MakeNewMaterial" << G4endl;
+
     G4NistManager* nist_manager = G4NistManager::Instance();
     G4String new_name = base_material_name + G4UIcommand::ConvertToString(density);
 
