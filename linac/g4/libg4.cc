@@ -96,6 +96,8 @@ BOOST_PYTHON_MODULE(libg4) {
         .def("CropY", &DetectorConstruction::CropY)
         .def("CropZ", &DetectorConstruction::CropZ)
         .def("SetCTPosition", &DetectorConstruction::SetCTPosition)
+        .def("GetWorld", &DetectorConstruction::GetWorld,
+            return_internal_reference<>())
         ;   // End DetectorConstruction
 
     class_<PhysicsList, PhysicsList*,

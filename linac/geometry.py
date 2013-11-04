@@ -23,26 +23,6 @@ def register_transformer(name, f):
     transformers[name] = f
 
 
-class Solid(object):
-    """Creates a G4Solid
-
-    Makes a G4VSolid of type `solid_type` specified by a string.
-
-    Attributes:
-        name: The desired name of the solid
-        solid_type: The name of the target G4VSolid, G4Tubs, G4Box for example
-        solid: An instance of the chosen `solid_type`
-    """
-    def __init__(self, name, solid_type, **kwargs):
-        for key, val in kwargs.iteritems():
-            setattr(self, key, val)
-
-        if solid_type == 'cylinder':
-            self.solid = G4Tubs(name, 0, self.radius, self.length, 0, 360*deg)
-        if solid_type == 'box':
-            self.solid = G4Box(name, self.side, self.side, self.thickness)
-
-
 class Volume(object):
     """A solid placed within the geometry
 
@@ -86,9 +66,6 @@ class Volume(object):
                 self.side = val["side"]
                 self.thickness = val["thickness"]
 
-        for key, val in kwargs.iteritems():
-            if hasattr(self, key):
-                setattr(self, key, val)
 
         self.daughters = {}
         if kwargs.has_key("daughters"):
@@ -244,8 +221,7 @@ class Linac(object):
     def __init__(self, filename):
         self.config = yaml.load(file(filename))
           
-        self.head = Volume('head', **self.config['head'])
-        self.vacuum = Volume('vacuum', **self.config['vacuum'])
+        self.world = Volume('world', **self.config['world'])
         self.phasespaces = self.config['phasespaces']
 
         self.gun = self.config["gun"]

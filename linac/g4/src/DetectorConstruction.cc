@@ -109,7 +109,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     world_logical = new G4LogicalVolume(world_solid, air, "world_logical", 0, 0, 0);
     world_physical = new G4PVPlacement(0, G4ThreeVector(), world_logical, 
                                        "world_physical", 0, false, 0);
-    world_logical->SetVisAttributes(G4VisAttributes::Invisible); 
+    //world_logical->SetVisAttributes(G4VisAttributes::Invisible); 
 
 /*
     if (region) {
@@ -349,8 +349,8 @@ G4VPhysicalVolume* DetectorConstruction::AddPhasespace(char* name, double radius
 //                                                               phasespace_logical, name, head_logical, false, 0);
 //    phasespace_logical->SetVisAttributes(G4VisAttributes::Invisible); 
 
-    G4VPhysicalVolume* phasespace_physical = AddSlab(name, radius, 1*nm, material, false, G4ThreeVector(0, 0, z_position),
-                                                     G4ThreeVector(), G4Colour(1, 0, 1, 0.5));
+    G4VPhysicalVolume* phasespace_physical = AddSlab(name, radius, 1*nm, material, G4ThreeVector(0, 0, z_position),
+                                                     G4ThreeVector(), G4Colour(1, 0, 1, 0.5), world_logical);
 
     // Active scoring area is 1% smaller than actual plane - avoids navigation errors when point on edge with direction (0,0,0)
     Phasespace* phasespace_sensitive_detector = new Phasespace(name, radius - (radius*0.01));
@@ -390,29 +390,16 @@ void DetectorConstruction::AddMaterial(G4String name, G4double density,
 G4VPhysicalVolume* DetectorConstruction::AddCylinder(char* name,
                                                    double radius, double thickness,
                                                    char* material,
-                                                   G4bool in_vacuum,
                                                    G4ThreeVector translation,
                                                    G4ThreeVector rotation,
-                                                   G4Colour colour)
+                                                   G4Colour colour,
+                                                   G4LogicalVolume* mother_logical)
 {
     if (verbose >= 4)
         G4cout << "DetectorConstruction::AddCylinder" << G4endl;
 
     G4Material* mat = nist_manager->FindOrBuildMaterial(material);
-   
-    G4LogicalVolume* mother_logical;
-    if (in_vacuum == true) {
-        G4cout << "added volume to vacuum" << G4endl;
-        
-        translation -= vacuum_position;
-        translation -= G4ThreeVector(0, 0, vacuum_length/2.);
-        mother_logical = vacuum_logical;
-    } else {
-        translation -= head_position;
-        translation -= G4ThreeVector(0, 0, head_length/2.);
-        mother_logical = head_logical;
-    }
- 
+    
     G4RotationMatrix* rot = new G4RotationMatrix();
     rot->rotateX(rotation.x()*deg);
     rot->rotateY(rotation.y()*deg);
@@ -444,29 +431,16 @@ void DetectorConstruction::UpdateCylinder(char* name,
 G4VPhysicalVolume* DetectorConstruction::AddSlab(char* name,
                                                    double side, double thickness,
                                                    char* material,
-                                                   G4bool in_vacuum,
                                                    G4ThreeVector translation,
                                                    G4ThreeVector rotation,
-                                                   G4Colour colour)
+                                                   G4Colour colour,
+                                                   G4LogicalVolume* mother_logical)
 {
     if (verbose >= 4)
         G4cout << "DetectorConstruction::AddSlab" << G4endl;
 
     G4Material* mat = nist_manager->FindOrBuildMaterial(material);
-   
-    G4LogicalVolume* mother_logical;
-    if (in_vacuum == true) {
-        G4cout << "added volume to vacuum" << G4endl;
-        
-        translation -= vacuum_position;
-        translation -= G4ThreeVector(0, 0, vacuum_length/2.);
-        mother_logical = vacuum_logical;
-    } else {
-        translation -= head_position;
-        translation -= G4ThreeVector(0, 0, head_length/2.);
-        mother_logical = head_logical;
-    }
-
+    
     G4RotationMatrix* rot = new G4RotationMatrix();
     rot->rotateX(rotation.x()*deg);
     rot->rotateY(rotation.y()*deg);
@@ -497,30 +471,17 @@ void DetectorConstruction::UpdateSlab(char* name,
 G4VPhysicalVolume* DetectorConstruction::AddCADComponent(char* name,
                                                    char* filename,
                                                    char* material,
-                                                   G4bool in_vacuum,
                                                    double scale,
                                                    G4ThreeVector translation,
                                                    G4ThreeVector rotation,
                                                    G4Colour colour,
-                                                   G4bool tessellated)
+                                                   G4bool tessellated,
+                                                   G4LogicalVolume* mother_logical)
 {
     if (verbose >= 4)
         G4cout << "DetectorConstruction::AddCADComponent" << G4endl;
 
     G4Material* mat = nist_manager->FindOrBuildMaterial(material);
-
-    G4LogicalVolume* mother_logical;
-    if (in_vacuum == true) {
-        G4cout << "added volume to vacuum" << G4endl;
-        
-        translation -= vacuum_position;
-        translation -= G4ThreeVector(0, 0, vacuum_length/2.);
-        mother_logical = vacuum_logical;
-    } else {
-        translation -= head_position;
-        translation -= G4ThreeVector(0, 0, head_length/2.);
-        mother_logical = head_logical;
-    }
 
     G4RotationMatrix* rot = new G4RotationMatrix();
     rot->rotateX(rotation.x()*deg);
@@ -536,6 +497,8 @@ G4VPhysicalVolume* DetectorConstruction::AddCADComponent(char* name,
         G4VPhysicalVolume* physical = new G4PVPlacement(rot, translation,
                                                         logical, name, mother_logical,
                                                         false, 0);
+        return physical;
+
     } else {
         CADMesh * mesh = new CADMesh(filename, (char*) "PLY", mat);
         G4AssemblyVolume* assembly = mesh->TetrahedralMesh();

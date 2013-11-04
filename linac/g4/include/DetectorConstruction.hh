@@ -98,10 +98,10 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4VPhysicalVolume* AddCylinder(char* name,
                       double radius, double thickness,
                       char* material,
-                      G4bool in_vacuum,
                       G4ThreeVector translation,
                       G4ThreeVector rotation,
-                      G4Colour colour);
+                      G4Colour colour,
+                      G4LogicalVolume* mother_logical);
     void UpdateCylinder(char* name,
                       double radius, double thickness,
                       char* material,
@@ -111,10 +111,10 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4VPhysicalVolume* AddSlab(char* name,
                       double side, double thickness,
                       char* material,
-                      G4bool in_vacuum,
                       G4ThreeVector translation,
                       G4ThreeVector rotation,
-                      G4Colour colour);
+                      G4Colour colour,
+                      G4LogicalVolume* mother_logical);
     void UpdateSlab(char* name,
                       double side, double thickness,
                       char* material,
@@ -122,10 +122,11 @@ class DetectorConstruction : public G4VUserDetectorConstruction
                       G4ThreeVector rotation);
  
     G4VPhysicalVolume* AddCADComponent(char* name, char* filename, char* material,
-                    G4bool in_vacuum, double scale,
+                    double scale,
                     G4ThreeVector translation,
                     G4ThreeVector rotation,
-                    G4Colour colour, G4bool tessellated);
+                    G4Colour colour, G4bool tessellated,
+                    G4LogicalVolume* mother_logical);
     void TranslateCADComponent(char* name, G4ThreeVector translation, G4bool in_vacuum);
     void RotateCADComponent(char* name, G4ThreeVector rotation);
     
@@ -245,6 +246,14 @@ class DetectorConstruction : public G4VUserDetectorConstruction
         std::fill(detector->counts_histogram.begin(), detector->counts_histogram.end(), 0.0);
     }
 
+    void SetVerbosity(G4int verbose) {
+        this->verbose = verbose;
+    }
+
+    G4LogicalVolume* GetWorld() {
+        return world_logical;
+    }
+
   private:
     G4Region* region;
     G4ProductionCuts* cuts;
@@ -304,6 +313,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4VoxelDataParameterisation<int16_t>* voxeldata_param;
     std::map<int16_t, G4Material*> materials;
     std::vector<Hounsfield> hounsfield;
+
+    G4int verbose;
 };
 
 #endif

@@ -176,93 +176,47 @@ class Simulation(object):
 
     def build_geometry(self):
         self.detector_construction.ClosePhasespace()
-        self.detector_construction.SetupHead( 
-            self.config.head.radius,
-            self.config.head.length,
-            self.config.head.translation,
-            self.config.head.rotation,
-            self.config.vacuum.radius,
-            self.config.vacuum.length,
-            self.config.vacuum.translation)
-         
-        for name, params in self.config.vacuum.daughters.iteritems():
-            if params.filename != "":
-                self.detector_construction.AddCADComponent(name, params.filename,
-                    params.material, True,
-                    params.scale, params.translation,
-                    params.rotation, params.colour, params.tessellated)
-            if hasattr(params, "solid"):
-                if params.solid == "cylinder":
-                    self.detector_construction.AddCylinder(name, params.radius,
-                            params.thickness, params.material,
-                        False, params.translation, params.rotation, params.colour) 
-                if params.solid == "slab":
-                    self.detector_construction.AddSlab(name, params.side,
-                            params.thickness, params.material,
-                        False, params.translation, params.rotation, params.colour) 
 
-        for name, params in self.config.head.daughters.iteritems():
-            if params.filename != "":
-                self.detector_construction.AddCADComponent(name, params.filename,
-                    params.material, False,
-                    params.scale, params.translation,
-                    params.rotation, params.colour, params.tessellated)
-            if hasattr(params, "solid"):
-                if params.solid == "cylinder":
-                    self.detector_construction.AddCylinder(name, params.radius,
-                            params.thickness, params.material,
-                        False, params.translation, params.rotation, params.colour) 
-                if params.solid == "slab":
-                    self.detector_construction.AddSlab(name, params.side,
-                            params.thickness, params.material,
-                        False, params.translation, params.rotation, params.colour) 
-        
-        if len(self.phasespaces) > 0:
-            for phasespace, phasespace_file in zip(self.phasespaces, self.phasespace_files):
-                ps = self.config.phasespaces[phasespace]
-                self.detector_construction.AddPhasespace(phasespace_file,
-                        ps["radius"], ps["z_position"], ps["material"], ps["kill"])
-        elif hasattr(self, "phasespace_file") and self.phasespace is not None:
-            ps = self.config.phasespaces[self.phasespace]
-            self.detector_construction.AddPhasespace(self.phasespace_file,
-                    ps["radius"], ps["z_position"], ps["material"], ps["kill"])
-        
+        def load(volume, mother): 
+            for name, params in volume.daughters.iteritems():
+                if params.filename != "":
+                    physical = self.detector_construction.AddCADComponent(name, params.filename,
+                        params.material, params.scale, params.translation, params.rotation,
+                        params.colour, params.tessellated, mother)
+                if hasattr(params, "solid"):
+                    if params.solid == "cylinder":
+                        physical = self.detector_construction.AddCylinder(name, params.radius,
+                                params.length, params.material, params.translation,
+                                params.rotation, params.colour, mother) 
+                    if params.solid == "slab":
+                        physical = self.detector_construction.AddSlab(name, params.side,
+                                params.thickness, params.material, params.translation,
+                                params.rotation, params.colour, mother) 
+                
+                load(params, physical.GetLogicalVolume())        
+
+        mother = self.detector_construction.GetWorld()
+        load(self.config.world, mother)
+ 
+        self.build_phasespaces()       
+ 
     def update_geometry(self):
         self.detector_construction.ClosePhasespace()
-        print "ROTATION: ", self.config.head.rotation
-        self.detector_construction.SetGantryAngle(self.config.head.rotation.y)
-        self.detector_construction.SetCollimatorAngle(self.config.head.rotation.x)
-         
-        for name, params in self.config.vacuum.daughters.iteritems():
-            if params.filename != "":
-                if params.tessellated:
-                    self.detector_construction.TranslateCADComponent(name, params.translation, True)
-                    self.detector_construction.RotateCADComponent(name, params.rotation)
-            if hasattr(params, "solid"):
-                if params.solid == "cylinder":
-                    self.detector_construction.UpdateCylinder(name, params.radius,
-                            params.thickness, params.material,
-                            params.translation, params.rotation) 
-                if params.solid == "slab":
-                    self.detector_construction.UpdateSlab(name, params.side,
-                            params.thickness, params.material,
-                            params.translation, params.rotation) 
+        #self.detector_construction.SetGantryAngle(self.config.head.rotation.y)
+        #self.detector_construction.SetCollimatorAngle(self.config.head.rotation.x)
+  
+        def update(volume):
+            for name, params in volume.daughters.iteritems():
+                pass
+                # find physical
+                # update translation/rotation
 
-        for name, params in self.config.head.daughters.iteritems():
-            if params.filename != "":
-                if params.tessellated:
-                    self.detector_construction.TranslateCADComponent(name, params.translation, False)
-                    self.detector_construction.RotateCADComponent(name, params.rotation)
-            if hasattr(params, "solid"):
-                if params.solid == "cylinder":
-                    self.detector_construction.UpdateCylinder(name, params.radius,
-                            params.thickness, params.material,
-                            params.translation, params.rotation) 
-                if params.solid == "slab":
-                    self.detector_construction.UpdateSlab(name, params.side,
-                            params.thickness, params.material,
-                            params.translation, params.rotation) 
- 
+                #update(params)
+        # update(find_volume(world))
+
+        self.build_phasespaces() 
+    
+    def build_phasespaces(self):     
         if len(self.phasespaces) > 0:
             for phasespace, phasespace_file in zip(self.phasespaces, self.phasespace_files):
                 ps = self.config.phasespaces[phasespace]
@@ -278,7 +232,7 @@ class Simulation(object):
         self.no_head = True
  
     def beam_on(self, histories, fwhm=2.0*mm, energy=6*MeV):
-        self.primary_generator.SetGantryRotation(self.config.head.rotation)
+        #self.primary_generator.SetGantryRotation(self.config.head.rotation)
 
         self._update()
   
