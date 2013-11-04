@@ -262,24 +262,4 @@ class Simulation(object):
     def start_session(self): 
         Geant4.StartUISession()
 
-    def add_head_component(self, name, component):
-        self.config.head.daughters[name] = {
-            'filename' : component.filename,
-            'material' : component.material,
-            'scale' : component.scale,
-            'translation' : component.translation,
-            'rotation' : component.rotation,
-            'colour' : component.colour
-        }
-
-    def add_vacuum_component(self, name, component):
-        self.config.vacuum.daughters[name] = {
-            'filename' : component.filename,
-            'material' : component.material,
-            'scale' : component.scale,
-            'translation' : component.translation,
-            'rotation' : component.rotation,
-            'colour' : component.colour
-        }
-
 
