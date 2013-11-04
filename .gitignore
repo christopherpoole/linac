@@ -1,6 +1,7 @@
 *.pyc
 *.swp
 *.so
+*.phsp
 
 linac/g4/build/*
 utils/phsp_inspector/build/*
