@@ -213,11 +213,7 @@ class Simulation(object):
             for name, params in volume.daughters.iteritems():
                 physical = self.geometry[name]
 
-                rotation = G4RotationMatrix()
-                rotation.rotateX(params.rotation.x*deg)
-                rotation.rotateY(params.rotation.y*deg)
-                rotation.rotateZ(params.rotation.z*deg)
-                physical.SetRotation(rotation)
+                physical.SetRotation(params.rotation_matrix)
                 physical.SetTranslation(params.translation)
 
                 update(volume.daughters[name])

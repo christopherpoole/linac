@@ -5,7 +5,7 @@ from itertools import repeat
 
 import yaml
 
-from Geant4 import G4Tubs, G4Box, G4ThreeVector, G4Color
+from Geant4 import G4Tubs, G4Box, G4ThreeVector, G4RotationMatrix, G4Color
 from Geant4 import mm, deg, keV, MeV
 
 
@@ -50,6 +50,7 @@ class Volume(object):
         self.scale = 1
         self._translation = (0, 0, 0)
         self._rotation = (0, 0, 0)
+        self._rotation_matrix = None
         self._colour = (1, 0, 0, 1)
         self._material = 'G4_AIR'
         self.tessellated = True
@@ -109,16 +110,19 @@ class Volume(object):
 
     @property
     def rotation(self):
-        #rot = G4RotationMatrix()
-        #rot.rotateX(self._rotation[0]*deg)
-        #rot.rotateY(self._rotation[1]*deg)
-        #rot.rotateZ(self._rotation[2]*deg)
-        #return rot
         return G4ThreeVector(*self._rotation)
 
     @rotation.setter
     def rotation(self, value):
         self._rotation = value
+
+    @property
+    def rotation_matrix(self):
+        self._rotation_matrix = G4RotationMatrix()
+        self._rotation_matrix.rotateX(self._rotation[0]*deg)
+        self._rotation_matrix.rotateY(self._rotation[1]*deg)
+        self._rotation_matrix.rotateZ(self._rotation[2]*deg)
+        return self._rotation_matrix
 
     @property
     def colour(self):
