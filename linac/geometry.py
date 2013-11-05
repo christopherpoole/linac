@@ -1,4 +1,5 @@
 import math
+
 from math import *
 from itertools import repeat
 
@@ -152,8 +153,8 @@ class Volume(object):
             if repeats > 1:
                 daughters = self._unpack_repeats(name, daughter, repeats)
                 self.daughters.update(daughters)
-            else:
-                self.daughters[name] = Volume(name, **daughter)
+            
+            self.daughters[name] = Volume(name, **daughter)
 
     def _unpack_repeats(self, name, daughter, repeats):
         """Construct individual Volumes for those specified as repeats
@@ -206,8 +207,6 @@ class Volume(object):
         return daughters 
 
 
-
-               
 class Linac(object):
     """The Python object representation of the geometry configuration
 
