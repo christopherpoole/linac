@@ -16,6 +16,8 @@ class Simulation(object):
         self.config = config
         self.geometry_modified = False
 
+        self.geometry = {}
+
         self.phsp_dir = phsp_dir
         self._source = None
         self._phasespace = None
@@ -176,7 +178,7 @@ class Simulation(object):
 
     def build_geometry(self):
         self.detector_construction.ClosePhasespace()
-
+    
         def load(volume, mother): 
             for name, params in volume.daughters.iteritems():
                 if params.filename != "":
@@ -192,8 +194,10 @@ class Simulation(object):
                         physical = self.detector_construction.AddSlab(name, params.side,
                                 params.thickness, params.material, params.translation,
                                 params.rotation, params.colour, mother) 
-                
-                load(params, physical.GetLogicalVolume())        
+
+                self.geometry[name] = physical               
+ 
+                load(params, physical.GetLogicalVolume())
 
         mother = self.detector_construction.GetWorld()
         load(self.config.world, mother)
@@ -207,12 +211,18 @@ class Simulation(object):
   
         def update(volume):
             for name, params in volume.daughters.iteritems():
-                pass
-                # find physical
-                # update translation/rotation
+                physical = self.geometry[name]
 
-                #update(params)
-        # update(find_volume(world))
+                rotation = G4RotationMatrix()
+                rotation.rotateX(params.rotation.x*deg)
+                rotation.rotateY(params.rotation.y*deg)
+                rotation.rotateZ(params.rotation.z*deg)
+                physical.SetRotation(rotation)
+                physical.SetTranslation(params.translation)
+
+                update(volume.daughters[name])
+        
+        update(self.config.world)
 
         self.build_phasespaces() 
     
