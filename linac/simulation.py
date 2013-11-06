@@ -189,6 +189,7 @@ class Simulation(object):
             self.primary_generator.SetSource(self.source_file)
 
             z = self.config.phasespaces[self.source]["z_position"]
+            self.primary_generator.SetGantryRotation(self.config.world.daughters["head"].rotation)
             self.primary_generator.SetPhasespaceLimits(-200, 200, -200, 200, z-0.1, z+0.1) 
             self.primary_generator.SetRedistribute(self.config.phasespaces[self.source]["redistribute"])
             self.primary_generator.SetRecyclingNumber(self.config.gun["recycling_number"])       

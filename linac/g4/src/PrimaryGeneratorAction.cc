@@ -133,8 +133,8 @@ void PrimaryGeneratorAction::GeneratePhasespacePrimaries(G4Event* event)
     }
     
     // gantry rotation correction
-    pos.rotateX(-rotation.y()*deg);
-    mom.rotateX(-rotation.y()*deg);
+    pos.rotateY(-rotation.y()*deg);
+    mom.rotateY(-rotation.y()*deg);
 
     phasespace_particle_gun->SetParticlePosition(pos);
     phasespace_particle_gun->SetParticleMomentumDirection(mom);
