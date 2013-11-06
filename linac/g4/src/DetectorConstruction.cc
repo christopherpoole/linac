@@ -320,6 +320,7 @@ void DetectorConstruction::RemovePhasespace(char* name) {
 
     G4VPhysicalVolume* physical = FindVolume(name, world_physical);
     delete physical;
+    G4RunManager::GetRunManager()->GeometryHasBeenModified();
 }
 
 

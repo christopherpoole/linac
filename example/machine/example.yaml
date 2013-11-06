@@ -36,15 +36,15 @@ gun:
       
 phasespaces:
   exitwindow:
-    z_position: 250 
-    radius: 2000
+    z_position: 0 
+    radius: 1000
     material: G4_AIR
-    redistrubute: false
+    redistribute: false
     kill: true 
 
   iso:
-    z_position: 0
-    radius: 5000
+    z_position: -500
+    radius: 1000
     material: G4_AIR
-    redistrubute: false
+    redistribute: false
     kill: true
