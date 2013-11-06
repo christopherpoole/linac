@@ -31,7 +31,7 @@ class Simulation(object):
         self.phsp_dir = phsp_dir
 
         self.source = None
-        self.phasespace = None
+        self.phasespaces = []
 
         self.detector_construction = g4.DetectorConstruction()
         Geant4.gRunManager.SetUserInitialization(self.detector_construction)
@@ -68,14 +68,20 @@ class Simulation(object):
         """
         self.primary_generator.Reset()
 
-    @property
-    def source_file(self):
-        """Generate a filename from the name of the source as in the `Linac` configuration
+    def enable_phasespace_source(self, name):
+        """Set the primary generator action source to draw from an existing phasespace file. If
+        the nominated phasespace file is open for recoding, it will be disabled automatically.
         """
-        if self.source is not None:
-            return "%s/%s_%s_%s.phsp" % (self.phsp_dir, self.source, self.name, self.run_id)
-        else:
-            return None 
+        if name in self.phasespaces:
+            self.disable_phasespace(name)
+
+        self.source = name
+
+    def disable_phasespace_source(self):
+        """Remove any phasespace set as the primary generator action source, defaults to
+        using a general particle source (GPS).
+        """
+        self.source = None
 
     ## Physics ##
 
@@ -218,26 +224,29 @@ class Simulation(object):
 
     ## Phasespace files ##
 
-    @property
-    def phasespace_file(self):
+    def get_phasespace_filename(self, name):
         """Generate a filename from the name of the phasespace as in the `Linac` configuration
         """
-        if self.phasespace is not None:
-            return "%s/%s_%s_%s.phsp" % (self.phsp_dir, self.phasespace, self.name, self.run_id)
-        else:
-            return None
+        return "%s/%s_%s_%s.phsp" % (self.phsp_dir, name, self.name, self.run_id)
+  
+    def enable_phasespace(self, name):
+        self.phasespaces.append(name)
 
-    def close_phasespace(self):
+    def disable_phasespace(self, name):
         """Close an open phasespace file, and remove it from the geometry.
         """
-        self.detector_construction.RemovePhasespace(self.phasespace_file)
-   
+        self.detector_construction.RemovePhasespace(self.get_phasespace_filename(name))
+        self.phasespaces.remove(name)
+
+    def disable_all_phasespaces(self):
+        map(self.disable_phasespace, self.phasespaces)
+
     def build_phasespaces(self):
         """Create an empty phasespace file to write into, and insert it into the geometry.
         """ 
-        if self.phasespace is not None:
-            ps = self.config.phasespaces[self.phasespace]
-            self.detector_construction.AddPhasespace(self.phasespace_file,
+        for phasespace in self.phasespaces:
+            ps = self.config.phasespaces[phasespace]
+            self.detector_construction.AddPhasespace(self.get_phasespace_filename(phasespace),
                     ps["radius"], ps["z_position"], ps["material"], ps["kill"])
 
     ## Run ##
@@ -249,7 +258,7 @@ class Simulation(object):
         self.update_geometry()
 
         if self.source is not None: 
-            self.primary_generator.SetSource(self.source_file)
+            self.primary_generator.SetSource(self.get_phasespace_filename(self.source))
 
             z = self.config.phasespaces[self.source]["z_position"]
             self.primary_generator.SetGantryRotation(self.config.world.daughters["head"].rotation)

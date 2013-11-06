@@ -35,8 +35,15 @@ gun:
   recycling_number: 10
       
 phasespaces:
-  exitwindow:
+  exitwindow1:
     z_position: 0 
+    radius: 1000
+    material: G4_AIR
+    redistribute: false
+    kill: false 
+
+  exitwindow2:
+    z_position: -100 
     radius: 1000
     material: G4_AIR
     redistribute: false
@@ -48,3 +55,4 @@ phasespaces:
     material: G4_AIR
     redistribute: false
     kill: true
+
