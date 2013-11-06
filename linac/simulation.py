@@ -1,14 +1,24 @@
+# Standard Library
 import random
 
+# GEANT4
 import Geant4
 from Geant4 import G4ThreeVector, G4RotationMatrix, G4Color, mm, deg, MeV
 
-import g4
+# External
 import numpy
 import pyublas
 
+# User
+import g4
+
 
 class Simulation(object):
+    """The base GEANT4 application
+
+    The simulation proper is initialised here, along with the geometry described
+    by the world `Volume` and each daughter `Volume` within.
+    """
     def __init__(self, name, config, phsp_dir='.', run_id=0):
         self.name = name
         self.run_id = run_id
@@ -50,10 +60,18 @@ class Simulation(object):
     ## Primary generator ##
 
     def reset_source(self):
+        """Reset the primary generator action to its default state.
+        
+        Especially in the case of using a phasespace file as the source,
+        resetting it has the effect of replaying it again from the beginning
+        on the next run.
+        """
         self.primary_generator.Reset()
 
     @property
     def source_file(self):
+        """Generate a filename from the name of the source as in the `Linac` configuration
+        """
         if self.source is not None:
             return "%s/%s_%s_%s.phsp" % (self.phsp_dir, self.source, self.name, self.run_id)
         else:
@@ -62,41 +80,64 @@ class Simulation(object):
     ## Physics ##
 
     def set_cuts(self, gamma=1., electron=1.):
+        """Set or override the default cuts for gammas and electrons through all parts of
+        the simulation geometry.
+        """
         self.physics_list.OverrideCuts(gamma, electron)
 
     ## Voxelised phantom data ##
 
     def set_ct(self, directory, acquisition=1):
+        """Nominate a DICOM directory as acquisition to load as voxelised geometry.
+        """
         self.detector_construction.UseCT(directory, acquisition)
 
     def set_array(self, filename, x=1., y=1., z=1.):
+        """Use a `numpy` array as voxelised geometry.
+        """
         self.detector_construction.UseArray(filename, x, y, z)
 
     def set_ct_position(self, position):
+        """Coerce the loaded voxel data to the specified origin.
+        """
         pos = G4ThreeVector(*position)
         self.detector_construction.SetCTPosition(pos)
 
     def crop_ct_x(self, xmin, xmax):
+        """Crop the voxel data in the x-direction.
+        """
         self.detector_construction.CropX(xmin, xmax)
 
     def crop_ct_y(self, ymin, ymax):
+        """Crop the voxel data in the y-direction.
+        """
         self.detector_construction.CropY(ymin, ymax)
 
     def crop_ct_z(self, zmin, zmax):
+        """Crop the voxel data in the z-direction.
+        """
         self.detector_construction.CropZ(zmin, zmax)
 
     def get_ct_origin(self):
+        """Get the voxel data origin (usually reported for DICOM-CT unless otherwise set).
+        """
         return self.detector_construction.GetCTOrigin()
 
     def hide_ct(self, hide):
+        """Hide the voxel data from the viewer.
+        """
         self.detector_construction.HideCT(hide)
 
     def use_phantom(self, use):
+        """Nide the voxel data from the navigator.
+        """
         self.detector_construction.UsePhantom(use)
 
     ## Scoring ##
 
     def save_histograms(self, directory, name, runid):
+        """Dump the saved `numpy` array histograms, that align with the voxel data,to disk.
+        """
         energy_data = self.detector_construction.GetEnergyHistogram()
         numpy.save("%s/energy_%s_%s_%s" % (directory, self.name, name, runid), energy_data)
 
@@ -107,23 +148,33 @@ class Simulation(object):
         numpy.save("%s/counts_%s_%s_%s" % (directory, self.name, name, runid), counts_data)
 
     def zero_histograms(self):
+        """Zero all historams without regard for their content.
+        """
         self.detector_construction.ZeroHistograms()
 
     ## Visualisation/Session ##
 
     def show(self):
+        """Show the geometry using built-in visualisation. Requires a `macros/vis.mac` macros.
+        """
         Geant4.gUImanager.ExecuteMacroFile("macros/vis.mac")  
 
-    def start_session(self): 
+    def start_session(self):
+        """Start a GEANT4 command line users session (`g4py`).
+        """
         Geant4.StartUISession()
 
     ## Geometry ##
 
     def build_materials(self):
+        """Build the materials defined in the user `Linac` configureation.
+        """
         for material in self.config["materials"]:
             self.detector_construction.AddMaterial(material["name"], material["density"], cb)
 
     def build_geometry(self):
+        """Recursively build the user defined geometry.
+        """
         def build(volume, mother): 
             for name, params in volume.daughters.iteritems():
                 if params.filename != "":
@@ -150,6 +201,8 @@ class Simulation(object):
         self.build_phasespaces()       
 
     def update_geometry(self):
+        """Recursively update the user defined geometry.
+        """
         def update(volume):
             for name, params in volume.daughters.iteritems():
                 physical = self.geometry[name]
@@ -164,17 +217,24 @@ class Simulation(object):
         self.build_phasespaces() 
 
     ## Phasespace files ##
+
     @property
     def phasespace_file(self):
+        """Generate a filename from the name of the phasespace as in the `Linac` configuration
+        """
         if self.phasespace is not None:
             return "%s/%s_%s_%s.phsp" % (self.phsp_dir, self.phasespace, self.name, self.run_id)
         else:
             return None
 
     def close_phasespace(self):
+        """Close an open phasespace file, and remove it from the geometry.
+        """
         self.detector_construction.RemovePhasespace(self.phasespace_file)
    
-    def build_phasespaces(self):     
+    def build_phasespaces(self):
+        """Create an empty phasespace file to write into, and insert it into the geometry.
+        """ 
         if self.phasespace is not None:
             ps = self.config.phasespaces[self.phasespace]
             self.detector_construction.AddPhasespace(self.phasespace_file,
@@ -183,6 +243,9 @@ class Simulation(object):
     ## Run ##
  
     def beam_on(self, histories, fwhm=2.0*mm, energy=6*MeV):
+        """Shoot particles from the primary generator into the geometry. Here we automatically
+        select between a bare source, or phasespace if one is specified.
+        """
         self.update_geometry()
 
         if self.source is not None: 
