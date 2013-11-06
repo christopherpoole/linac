@@ -265,10 +265,16 @@ class Linac(object):
         raise NotImplementedError("Definition of an arbitary MLC field must be implemented by the user")
 
     def rotate_gantry(self, angle):
+        offset_angle = (self.world.daughters['head'].rotation.y - angle)*deg
+
         self.world.daughters['head'].rotation = (self.world.daughters['head'].rotation.x,
                                                  angle,
                                                  self.world.daughters['head'].rotation.z)
-    
+   
+        t = self.world.daughters['head'].translation
+        t = t.rotateY(offset_angle)
+        self.world.daughters['head'].translation = (t.x, t.y, t.z)
+ 
     def rotate_collimator(self, angle):
         self.world.daughters['head'].rotation = (angle,
                                                  self.world.daughters['head'].rotation.y,
