@@ -133,6 +133,19 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     std::map<int16_t, G4Material*> MakeMaterialsMap(G4int increment);
     G4Material* MakeNewMaterial(G4String base_material_name, G4double density);
 
+  public:
+    void SetWorldSize(G4ThreeVector size) {
+        this->world_size = size;
+    };
+
+    void SetWorldMaterial(G4String name) {
+        this->world_material = nist_manager->FindOrBuildMaterial(name);
+    };
+
+    void SetWorldColour(G4Color colour) {
+        this->world_colour = colour;
+    };
+
     void RemoveHead() {
         if (head_physical)
             delete head_physical;
@@ -259,6 +272,10 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4Box* world_solid;
     G4LogicalVolume* world_logical;
     G4VPhysicalVolume* world_physical;
+
+    G4ThreeVector world_size;
+    G4Material* world_material;
+    G4Color world_colour;
 
     G4Box* phantom_solid;
     G4LogicalVolume* phantom_logical;

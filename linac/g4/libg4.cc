@@ -96,6 +96,9 @@ BOOST_PYTHON_MODULE(libg4) {
         .def("SetCTPosition", &DetectorConstruction::SetCTPosition)
         .def("GetWorld", &DetectorConstruction::GetWorld,
             return_internal_reference<>())
+        .def("SetWorldMaterial", &DetectorConstruction::SetWorldMaterial)
+        .def("SetWorldSize", &DetectorConstruction::SetWorldSize)
+        .def("SetWorldColour", &DetectorConstruction::SetWorldColour)
         ;   // End DetectorConstruction
 
     class_<PhysicsList, PhysicsList*,

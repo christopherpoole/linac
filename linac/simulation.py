@@ -34,6 +34,12 @@ class Simulation(object):
         self.phasespaces = []
 
         self.detector_construction = g4.DetectorConstruction()
+
+        side = self.config.world.side*mm
+        self.detector_construction.SetWorldSize(G4ThreeVector(side, side, side))
+        self.detector_construction.SetWorldMaterial(self.config.world.material)
+        self.detector_construction.SetWorldColour(self.config.world.colour)
+
         Geant4.gRunManager.SetUserInitialization(self.detector_construction)
 
         self.physics_list = g4.PhysicsList()

@@ -67,7 +67,10 @@ class Volume(object):
                 self.solid = "slab"
                 self.side = val["side"]
                 self.thickness = val["thickness"]
-
+            if key == "cube":
+                self.solid = "slab"
+                self.side = val["side"]
+                self.thickness = val["side"]
 
         self.daughters = {}
         if kwargs.has_key("daughters"):

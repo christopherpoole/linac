@@ -53,7 +53,11 @@ DetectorConstruction::DetectorConstruction()
     hounsfield.push_back(Hounsfield(125,"G4_TISSUE_SOFT_ICRP", 1.101));
     hounsfield.push_back(Hounsfield(2500,"G4_BONE_CORTICAL_ICRP", 2.088));
 
+    world_size = G4ThreeVector(3*m, 3*m, 3*m);
+
     nist_manager = G4NistManager::Instance();
+    world_material = nist_manager->FindOrBuildMaterial("G4_AIR");
+
     use_phantom = false;
     use_cad_phantom = false;
     region = NULL;
@@ -79,9 +83,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     G4LogicalVolumeStore::GetInstance()->Clean();
     G4PhysicalVolumeStore::GetInstance()->Clean();
 
-    G4NistManager* nist_manager = G4NistManager::Instance();
-    G4Material* air = nist_manager->FindOrBuildMaterial("G4_AIR");
-
     G4NistManager* man = G4NistManager::Instance();
     man->SetVerbose(1);
     // Define elements from NIST 
@@ -105,12 +106,11 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     StainlessSteel->AddElement(Ni, fractionmass=0.09);
 
 
-    world_solid = new G4Box("world_solid", 1.0*m, 1.5*m, 1.5*m);
-    world_logical = new G4LogicalVolume(world_solid, air, "world_logical", 0, 0, 0);
+    world_solid = new G4Box("world_solid", world_size.x()/2., world_size.y()/2., world_size.z()/2.);
+    world_logical = new G4LogicalVolume(world_solid, world_material, "world_logical", 0, 0, 0);
     world_physical = new G4PVPlacement(0, G4ThreeVector(), world_logical, 
                                        "world_physical", 0, false, 0);
-    //world_logical->SetVisAttributes(G4VisAttributes::Invisible); 
-
+    world_logical->SetVisAttributes(new G4VisAttributes(world_colour));
 /*
     if (region) {
         G4cout << "Deleting region." << G4endl;

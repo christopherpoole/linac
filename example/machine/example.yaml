@@ -1,4 +1,8 @@
 world:
+  cube:
+    side: 4000 
+  material: G4_AIR
+  colour: [0, 0, 0, 0]
   daughters:
     head: 
       cylinder:
@@ -6,7 +10,7 @@ world:
         length: 800
       translation: [0, 0, 500]
       rotation: [0, 0, 0]
-      colour: [0, 1, 0]
+      colour: [0, 1, 0, 0.25]
       daughters:  
         filter:
           filename: machine/cone.stl
@@ -20,7 +24,7 @@ world:
             radius: 250
             length: 250
           translation: [0, 0, 100]
-          colour: [1, 1, 0]
+          colour: [1, 1, 0, 0.25]
           daughters:
             target:
               filename: machine/target.ply
