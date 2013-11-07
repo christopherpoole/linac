@@ -73,7 +73,6 @@ BOOST_PYTHON_MODULE(libg4) {
         .def("ClosePhasespace", &DetectorConstruction::ClosePhasespace)
         .def("UsePhantom", &DetectorConstruction::UsePhantom)
         .def("UseCADPhantom", &DetectorConstruction::UseCADPhantom)
-        .def("SetupHead", &DetectorConstruction::SetupHead)
         .def("RemoveHead", &DetectorConstruction::RemoveHead)
 //             _SetupHead(
 //                 args("head_radius", "head_length", "head_position",
