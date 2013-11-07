@@ -89,13 +89,11 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4VPhysicalVolume* AddPhasespace(char* name, double radius, double z_position, char* material, bool kill);
     void RemovePhasespace(char* name);
 
-    G4VPhysicalVolume* AddCylinder(char* name,
-                      double radius, double thickness,
-                      char* material,
-                      G4ThreeVector translation,
-                      G4ThreeVector rotation,
-                      G4Colour colour,
-                      G4LogicalVolume* mother_logical);
+    G4VPhysicalVolume* AddTube(char* name,
+            double inner_radius, double outer_radius, double length,
+            G4ThreeVector translation, G4ThreeVector rotation,
+            char* material_name, G4Colour colour,
+            G4LogicalVolume* mother_logical);
  
     G4VPhysicalVolume* AddSlab(char* name,
                       double side, double thickness,

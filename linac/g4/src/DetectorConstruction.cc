@@ -110,7 +110,11 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     world_logical = new G4LogicalVolume(world_solid, world_material, "world_logical", 0, 0, 0);
     world_physical = new G4PVPlacement(0, G4ThreeVector(), world_logical, 
                                        "world_physical", 0, false, 0);
-    world_logical->SetVisAttributes(new G4VisAttributes(world_colour));
+    if (world_colour.GetAlpha() == 0) {
+       world_logical->SetVisAttributes(G4VisAttributes::Invisible);
+    } else {
+        world_logical->SetVisAttributes(new G4VisAttributes(world_colour));
+    }
 /*
     if (region) {
         G4cout << "Deleting region." << G4endl;
@@ -256,31 +260,28 @@ void DetectorConstruction::AddMaterial(G4String name, G4double density,
 }
 
 
-G4VPhysicalVolume* DetectorConstruction::AddCylinder(char* name,
-                                                   double radius, double thickness,
-                                                   char* material,
-                                                   G4ThreeVector translation,
-                                                   G4ThreeVector rotation,
-                                                   G4Colour colour,
-                                                   G4LogicalVolume* mother_logical)
+G4VPhysicalVolume* DetectorConstruction::AddTube(char* name,
+        double inner_radius, double outer_radius, double length, 
+        G4ThreeVector translation, G4ThreeVector rotation,
+        char* material_name, G4Colour colour,
+        G4LogicalVolume* mother_logical)
 {
     if (verbose >= 4)
-        G4cout << "DetectorConstruction::AddCylinder" << G4endl;
+        G4cout << "DetectorConstruction::AddTube" << G4endl;
 
-    G4Material* mat = nist_manager->FindOrBuildMaterial(material);
+    G4Material* material = nist_manager->FindOrBuildMaterial(material_name);
     
     G4RotationMatrix* rot = new G4RotationMatrix();
     rot->rotateX(rotation.x()*deg);
     rot->rotateY(rotation.y()*deg);
     rot->rotateZ(rotation.z()*deg);
    
-    G4Tubs* solid = new G4Tubs(name, 0, radius, thickness/2., 0, 360*deg);
-    G4LogicalVolume* logical = new G4LogicalVolume(solid, mat, name, 0, 0, 0);
+    G4Tubs* solid = new G4Tubs(name, inner_radius, outer_radius, length/2., 0, 360*deg);
+    G4LogicalVolume* logical = new G4LogicalVolume(solid, material, name, 0, 0, 0);
     logical->SetVisAttributes(new G4VisAttributes(colour)); 
 
     G4VPhysicalVolume* physical = new G4PVPlacement(rot, translation,
-                                                    logical, name, mother_logical,
-                                                    false, 0);
+            logical, name, mother_logical, false, 0);
 
     return physical;
 }

@@ -195,9 +195,15 @@ class Simulation(object):
                         params.color, params.tessellated, mother)
                 if hasattr(params, "solid"):
                     if params.solid == "cylinder":
-                        physical = self.detector_construction.AddCylinder(name, params.radius,
-                                params.length, params.material, params.translation_vector,
-                                params.rotation_vector, params.color, mother) 
+                        physical = self.detector_construction.AddTube(name,
+                                0, params.radius, params.length,
+                                params.translation_vector, params.rotation_vector,
+                                params.material, params.color, mother)
+                    if params.solid == "tube":
+                        physical = self.detector_construction.AddTube(name,
+                                params.inner_radius, params.outer_radius, params.length,
+                                params.translation_vector, params.rotation_vector,
+                                params.material, params.color, mother)
                     if params.solid == "slab":
                         physical = self.detector_construction.AddSlab(name, params.side,
                                 params.thickness, params.material, params.translation_vector,

@@ -98,6 +98,11 @@ class Volume(object):
                 self.solid = "cylinder"
                 self.radius = val["radius"]
                 self.length = val["length"]
+            if key == "tube":
+                self.solid = "tube"
+                self.inner_radius = val["inner_radius"]
+                self.outer_radius = val["outer_radius"]
+                self.length = val["length"]
             if key == "slab":
                 self.solid = "slab"
                 self.side = val["side"]
