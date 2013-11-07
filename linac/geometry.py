@@ -319,18 +319,3 @@ class Linac(object):
                                                  self.world.daughters['head'].rotation_vector.y,
                                                  self.world.daughters['head'].rotation_vector.z)
 
-## Transformers ##
-
-def cb():
-    return 123
-
-class Component:
-    def __init__(self, physical_volume, config):
-        self.physical_volume = physical_volume
-        self.config = config
-
-    def move(self, **kwargs):
-        self.config["move"](**kwargs)
-
-
-
