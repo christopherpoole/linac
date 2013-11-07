@@ -1,4 +1,5 @@
 import math
+import inspect 
 
 from math import *
 from itertools import repeat
@@ -123,8 +124,8 @@ class Volume(object):
             if repeats > 1:
                 daughters = self._unpack_repeats(name, daughter, repeats)
                 self.daughters.update(daughters)
-            
-            self.daughters[name] = Volume(name, **daughter)
+            else:
+                self.daughters[name] = Volume(name, **daughter)
 
     def _unpack_repeats(self, name, daughter, repeats):
         """Construct individual Volumes for those specified as repeats
@@ -147,12 +148,16 @@ class Volume(object):
 
             if isinstance(daughter[m], dict):
                 # with functions/transformers
-                args = daughter[m]['args'].copy()
-                for k, v in args.iteritems():
-                    if v is None:
-                        args[k] = daughter[k]            
-                r = []
                 f = transformers[daughter[m]['function']] 
+
+                spec = inspect.getargspec(f)
+                argnames = spec.args[-len(spec.defaults):]
+
+                args = {}
+                for k in argnames:
+                    args[k] = daughter[k]            
+
+                r = []
                 for i in range(repeats):
                     r.append(f(i, **args))
                 multiples[m] = r
@@ -172,7 +177,7 @@ class Volume(object):
             for k, v in multiples.iteritems():
                 d[k] = multiples[k][i]
             n = "%s_%i" % (name, i)
-            daughters.append((n, Daughter(n, **d)))
+            daughters.append((n, Volume(n, **d)))
         
         return daughters 
 
@@ -263,9 +268,23 @@ def mlc_arc(i, interval=None, position=None, shift=0, repeat=0):
     return (0, i*interval + offset, 1000 - math.sqrt((1000 - position)**2 - (i*interval + offset)**2))
 
 
+def repeat_x(i, interval=None, origin=None):
+    return (origin[0] + i*interval, origin[1], origin[2])
+
+def repeat_y(i, interval=None, origin=None):
+    return (origin[0], origin[1] + i*interval, origin[2])
+
+def repeat_z(i, interval=None, origin=None):
+    return (origin[0], origin[1], origin[2] + i*interval)
+
+
+
 register_transformer('mlc_diverge', mlc_diverge)
 register_transformer('mlc_interleave', mlc_interleave)
 register_transformer('mlc_arc', mlc_arc)
+register_transformer('repeat_x', repeat_x)
+register_transformer('repeat_y', repeat_y)
+register_transformer('repeat_z', repeat_z)
 
 
 def cb():

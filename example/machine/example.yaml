@@ -8,7 +8,7 @@ world:
       cylinder:
         radius: 500
         length: 800
-      translation: [0, 0, 500]
+      translation: [0, 0, 800]
       rotation: [0, 0, 0]
       colour: [0, 1, 0, 0.25]
       daughters:  
@@ -33,6 +33,30 @@ world:
               rotation: [90, 0, 0]
               material: G4_WATER 
               colour: [0, 1, 1]
+
+    zslab:
+      slab:
+        side: 50
+        thickness: 5
+      material: G4_Pb
+      repeat: 4
+      interval: -100
+      origin: [0, 0, 150]
+      translation:
+        function: repeat_z
+    yslab:
+      inherit: zslab
+      rotation: [90, 0, 0]
+      origin: [0, 150, 0]
+      translation:
+        function: repeat_y
+    xslab:
+      inherit: zslab
+      rotation: [0, 90, 0]
+      origin: [150, 0, 0]
+      translation:
+        function: repeat_x
+
 
 gun:
   spot_size: 1
