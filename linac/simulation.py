@@ -38,7 +38,7 @@ class Simulation(object):
         side = self.config.world.side*mm
         self.detector_construction.SetWorldSize(G4ThreeVector(side, side, side))
         self.detector_construction.SetWorldMaterial(self.config.world.material)
-        self.detector_construction.SetWorldColour(self.config.world.colour)
+        self.detector_construction.SetWorldColour(self.config.world.color)
 
         Geant4.gRunManager.SetUserInitialization(self.detector_construction)
 
@@ -191,17 +191,17 @@ class Simulation(object):
             for name, params in volume.daughters.iteritems():
                 if params.filename != "":
                     physical = self.detector_construction.AddCADComponent(name, params.filename,
-                        params.material, params.scale, params.translation, params.rotation,
-                        params.colour, params.tessellated, mother)
+                        params.material, params.scale, params.translation_vector, params.rotation_vector,
+                        params.color, params.tessellated, mother)
                 if hasattr(params, "solid"):
                     if params.solid == "cylinder":
                         physical = self.detector_construction.AddCylinder(name, params.radius,
-                                params.length, params.material, params.translation,
-                                params.rotation, params.colour, mother) 
+                                params.length, params.material, params.translation_vector,
+                                params.rotation_vector, params.color, mother) 
                     if params.solid == "slab":
                         physical = self.detector_construction.AddSlab(name, params.side,
-                                params.thickness, params.material, params.translation,
-                                params.rotation, params.colour, mother) 
+                                params.thickness, params.material, params.translation_vector,
+                                params.rotation_vector, params.color, mother) 
 
                 self.geometry[name] = physical               
  
@@ -220,7 +220,7 @@ class Simulation(object):
                 physical = self.geometry[name]
 
                 physical.SetRotation(params.rotation_matrix)
-                physical.SetTranslation(params.translation)
+                physical.SetTranslation(params.translation_vector)
 
                 update(volume.daughters[name])
         
@@ -267,7 +267,7 @@ class Simulation(object):
             self.primary_generator.SetSource(self.get_phasespace_filename(self.source))
 
             z = self.config.phasespaces[self.source]["z_position"]
-            self.primary_generator.SetGantryRotation(self.config.world.daughters["head"].rotation)
+            self.primary_generator.SetGantryRotation(self.config.world.daughters["head"].rotation_vector)
             self.primary_generator.SetPhasespaceLimits(-200, 200, -200, 200, z-0.1, z+0.1) 
             self.primary_generator.SetRedistribute(self.config.phasespaces[self.source]["redistribute"])
             self.primary_generator.SetRecyclingNumber(self.config.gun["recycling_number"])       

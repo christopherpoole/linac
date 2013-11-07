@@ -13,7 +13,7 @@ from Geant4 import mm, deg, keV, MeV
 default_multiples = {
     'translation' : [0, 0, 0],
     'rotation' : [0, 0, 0],
-    'colour' : [0, 0, 0, 1],
+    'colour' : [1, 1, 1, 1],
 }
 
 # Register for functions that enable rotation/translation
@@ -45,14 +45,14 @@ class Volume(object):
     def __init__(self, name, **kwargs):
         self.name = name
 
-        self._config = kwargs
+        self.config = kwargs
         self.filename = ''
         self.scale = 1
-        self._translation = (0, 0, 0)
-        self._rotation = (0, 0, 0)
+        self.translation = (0, 0, 0)
+        self.rotation = (0, 0, 0)
         self._rotation_matrix = None
-        self._colour = (1, 0, 0, 1)
-        self._material = 'G4_AIR'
+        self.colour = (1, 0, 0, 1)
+        self.material = 'G4_AIR'
         self.tessellated = True
        
         for key, val in kwargs.iteritems():
@@ -77,74 +77,37 @@ class Volume(object):
             self._init_daughters(**kwargs)
 
     @property
-    def config(self):
-    #    return dict(zip(self._config.keys(),
-    #                    [getattr(self, a) for a in self._config.keys()
-    #                                      if hasattr(self, a)]))
-        d = {}
-        for k in self._config.keys():
-            if hasattr(self, k):
-                d[k] = getattr(self, k)
-        return d
- 
-    @property
-    def translation(self):
-        return G4ThreeVector(*self._translation)
-
-    @translation.setter
-    def translation(self, value):
-        self._translation = value
+    def translation_vector(self):
+        """Return the current translations as a G4ThreeVector
+        """
+        return G4ThreeVector(*self.translation)
 
     @property
-    def x_position(self):
-        return self._translation[0]
-
-    @x_position.setter
-    def x_position(self, value):
-        self._translation = (value, self._translation[1], self._translation[2])
-
-    @property
-    def y_position(self):
-        return self._translation[1]
-
-    @x_position.setter
-    def y_position(self, value):
-        self._translation = (self._translation[0], value, self._translation[2])
-
-    @property
-    def rotation(self):
-        return G4ThreeVector(*self._rotation)
-
-    @rotation.setter
-    def rotation(self, value):
-        self._rotation = value
+    def rotation_vector(self):
+        """Return the x-, y-, z-direction rotations as a G4ThreeVector
+        """
+        return G4ThreeVector(self.rotation[0], self.rotation[1], self.rotation[2])
 
     @property
     def rotation_matrix(self):
+        """Return the x-, y-, z-direction rotations as a G4RotationMatrix
+        """
         self._rotation_matrix = G4RotationMatrix()
-        self._rotation_matrix.rotateX(self._rotation[0]*deg)
-        self._rotation_matrix.rotateY(self._rotation[1]*deg)
-        self._rotation_matrix.rotateZ(self._rotation[2]*deg)
+        self._rotation_matrix.rotateX(self.rotation[0]*deg)
+        self._rotation_matrix.rotateY(self.rotation[1]*deg)
+        self._rotation_matrix.rotateZ(self.rotation[2]*deg)
         return self._rotation_matrix
 
     @property
-    def colour(self):
-        return G4Color(*self._colour)
-    
-    @colour.setter
-    def colour(self, value):
-        self._colour = value
-
-    @property
-    def material(self):
-#        return Geant4.gNistManager.FindOrBuildMaterial(self._material)
-        return self._material
-   
-    @material.setter
-    def material(self, value):
-        self._material = value
+    def color(self):
+        """Return the colour as a G4Color
+        """
+        return G4Color(*self.colour)
 
     def _init_daughters(self, **kwargs):
+        """If a `Volume` has daugther volumes, iterativley initialise them and
+        unpack repeats of the same volume if required.
+        """
         for name, daughter in kwargs['daughters'].iteritems():
             if daughter.has_key('inherit'):
                 d = kwargs['daughters'][daughter['inherit']].copy()
@@ -268,20 +231,20 @@ class Linac(object):
         raise NotImplementedError("Definition of an arbitary MLC field must be implemented by the user")
 
     def rotate_gantry(self, angle):
-        offset_angle = (self.world.daughters['head'].rotation.y - angle)*deg
+        offset_angle = (self.world.daughters['head'].rotation_vector.y - angle)*deg
 
-        self.world.daughters['head'].rotation = (self.world.daughters['head'].rotation.x,
+        self.world.daughters['head'].rotation = (self.world.daughters['head'].rotation_vector.x,
                                                  angle,
-                                                 self.world.daughters['head'].rotation.z)
+                                                 self.world.daughters['head'].rotation_vector.z)
    
-        t = self.world.daughters['head'].translation
+        t = self.world.daughters['head'].translation_vector
         t = t.rotateY(offset_angle)
         self.world.daughters['head'].translation = (t.x, t.y, t.z)
  
     def rotate_collimator(self, angle):
         self.world.daughters['head'].rotation = (angle,
-                                                 self.world.daughters['head'].rotation.y,
-                                                 self.world.daughters['head'].rotation.z)
+                                                 self.world.daughters['head'].rotation_vector.y,
+                                                 self.world.daughters['head'].rotation_vector.z)
 
 
 def mlc_diverge(i, interval=None, position=None, shift=0, z_rotation=0, centre=0, repeat=0):
