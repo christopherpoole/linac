@@ -40,6 +40,7 @@
 #include "G4Material.hh"
 #include "G4NistManager.hh"
 #include "G4Colour.hh"
+#include "G4SDManager.hh"
 
 #include "G4RotationMatrix.hh"
 
@@ -246,6 +247,14 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4LogicalVolume* GetWorld() {
         return world_logical;
     }
+
+    void SetAsStopKillSheild(G4VPhysicalVolume* physical) {
+        StopKillSheild* sheild = new StopKillSheild(physical->GetName());
+
+        G4SDManager* sd_manager = G4SDManager::GetSDMpointer();
+        sd_manager->AddNewDetector(sheild);
+        physical->GetLogicalVolume()->SetSensitiveDetector(sheild);
+   }
 
   private:
     G4Region* region;

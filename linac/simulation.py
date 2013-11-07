@@ -209,6 +209,9 @@ class Simulation(object):
                                 params.thickness, params.material, params.translation_vector,
                                 params.rotation_vector, params.color, mother) 
 
+                if params.scorer == "StopKillSheild":
+                    self.detector_construction.SetAsStopKillSheild(physical)
+
                 self.geometry[name] = physical               
  
                 build(params, physical.GetLogicalVolume())

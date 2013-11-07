@@ -82,6 +82,7 @@ BOOST_PYTHON_MODULE(libg4) {
         .def("SetWorldMaterial", &DetectorConstruction::SetWorldMaterial)
         .def("SetWorldSize", &DetectorConstruction::SetWorldSize)
         .def("SetWorldColour", &DetectorConstruction::SetWorldColour)
+        .def("SetAsStopKillSheild", &DetectorConstruction::SetAsStopKillSheild)
         ;   // End DetectorConstruction
 
     class_<PhysicsList, PhysicsList*,

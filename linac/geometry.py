@@ -82,12 +82,17 @@ class Volume(object):
 
         self.config = kwargs
         self.filename = ''
+        
         self.scale = 1
         self.translation = (0, 0, 0)
         self.rotation = (0, 0, 0)
         self._rotation_matrix = None
+        
         self.colour = (1, 0, 0, 1)
         self.material = 'G4_AIR'
+        
+        self.scorer = None
+
         self.tessellated = True
        
         for key, val in kwargs.iteritems():
