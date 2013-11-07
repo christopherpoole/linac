@@ -18,11 +18,45 @@ default_multiples = {
 }
 
 # Register for functions that enable rotation/translation
-# of a component within the geomtry (jaws for example).
+# of a component within the geometry (jaws for example).
 transformers = {}
 
 def register_transformer(name, f):
     transformers[name] = f
+
+## MLC transformers ##
+
+def mlc_diverge(i, interval=None, position=None, shift=0, z_rotation=0, centre=0, repeat=0):
+    offset = -(interval * repeat / 2. - interval + shift)
+    divergance = math.atan((i*interval + offset + centre)/(1000 - position))
+    return (-divergance/deg, 0, z_rotation)
+
+def mlc_interleave(i, interval=None, position=None, shift=0):
+    offset = -(interval * 20 / 2. - interval + shift)
+    return (10, i*interval + offset, position)
+
+def mlc_arc(i, interval=None, position=None, shift=0, repeat=0):
+    offset = -(interval * repeat / 2. - interval + shift)
+    return (0, i*interval + offset, 1000 - math.sqrt((1000 - position)**2 - (i*interval + offset)**2))
+
+register_transformer('mlc_diverge', mlc_diverge)
+register_transformer('mlc_interleave', mlc_interleave)
+register_transformer('mlc_arc', mlc_arc)
+
+## Basic repeated geometry transformers ##
+
+def repeat_x(i, interval=None, origin=None):
+    return (origin[0] + i*interval, origin[1], origin[2])
+
+def repeat_y(i, interval=None, origin=None):
+    return (origin[0], origin[1] + i*interval, origin[2])
+
+def repeat_z(i, interval=None, origin=None):
+    return (origin[0], origin[1], origin[2] + i*interval)
+
+register_transformer('repeat_x', repeat_x)
+register_transformer('repeat_y', repeat_y)
+register_transformer('repeat_z', repeat_z)
 
 
 class Volume(object):
@@ -77,6 +111,8 @@ class Volume(object):
         if kwargs.has_key("daughters"):
             self._init_daughters(**kwargs)
 
+    ## Getters for rotation/translation as G4* objects ##
+
     @property
     def translation_vector(self):
         """Return the current translations as a G4ThreeVector
@@ -104,6 +140,8 @@ class Volume(object):
         """Return the colour as a G4Color
         """
         return G4Color(*self.colour)
+
+    ## Initialisers ##
 
     def _init_daughters(self, **kwargs):
         """If a `Volume` has daugther volumes, iterativley initialise them and
@@ -202,6 +240,14 @@ class Linac(object):
 
     def rounded_leaf_position(self, leaf_radius, radius_position,
             field_size, iso_position=1000.):
+        """Calculator for positioning a leaf/jaw with a rounded end.
+
+        Attributes:
+            leaf_radius: the radius on the end of the leaf
+            radius_position: the position of the center of the leaf radius
+            field_size: target field opening
+            iso_position: distance from the source to the iso center
+        """
         theta = atan(field_size / iso_position) 
         delta = (leaf_radius / cos(theta)) - leaf_radius
 
@@ -210,6 +256,8 @@ class Linac(object):
         else:
             return (field_size / iso_position * radius_position) - delta
 
+    ## Define rectangular fields ##
+
     def rectangular_field_jaws(self, x1, x2, y1, y2):
         raise NotImplementedError("Definition of a rectangular jaw field must be implemented by the user")
 
@@ -217,25 +265,43 @@ class Linac(object):
         raise NotImplementedError("Definition of a rectangular MLC field must be implemented by the user")
  
     def rectangular_field(self, x1, x2, y1, y2):
+        """Convenience function for calling the user defined jaw/MLC rectangular
+        field setters both together.
+        """
         self.rectangular_field_jaws(x1, x2, y1, y2)
         self.rectangular_field_mlc(x1, x2, y1, y2)
 
+    ## Define square fields ##
+
     def square_field_jaws(self, size, x_offset=0, y_offset=0):
+        """Set a square field for the jaw only.
+        """
         size = size/2.
         self.rectangular_field_jaws(size + x_offset, (-size) + x_offset, size + y_offset, (-size) + y_offset)
 
     def square_field_mlc(self, size, x_offset=0, y_offset=0):
+        """Set a square field for the MLC only.
+        """
         size = size/2.
         self.rectangular_field_mlc(size + x_offset, (-size) + x_offset, size + y_offset, (-size) + y_offset)
 
     def square_field(self, size, x_offset=0, y_offset=0):
+        """Convenience function for setting a square field given the field size length.
+        """
         self.square_field_jaws(size, x_offset, y_offset)
         self.square_field_mlc(size, x_offset, y_offset)
+    
+    ## Define arbitrary fields ##
 
     def arbitary_field_mlc(self, bank1_positions, bank2_positions):
         raise NotImplementedError("Definition of an arbitary MLC field must be implemented by the user")
 
+    ## Move the gantry/collimator ##
+
     def rotate_gantry(self, angle):
+        """Rotate the gantry to the nominated angular position. This is NOT
+        and incremental rotation.
+        """
         offset_angle = (self.world.daughters['head'].rotation_vector.y - angle)*deg
 
         self.world.daughters['head'].rotation = (self.world.daughters['head'].rotation_vector.x,
@@ -247,45 +313,13 @@ class Linac(object):
         self.world.daughters['head'].translation = (t.x, t.y, t.z)
  
     def rotate_collimator(self, angle):
+        """Rotation the collimator to the nominated angular position.
+        """
         self.world.daughters['head'].rotation = (angle,
                                                  self.world.daughters['head'].rotation_vector.y,
                                                  self.world.daughters['head'].rotation_vector.z)
 
-
-def mlc_diverge(i, interval=None, position=None, shift=0, z_rotation=0, centre=0, repeat=0):
-    offset = -(interval * repeat / 2. - interval + shift)
-    divergance = math.atan((i*interval + offset + centre)/(1000 - position))
-    return (-divergance/deg, 0, z_rotation)
-
- 
-def mlc_interleave(i, interval=None, position=None, shift=0):
-    offset = -(interval * 20 / 2. - interval + shift)
-    return (10, i*interval + offset, position)
-
-
-def mlc_arc(i, interval=None, position=None, shift=0, repeat=0):
-    offset = -(interval * repeat / 2. - interval + shift)
-    return (0, i*interval + offset, 1000 - math.sqrt((1000 - position)**2 - (i*interval + offset)**2))
-
-
-def repeat_x(i, interval=None, origin=None):
-    return (origin[0] + i*interval, origin[1], origin[2])
-
-def repeat_y(i, interval=None, origin=None):
-    return (origin[0], origin[1] + i*interval, origin[2])
-
-def repeat_z(i, interval=None, origin=None):
-    return (origin[0], origin[1], origin[2] + i*interval)
-
-
-
-register_transformer('mlc_diverge', mlc_diverge)
-register_transformer('mlc_interleave', mlc_interleave)
-register_transformer('mlc_arc', mlc_arc)
-register_transformer('repeat_x', repeat_x)
-register_transformer('repeat_y', repeat_y)
-register_transformer('repeat_z', repeat_z)
-
+## Transformers ##
 
 def cb():
     return 123
