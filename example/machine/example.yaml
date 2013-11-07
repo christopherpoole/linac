@@ -24,6 +24,7 @@ world:
             radius: 250
             length: 250
           translation: [0, 0, 100]
+          material: G4_Galactic
           colour: [1, 1, 0, 0.25]
           daughters:
             target:
