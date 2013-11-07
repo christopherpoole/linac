@@ -286,17 +286,6 @@ G4VPhysicalVolume* DetectorConstruction::AddCylinder(char* name,
 }
 
 
-void DetectorConstruction::UpdateCylinder(char* name,
-                      double radius, double thickness,
-                      char* material,
-                      G4ThreeVector translation,
-                      G4ThreeVector rotation)
-{
-    if (verbose >= 4)
-        G4cout << "DetectorConstruction::UpdateCylinder" << G4endl;
-}
-
-
 G4VPhysicalVolume* DetectorConstruction::AddSlab(char* name,
                                                    double side, double thickness,
                                                    char* material,
@@ -326,16 +315,6 @@ G4VPhysicalVolume* DetectorConstruction::AddSlab(char* name,
     return physical;
 }
 
-
-void DetectorConstruction::UpdateSlab(char* name,
-                      double side, double thickness,
-                      char* material,
-                      G4ThreeVector translation,
-                      G4ThreeVector rotation)
-{
-    if (verbose >= 4)
-        G4cout << "DetectorConstruction::UpdateSlab" << G4endl;
-}
 
 G4VPhysicalVolume* DetectorConstruction::AddCADComponent(char* name,
                                                    char* filename,
@@ -379,43 +358,6 @@ G4VPhysicalVolume* DetectorConstruction::AddCADComponent(char* name,
 
     G4RunManager::GetRunManager()->GeometryHasBeenModified();
     return NULL;
-}
-
-
-void DetectorConstruction::TranslateCADComponent(char* name, G4ThreeVector translation, G4bool in_vacuum)
-{
-    if (verbose >=4)
-        G4cout << "DetectorConstruction::TranslateCADComponent" << G4endl;
-
-    if (in_vacuum == true) {
-        translation -= vacuum_position;
-        translation -= G4ThreeVector(0, 0, vacuum_length/2.);
-    } else {
-        translation -= head_position;
-        translation -= G4ThreeVector(0, 0, head_length/2.);
-    }
-
-    G4VPhysicalVolume* physical = FindVolume(name, head_physical);
-    physical->SetTranslation(translation);
-    
-    G4RunManager::GetRunManager()->GeometryHasBeenModified();
-}
-
-
-void DetectorConstruction::RotateCADComponent(char* name, G4ThreeVector rotation)
-{
-    if (verbose >= 4)
-        G4cout << "DetectorConstruction::RotateCADComponent" << G4endl;
-
-    G4VPhysicalVolume* physical = FindVolume(name, head_physical);
-
-    G4RotationMatrix* rot = new G4RotationMatrix();
-    rot->rotateX(rotation.x()*deg);
-    rot->rotateY(rotation.y()*deg);
-    rot->rotateZ(rotation.z()*deg);
-    physical->SetRotation(rot);
-    
-    G4RunManager::GetRunManager()->GeometryHasBeenModified();
 }
 
 

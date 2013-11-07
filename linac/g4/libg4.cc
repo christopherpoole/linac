@@ -56,29 +56,13 @@ BOOST_PYTHON_MODULE(libg4) {
         .def("RemovePhasespace", &DetectorConstruction::RemovePhasespace)
         .def("AddCADComponent", &DetectorConstruction::AddCADComponent,
             return_internal_reference<>())
-        .def("TranslateCADComponent", &DetectorConstruction::TranslateCADComponent)
-        .def("RotateCADComponent", &DetectorConstruction::RotateCADComponent)
         .def("AddCylinder", &DetectorConstruction::AddCylinder,
             return_internal_reference<>())
-        .def("UpdateCylinder", &DetectorConstruction::UpdateCylinder)
         .def("AddSlab", &DetectorConstruction::AddSlab,
             return_internal_reference<>())
-        .def("UpdateSlab", &DetectorConstruction::UpdateSlab)
-//        .def("AddCADComponent", &DetectorConstruction::AddCADComponent,
-//             _AddCADComponent(
-//                 args("name", "filename", "material", "in_vacuum", "scale", "translation",
-//                      "rotation", "colour"),
-//                 "doc string"
-//             )[return_internal_reference<>()])
         .def("ClosePhasespace", &DetectorConstruction::ClosePhasespace)
         .def("UsePhantom", &DetectorConstruction::UsePhantom)
         .def("UseCADPhantom", &DetectorConstruction::UseCADPhantom)
-        .def("RemoveHead", &DetectorConstruction::RemoveHead)
-//             _SetupHead(
-//                 args("head_radius", "head_length", "head_position",
-//                      "vacuum_radius", "vacuum_length", "vacuum_position"),
-//                 "doc string"
-//             )[return_internal_reference<>()])
         .def("GetEnergyHistogram", &DetectorConstruction::GetEnergyHistogram)
         .def("GetEnergySqHistogram", &DetectorConstruction::GetEnergySqHistogram)
         .def("GetCountsHistogram", &DetectorConstruction::GetCountsHistogram)
