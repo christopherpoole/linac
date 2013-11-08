@@ -121,6 +121,18 @@ class Volume(object):
         if kwargs.has_key("daughters"):
             self._init_daughters(**kwargs)
 
+    ## Language mappings ##
+
+    @property
+    def color(self):
+        """Catch incorrect spelling of "colour"
+        """
+        return self.colour
+
+    @color.setter
+    def color(self, colour):
+        self.colour = colour
+
     ## Getters for rotation/translation as G4* objects ##
 
     @property
