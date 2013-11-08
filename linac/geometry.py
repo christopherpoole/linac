@@ -1,3 +1,4 @@
+import copy
 import math
 import inspect 
 
@@ -29,15 +30,15 @@ def register_transformer(name, f):
 def mlc_diverge(i, interval=None, position=None, shift=0, z_rotation=0, centre=0, repeat=0):
     offset = -(interval * repeat / 2. - interval + shift)
     divergance = math.atan((i*interval + offset + centre)/(1000 - position))
-    return (-divergance/deg, 0, z_rotation)
+    return [-divergance/deg, 0, z_rotation]
 
 def mlc_interleave(i, interval=None, position=None, shift=0):
     offset = -(interval * 20 / 2. - interval + shift)
-    return (10, i*interval + offset, position)
+    return [10, i*interval + offset, position]
 
 def mlc_arc(i, interval=None, position=None, shift=0, repeat=0):
     offset = -(interval * repeat / 2. - interval + shift)
-    return (0, i*interval + offset, 1000 - math.sqrt((1000 - position)**2 - (i*interval + offset)**2))
+    return [0, i*interval + offset, 1000 - math.sqrt((1000 - position)**2 - (i*interval + offset)**2)]
 
 register_transformer('mlc_diverge', mlc_diverge)
 register_transformer('mlc_interleave', mlc_interleave)
@@ -46,13 +47,13 @@ register_transformer('mlc_arc', mlc_arc)
 ## Basic repeated geometry transformers ##
 
 def repeat_x(i, interval=None, origin=None):
-    return (origin[0] + i*interval, origin[1], origin[2])
+    return [origin[0] + i*interval, origin[1], origin[2]]
 
 def repeat_y(i, interval=None, origin=None):
-    return (origin[0], origin[1] + i*interval, origin[2])
+    return [origin[0], origin[1] + i*interval, origin[2]]
 
 def repeat_z(i, interval=None, origin=None):
-    return (origin[0], origin[1], origin[2] + i*interval)
+    return [origin[0], origin[1], origin[2] + i*interval]
 
 register_transformer('repeat_x', repeat_x)
 register_transformer('repeat_y', repeat_y)
@@ -84,8 +85,8 @@ class Volume(object):
         self.filename = ''
         
         self.scale = 1
-        self.translation = (0, 0, 0)
-        self.rotation = (0, 0, 0)
+        self.translation = [0, 0, 0]
+        self.rotation = [0, 0, 0]
         self._rotation_matrix = None
         
         self.colour = (1, 0, 0, 1)
@@ -163,6 +164,56 @@ class Volume(object):
         """
         return G4Color(*self.colour)
 
+    ## Getters/setters for translation/rotation ##
+
+    @property
+    def x_position(self):
+        return self.translation[0]
+
+    @x_position.setter
+    def x_position(self, x):
+        self.translation[0] = x
+    
+    @property
+    def y_position(self):
+        return self.translation[1]
+
+    @y_position.setter
+    def y_position(self, y):
+        self.translation[1] = y
+
+    @property
+    def z_position(self):
+        return self.translation[2]
+
+    @z_position.setter
+    def z_position(self, z):
+        self.translation[2] = z
+
+    @property
+    def x_rotation(self):
+        return self.rotation[0]
+
+    @x_rotation.setter
+    def x_rotation(self, x):
+        self.rotation[0] = x
+    
+    @property
+    def y_rotation(self):
+        return self.rotation[1]
+
+    @y_rotation.setter
+    def y_rotation(self, y):
+        self.rotation[1] = y
+
+    @property
+    def z_rotation(self):
+        return self.rotation[2]
+
+    @z_rotation.setter
+    def z_rotation(self, z):
+        self.rotation[2] = z
+
     ## Initialisers ##
 
     def _init_daughters(self, **kwargs):
@@ -171,7 +222,7 @@ class Volume(object):
         """
         for name, daughter in kwargs['daughters'].iteritems():
             if daughter.has_key('inherit'):
-                d = kwargs['daughters'][daughter['inherit']].copy()
+                d = copy.deepcopy(kwargs['daughters'][daughter['inherit']])
                 d.update(daughter)
                 del d['inherit']
                 daughter = d
@@ -233,9 +284,9 @@ class Volume(object):
 
         daughters = []
         for i in range(repeats):
-            d = daughter.copy()
+            d = copy.deepcopy(daughter)
             for k, v in multiples.iteritems():
-                d[k] = multiples[k][i]
+                d[k] = copy.deepcopy(multiples[k][i])
             n = "%s_%i" % (name, i)
             daughters.append((n, Volume(n, **d)))
         
@@ -299,13 +350,13 @@ class Linac(object):
         """Set a square field for the jaw only.
         """
         size = size/2.
-        self.rectangular_field_jaws(size + x_offset, (-size) + x_offset, size + y_offset, (-size) + y_offset)
+        self.rectangular_field_jaws(size + x_offset, size + x_offset, size + y_offset, size + y_offset)
 
     def square_field_mlc(self, size, x_offset=0, y_offset=0):
         """Set a square field for the MLC only.
         """
         size = size/2.
-        self.rectangular_field_mlc(size + x_offset, (-size) + x_offset, size + y_offset, (-size) + y_offset)
+        self.rectangular_field_mlc(size + x_offset, size + x_offset, size + y_offset, size + y_offset)
 
     def square_field(self, size, x_offset=0, y_offset=0):
         """Convenience function for setting a square field given the field size length.
