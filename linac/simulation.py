@@ -237,6 +237,9 @@ class Simulation(object):
 
         self.build_phasespaces() 
 
+        run_manager = Geant4.G4RunManager.GetRunManager()
+        run_manager.GeometryHasBeenModified()
+
     ## Phasespace files ##
 
     def get_phasespace_filename(self, name):
