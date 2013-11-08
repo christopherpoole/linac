@@ -19,41 +19,29 @@
 //////////////////////////////////////////////////////////////////////////
 
 
-#ifndef PhysicsList_h
-#define PhysicsList_h 1
+#ifndef ParallelDetectorConstruction_H
+#define ParallelDetectorConstruction_H 1
 
 // GEANT4 //
-#include "globals.hh"
-#include "G4VModularPhysicsList.hh"
-#include "G4VUserPhysicsList.hh"
-#include "G4RunManager.hh"
-#include "G4ProductionCutsTable.hh"
+#include "G4VUserParallelWorld.hh"
+#include "G4LogicalVolume.hh"
 
 
-//class PhysicsList: public G4VUserPhysicsList
-class PhysicsList: public G4VModularPhysicsList
+class ParallelDetectorConstruction : public G4VUserParallelWorld
 {
-    public:
-        PhysicsList();
-        ~PhysicsList();
-
-    protected:
-        void ConstructParticle();
-        void ConstructProcess();
-        void SetCuts();
-        void AddParallelWorldProcess();
-
   public:
-    void OverrideCuts(double gamma_cuts, double e_cuts){
-        this->gamma_cuts = gamma_cuts;
-        this->e_cuts = e_cuts;
+    ParallelDetectorConstruction(G4String name);
+    ~ParallelDetectorConstruction();
 
-        SetCuts();
-    };
-
+    void Construct();
+    G4VPhysicalVolume* AddPhasespace(char* name, double radius, double z_position, bool kill);
+    void RemovePhasespace(char* name);
+  
   private:
-    double gamma_cuts;
-    double e_cuts;
+    G4LogicalVolume* world_logical;
+    G4VPhysicalVolume* world_physical;
+
+    G4int verbose;
 };
 
 #endif

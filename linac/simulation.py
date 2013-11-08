@@ -262,7 +262,7 @@ class Simulation(object):
         for phasespace in self.phasespaces:
             ps = self.config.phasespaces[phasespace]
             self.detector_construction.AddPhasespace(self.get_phasespace_filename(phasespace),
-                    ps["radius"], ps["z_position"], ps["material"], ps["kill"])
+                    ps["radius"], ps["z_position"], ps["kill"])
 
     ## Run ##
  

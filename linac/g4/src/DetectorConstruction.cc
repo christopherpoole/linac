@@ -35,7 +35,6 @@
 #include "G4LogicalVolumeStore.hh"
 #include "G4SolidStore.hh"
 #include "G4RunManager.hh"
-#include "G4SDManager.hh"
 
 
 DetectorConstruction::DetectorConstruction()
@@ -68,6 +67,8 @@ DetectorConstruction::DetectorConstruction()
 
     detector = NULL;
     voxeldata_param = NULL;
+
+    RegisterParallelWorld(new ParallelDetectorConstruction("parallel_world"));
 }
 
 DetectorConstruction::~DetectorConstruction()
@@ -205,44 +206,6 @@ void DetectorConstruction::SetupCADPhantom(char* filename, G4ThreeVector offset)
     sd_manager->AddNewDetector(detector);
     logical->SetSensitiveDetector(detector);
 
-    G4RunManager::GetRunManager()->GeometryHasBeenModified();
-}
-
-G4VPhysicalVolume* DetectorConstruction::AddPhasespace(char* name, double radius, double z_position, char* material, bool kill)
-{
-    if (verbose >= 4)
-        G4cout << "DetectorConstruction::AddPhasespace: " << name << G4endl;
-
-//    G4Material* phasespace_material = nist_manager->FindOrBuildMaterial(material);
-    
-//    G4Box* phasespace_solid = new G4Box(name, radius, radius, 1*um);
-//    G4LogicalVolume* phasespace_logical = new G4LogicalVolume(phasespace_solid, phasespace_material, name, 0, 0, 0);
-//    G4VPhysicalVolume* phasespace_physical = new G4PVPlacement(0, G4ThreeVector(0, 0, z_position), 
-//                                                               phasespace_logical, name, head_logical, false, 0);
-//    phasespace_logical->SetVisAttributes(G4VisAttributes::Invisible); 
-
-    G4VPhysicalVolume* phasespace_physical = AddSlab(name, radius, 1*nm, material, G4ThreeVector(0, 0, z_position),
-                                                     G4ThreeVector(), G4Colour(1, 0, 1, 0.5), world_logical);
-
-    // Active scoring area is 1% smaller than actual plane - avoids navigation errors when point on edge with direction (0,0,0)
-    Phasespace* phasespace_sensitive_detector = new Phasespace(name, radius - (radius*0.01));
-    phasespace_sensitive_detector->SetKillAtPlane(kill);
-    this->phasespaces.push_back(phasespace_sensitive_detector);
-
-    G4SDManager* sensitive_detector_manager = G4SDManager::GetSDMpointer();
-    sensitive_detector_manager->AddNewDetector(phasespace_sensitive_detector);
-    phasespace_physical->GetLogicalVolume()->SetSensitiveDetector(phasespace_sensitive_detector);
-
-    return phasespace_physical;
-}
-
-
-void DetectorConstruction::RemovePhasespace(char* name) {
-    if (verbose >=4)
-        G4cout << "DetectorConstruction::RemovePhasespace" << G4endl;
-
-    G4VPhysicalVolume* physical = FindVolume(name, world_physical);
-    delete physical;
     G4RunManager::GetRunManager()->GeometryHasBeenModified();
 }
 

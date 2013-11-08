@@ -45,6 +45,8 @@
 #include "G4ParticleTypes.hh"
 
 //includes for phsyics processes
+#include "G4ParallelWorldProcess.hh"
+
 #include "G4ComptonScattering.hh"
 #include "G4PhotoElectricEffect.hh"
 #include "G4GammaConversion.hh"
@@ -124,6 +126,7 @@ void PhysicsList::ConstructParticle()
 
 void PhysicsList::ConstructProcess()
 {
+    AddParallelWorldProcess();
     G4VModularPhysicsList::ConstructProcess();
 /*
     AddTransportation();
@@ -191,6 +194,33 @@ void PhysicsList::ConstructProcess()
     //opt.SetDEDXBinning(100);
     //opt.SetLambdaBinning(100);
 */
+}
+
+
+void PhysicsList::AddParallelWorldProcess()
+{
+  // Add parallel world process
+  G4ParallelWorldProcess* theParallelWorldProcess
+      = new G4ParallelWorldProcess("paraWorldProc");
+  theParallelWorldProcess->SetParallelWorld("parallel_world");
+  theParallelWorldProcess->SetLayeredMaterialFlag();
+
+  theParticleIterator->reset();
+  while ((*theParticleIterator)()){
+    G4ParticleDefinition* particle = theParticleIterator->value();
+    //if (particle!=G4ChargedGeantino::Definition()) {
+      G4ProcessManager* pmanager = particle->GetProcessManager();
+      pmanager->AddProcess(theParallelWorldProcess);
+      
+      if(theParallelWorldProcess->IsAtRestRequired(particle)) {
+        pmanager->SetProcessOrdering(theParallelWorldProcess, idxAtRest, 9999);
+      }
+      
+      pmanager->SetProcessOrdering(theParallelWorldProcess, idxAlongStep, 1);
+      pmanager->SetProcessOrdering(theParallelWorldProcess, idxPostStep, 9999);
+    //}
+  }
+
 }
 
 

@@ -22,6 +22,8 @@
 #ifndef DetectorConstruction_H
 #define DetectorConstruction_H 1
 
+// USER //
+#include "ParallelDetectorConstruction.hh"
 #include "StopKillShield.hh"
 #include "SensitiveDetector.hh"
 #include "Phasespace.hh"
@@ -55,6 +57,7 @@
 #include "boost/python.hpp"
 //#include "pyublas/numpy.hpp"
 
+
 // Simple data structure for setpoints in hounsfiled -> G4Material ramp
 class Hounsfield{
   public:
@@ -86,9 +89,6 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
     void SetupPhantom();
     void SetupCADPhantom(char* filename, G4ThreeVector offset);
-
-    G4VPhysicalVolume* AddPhasespace(char* name, double radius, double z_position, char* material, bool kill);
-    void RemovePhasespace(char* name);
 
     G4VPhysicalVolume* AddTube(char* name,
             double inner_radius, double outer_radius, double length,
@@ -254,7 +254,23 @@ class DetectorConstruction : public G4VUserDetectorConstruction
         G4SDManager* sd_manager = G4SDManager::GetSDMpointer();
         sd_manager->AddNewDetector(sheild);
         physical->GetLogicalVolume()->SetSensitiveDetector(sheild);
-   }
+    }
+
+    G4VPhysicalVolume* AddPhasespace(char* name, double radius, double z_position, bool kill) {
+        if (GetNumberOfParallelWorld() == 1) {
+            ParallelDetectorConstruction* pw = (ParallelDetectorConstruction*) GetParallelWorld(0);
+            return pw->AddPhasespace(name, radius, z_position, kill);
+        }
+
+        return 0;
+    }
+
+    void RemovePhasespace(char* name) {
+        if (GetNumberOfParallelWorld() == 1) {
+            ParallelDetectorConstruction* pw = (ParallelDetectorConstruction*) GetParallelWorld(0);
+            pw->RemovePhasespace(name);
+        }
+    }
 
   private:
     G4Region* region;
