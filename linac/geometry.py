@@ -28,13 +28,13 @@ def register_transformer(name, f):
 ## MLC transformers ##
 
 def mlc_diverge(i, interval=None, position=None, shift=0, z_rotation=0, centre=0, repeat=0):
-    offset = -(interval * repeat / 2. - interval + shift)
-    divergance = math.atan((i*interval + offset + centre)/(1000 - position))
+    offset = -(interval * repeat / 2. - interval)
+    divergance = math.atan((i*interval + offset + centre)/(1000 - position - 750))
     return [-divergance/deg, 0, z_rotation]
 
 def mlc_interleave(i, interval=None, position=None, shift=0):
     offset = -(interval * 20 / 2. - interval + shift)
-    return [10, i*interval + offset, position]
+    return [0, i*interval + offset, position]
 
 def mlc_arc(i, interval=None, position=None, shift=0, repeat=0):
     offset = -(interval * repeat / 2. - interval + shift)
