@@ -23,7 +23,6 @@
 // USER //
 #include "DetectorConstruction.hh"
 #include "ParallelDetectorConstruction.hh"
-#include "Phasespace.hh"
 
 // GEANT4 //
 #include "globals.hh"
@@ -70,7 +69,7 @@ G4VPhysicalVolume* ParallelDetectorConstruction::AddPhasespace(char* name, doubl
     // Active scoring area is 1% smaller than actual plane - avoids navigation errors when point on edge with direction (0,0,0)
     Phasespace* phasespace_sensitive_detector = new Phasespace(name, radius - (radius*0.01));
     phasespace_sensitive_detector->SetKillAtPlane(kill);
-    //phasespaces.push_back(phasespace_sensitive_detector);
+    phasespaces[name] = phasespace_sensitive_detector;
 
     G4SDManager* sensitive_detector_manager = G4SDManager::GetSDMpointer();
     sensitive_detector_manager->AddNewDetector(phasespace_sensitive_detector);
@@ -83,7 +82,9 @@ G4VPhysicalVolume* ParallelDetectorConstruction::AddPhasespace(char* name, doubl
 void ParallelDetectorConstruction::RemovePhasespace(char* name) {
     if (verbose >=4)
         G4cout << "DetectorConstruction::RemovePhasespace" << G4endl;
-    
+   
+    phasespaces.erase(name);
+
     DetectorConstruction* detector = (DetectorConstruction*) G4RunManager::GetRunManager()->GetUserDetectorConstruction();
 
     G4VPhysicalVolume* physical = detector->FindVolume(name, world_physical);

@@ -22,6 +22,9 @@
 #ifndef ParallelDetectorConstruction_H
 #define ParallelDetectorConstruction_H 1
 
+// USER //
+#include "Phasespace.hh"
+
 // GEANT4 //
 #include "G4VUserParallelWorld.hh"
 #include "G4LogicalVolume.hh"
@@ -40,6 +43,8 @@ class ParallelDetectorConstruction : public G4VUserParallelWorld
   private:
     G4LogicalVolume* world_logical;
     G4VPhysicalVolume* world_physical;
+
+    std::map<char*, Phasespace*> phasespaces;
 
     G4int verbose;
 };
