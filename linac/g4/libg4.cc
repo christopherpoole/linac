@@ -30,13 +30,36 @@
 
 // GEANT4 //
 #include "G4LogicalVolume.hh"
+#include "G4UImanager.hh"
+#include "G4VisManager.hh"
+#include "G4UIExecutive.hh"
+#include "G4VisExecutive.hh"
 
 // BOOST/PYTHON //
 #include "boost/python.hpp"
 #include "pyublas/numpy.hpp"
 
 
+void ShowGUI(char* macro)
+{
+    int argc = 1;
+    char* argv[1] = {""};
+
+    G4VisManager* visManager = new G4VisExecutive;
+    visManager->Initialize();
+
+    G4UImanager* ui_manager = G4UImanager::GetUIpointer();
+    G4UIExecutive* ui = new G4UIExecutive(argc, argv);
+    
+    ui_manager->ApplyCommand(G4String("/control/execute ") + G4String(macro));    
+    
+    ui->SessionStart();
+    delete ui;
+};
+
+
 using namespace boost::python;
+
 
 // Members with default kwargs ..
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(_AddCADComponent,
@@ -46,7 +69,8 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(_SetupHead,
 
 
 BOOST_PYTHON_MODULE(libg4) {
-
+    def("ShowGUI", ShowGUI);
+    
     class_<DetectorConstruction, DetectorConstruction*,
         bases<G4VUserDetectorConstruction>, boost::noncopyable>
         ("DetectorConstruction", "detector")

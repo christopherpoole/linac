@@ -18,5 +18,5 @@
 
 
 from libg4 import DetectorConstruction, PhysicsList, \
-    PrimaryGeneratorAction, EventAction, SteppingAction
+    PrimaryGeneratorAction, EventAction, SteppingAction, ShowGUI
 
