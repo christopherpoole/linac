@@ -189,7 +189,7 @@ void DetectorConstruction::SetupCADPhantom(char* filename, G4ThreeVector offset)
 
     G4RotationMatrix* rot = new G4RotationMatrix();
     rot->rotateZ(90*deg);
-    rot->rotateX(-90*deg);
+    rot->rotateY(-90*deg);
 
     CADMesh* mesh = new CADMesh(filename, (char*) "STL", 1, offset, false);
     G4VSolid* solid = mesh->TessellatedMesh();
