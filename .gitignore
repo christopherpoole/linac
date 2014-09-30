@@ -5,5 +5,5 @@
 *~
 
 linac/g4/build/*
-utils/phsp_inspector/build/*
+.ipynb_checkpoints/*
 machines/*
