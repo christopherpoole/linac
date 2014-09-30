@@ -7,7 +7,7 @@ world:
     head: 
       cylinder:
         radius: 500
-        length: 774
+        length: 696
       translation: [0, 0, 800]
       rotation: [0, 0, 0]
       colour: [0, 1, 0, 0.05]
@@ -15,7 +15,7 @@ world:
         vacuum:
           cylinder:
             radius: 250
-            length: 250
+            length: 320
           translation: [0, 0, 100]
           material: G4_Galactic
           colour: [1, 1, 0, 0.1]
@@ -101,7 +101,7 @@ phasespaces:
     kill: false 
 
   exitwindow2:
-    z_position: -100 
+    z_position: -300 
     radius: 1000
     material: G4_AIR
     redistribute: false
