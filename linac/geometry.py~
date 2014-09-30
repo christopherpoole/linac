@@ -119,7 +119,7 @@ class Volume(object):
                 self.thickness = val["side"]
                 
             if key == "subtractionSlab":
-                self.solid = "subtractionSlab"
+                self.solid = "slab"
                 self.inner_side = val["inner_side"]
                 self.outer_side = val["outer_side"]
                 self.thickness = val["thickness"]

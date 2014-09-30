@@ -84,8 +84,6 @@ BOOST_PYTHON_MODULE(libg4) {
             return_internal_reference<>())
         .def("AddSlab", &DetectorConstruction::AddSlab,
             return_internal_reference<>())
-        .def("AddSubtractionSlab", &DetectorConstruction::AddSubtractionSlab,
-            return_internal_reference<>())
         .def("ClosePhasespace", &DetectorConstruction::ClosePhasespace)
         .def("UsePhantom", &DetectorConstruction::UsePhantom)
         //.def("UseCADPhantom", &DetectorConstruction::UseCADPhantom) //-- Removed for now
