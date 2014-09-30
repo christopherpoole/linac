@@ -1,20 +1,5 @@
-# GEANT4 Clinical Linear Accelerator Simulation 
+# Non-real electron mode linac 
 
-A generic platform for clinical linear accelerator simulation using GEANT4. 
+A non-real electron mode linear accelerator based upon Christopher Poole's [generic GEANT4 python platform](https://github.com/christopherpoole/linac).
 
-# Dependencies
-* GEANT4
-* CADMesh
-* G4VoxelData
-* Python, numpy
-* PyUblas
-
-# Installation
-To compile the Python module:
-
-    $> cd g4/
-    $> mkdir build
-    $> cd build/
-    $> cmake ..
-    $> make
-
+ -- Far from complete -- Currently not working --
