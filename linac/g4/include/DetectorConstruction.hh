@@ -89,7 +89,6 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     void AddMaterial(G4String name, G4double density, boost::python::object move);
 
     void SetupPhantom();
-    //void SetupCADPhantom(char* filename, G4ThreeVector offset); // -- Removed for now
 
     G4VPhysicalVolume* AddTube(char* name,
             double inner_radius, double outer_radius, double length,
@@ -112,14 +111,6 @@ class DetectorConstruction : public G4VUserDetectorConstruction
                       G4ThreeVector rotation,
                       G4Colour colour,
                       G4LogicalVolume* mother_logical);    
- 
-    /* G4VPhysicalVolume* AddCADComponent(char* name, char* filename, char* material,
-                    double scale,
-                    G4ThreeVector translation,
-                    G4ThreeVector rotation,
-                    G4Colour colour, G4bool tessellated,
-                    G4LogicalVolume* mother_logical);
-    -- Removed for now */
     
     void SetupCT();
 
@@ -163,15 +154,6 @@ class DetectorConstruction : public G4VUserDetectorConstruction
         use_phantom = use;
     }
 
-/*
-    void UseCADPhantom(char* filename, G4ThreeVector offset) {
-        phantom_filename = filename;
-        phantom_offset = offset;
-        use_cad_phantom = true;
-
-        SetupCADPhantom(filename, offset);
-    }
--- Removed for now*/ 
 
     G4ThreeVector GetCTOrigin() {
         return G4ThreeVector(this->data->origin[0],
@@ -333,7 +315,6 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4bool use_ct;
     G4bool ct_built;
     
-    G4bool use_cad_phantom;
     char* phantom_filename;
     G4ThreeVector phantom_offset;    
 

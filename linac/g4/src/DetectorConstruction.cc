@@ -22,9 +22,6 @@
 // USER //
 #include "DetectorConstruction.hh"
 
-// CADMesh //
-// #include "CADMesh.hh" // -- Removed for now
-
 // GEANT4 //
 #include "globals.hh"
 #include "G4Material.hh"
@@ -58,7 +55,6 @@ DetectorConstruction::DetectorConstruction()
     world_material = nist_manager->FindOrBuildMaterial("G4_AIR");
 
     use_phantom = false;
-    use_cad_phantom = false;
     region = NULL;
     use_ct = false;
     ct_built = false;
@@ -180,36 +176,6 @@ void DetectorConstruction::SetupPhantom()
     phantom_logical->SetSensitiveDetector(detector);
 }
 
-/*
-void DetectorConstruction::SetupCADPhantom(char* filename, G4ThreeVector offset)
-{
-    if (verbose >= 4)
-        G4cout << "DetectorConstruction::SetupCADPhantom" << G4endl;
-
-    G4Material* water = nist_manager->FindOrBuildMaterial("G4_WATER");
-
-    G4RotationMatrix* rot = new G4RotationMatrix();
-    rot->rotateZ(90*deg);
-    rot->rotateY(-90*deg);
-
-    CADMesh* mesh = new CADMesh(filename, (char*) "STL", 1, offset, false);
-    G4VSolid* solid = mesh->TessellatedMesh();
-    G4LogicalVolume* logical = new G4LogicalVolume(solid, water, filename, 0, 0, 0);
-
-    G4VPhysicalVolume* physical = new G4PVPlacement(rot, G4ThreeVector(),
-                                                    logical, filename, world_logical,
-                                                    false, 0);
-
-    if (!this->detector)
-        detector = new SensitiveDetector("phantom_detector");
-
-    G4SDManager* sd_manager = G4SDManager::GetSDMpointer();
-    sd_manager->AddNewDetector(detector);
-    logical->SetSensitiveDetector(detector);
-
-    G4RunManager::GetRunManager()->GeometryHasBeenModified();
-}
-*/
 
 void DetectorConstruction::AddMaterial(G4String name, G4double density,
                                         boost::python::object move)
@@ -321,51 +287,6 @@ G4VPhysicalVolume* DetectorConstruction::AddSubtractionSlab(char* name,
     return physical;
 }
 
-/*
-G4VPhysicalVolume* DetectorConstruction::AddCADComponent(char* name,
-                                                   char* filename,
-                                                   char* material,
-                                                   double scale,
-                                                   G4ThreeVector translation,
-                                                   G4ThreeVector rotation,
-                                                   G4Colour colour,
-                                                   G4bool tessellated,
-                                                   G4LogicalVolume* mother_logical)
-{
-    if (verbose >= 4)
-        G4cout << "DetectorConstruction::AddCADComponent" << G4endl;
-
-    G4Material* mat = nist_manager->FindOrBuildMaterial(material);
-
-    G4RotationMatrix* rot = new G4RotationMatrix();
-    rot->rotateX(rotation.x()*deg);
-    rot->rotateY(rotation.y()*deg);
-    rot->rotateZ(rotation.z()*deg);
-
-    if (tessellated) {
-        CADMesh* mesh = new CADMesh(filename, (char*) "STL", scale, G4ThreeVector(), false);
-        G4VSolid* solid = mesh->TessellatedMesh();
-        G4LogicalVolume* logical = new G4LogicalVolume(solid, mat, name, 0, 0, 0);
-        logical->SetVisAttributes(new G4VisAttributes(colour)); 
-
-        G4VPhysicalVolume* physical = new G4PVPlacement(rot, translation,
-                                                        logical, name, mother_logical,
-                                                        false, 0);
-        return physical;
-
-    } else {
-        CADMesh * mesh = new CADMesh(filename, (char*) "PLY", mat);
-        G4AssemblyVolume* assembly = mesh->TetrahedralMesh();
-        G4Translate3D trans(translation.x(), translation.y(), translation.z());
-        G4Transform3D rotation = G4Rotate3D(*rot);
-        G4Transform3D transform = trans*rotation;
-        assembly->MakeImprint(mother_logical, transform, 0, 0);
-    }
-
-    G4RunManager::GetRunManager()->GeometryHasBeenModified();
-    return NULL;
-}
-*/
 
 void DetectorConstruction::SetupCT()
 {

@@ -189,10 +189,7 @@ class Simulation(object):
         """
         def build(volume, mother): 
             for name, params in volume.daughters.iteritems():
-                #if params.filename != "":
-                #    physical = self.detector_construction.AddCADComponent(name, params.filename,
-                #        params.material, params.scale, params.translation_vector, params.rotation_vector,
-                #        params.color, params.tessellated, mother) # -- Removed for now
+
                 if hasattr(params, "solid"):
                     if params.solid == "cylinder":
                         physical = self.detector_construction.AddTube(name,

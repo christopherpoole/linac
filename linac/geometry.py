@@ -65,11 +65,6 @@ class Volume(object):
 
     A solid can be any GEANT4 primitive.
     
-    CAD Files:
-    Using CADMesh a CAD file is loaded into the geometry as a G4TessellatedSolid,
-    the user can specify if the volume is left as a normal tessellated solid or
-    loaded as a tetrahedral mesh (for fast/er navigation).
-
     Attributes:
         name: The desired name of the solid
         translation: G4ThreeVector position of the solid within its mother volume

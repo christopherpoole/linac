@@ -62,8 +62,6 @@ using namespace boost::python;
 
 
 // Members with default kwargs ..
-//BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(_AddCADComponent,
-//                                       DetectorConstruction::AddCADComponent, 3, 8) //-- Removed for now
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(_SetupHead,
                                        DetectorConstruction::SetupHead, 6, 6)
 
@@ -78,8 +76,6 @@ BOOST_PYTHON_MODULE(libg4) {
         .def("AddPhasespace", &DetectorConstruction::AddPhasespace,
             return_internal_reference<>())
         .def("RemovePhasespace", &DetectorConstruction::RemovePhasespace)
-        //.def("AddCADComponent", &DetectorConstruction::AddCADComponent,
-        //    return_internal_reference<>()) //-- Removed for now
         .def("AddTube", &DetectorConstruction::AddTube,
             return_internal_reference<>())
         .def("AddSlab", &DetectorConstruction::AddSlab,
@@ -88,7 +84,6 @@ BOOST_PYTHON_MODULE(libg4) {
             return_internal_reference<>())
         .def("ClosePhasespace", &DetectorConstruction::ClosePhasespace)
         .def("UsePhantom", &DetectorConstruction::UsePhantom)
-        //.def("UseCADPhantom", &DetectorConstruction::UseCADPhantom) //-- Removed for now
         .def("GetEnergyHistogram", &DetectorConstruction::GetEnergyHistogram)
         .def("GetEnergySqHistogram", &DetectorConstruction::GetEnergySqHistogram)
         .def("GetCountsHistogram", &DetectorConstruction::GetCountsHistogram)
