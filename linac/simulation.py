@@ -144,6 +144,11 @@ class Simulation(object):
         """Hide the voxel data from the navigator.
         """
         self.detector_construction.UsePhantom(use)
+        
+    def setup_phantom(self):
+        """Hide the voxel data from the navigator.
+        """
+        self.detector_construction.SetupPhantom()
 
     ## Scoring ##
 

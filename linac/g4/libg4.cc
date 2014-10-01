@@ -84,6 +84,7 @@ BOOST_PYTHON_MODULE(libg4) {
             return_internal_reference<>())
         .def("ClosePhasespace", &DetectorConstruction::ClosePhasespace)
         .def("UsePhantom", &DetectorConstruction::UsePhantom)
+        .def("SetupPhantom", &DetectorConstruction::SetupPhantom)
         .def("GetEnergyHistogram", &DetectorConstruction::GetEnergyHistogram)
         .def("GetEnergySqHistogram", &DetectorConstruction::GetEnergySqHistogram)
         .def("GetCountsHistogram", &DetectorConstruction::GetCountsHistogram)
