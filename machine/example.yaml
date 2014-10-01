@@ -6,15 +6,15 @@ world:
   daughters:
     head: 
       cylinder:
-        radius: 500
+        radius: 250
         length: 696
       translation: [0, 0, 800]
       rotation: [0, 0, 0]
       colour: [0, 1, 0, 0.05]
-      daughters:       
+      daughters:
         vacuum:
           cylinder:
-            radius: 250
+            radius: 200
             length: 320
           translation: [0, 0, 100]
           material: G4_Galactic
@@ -26,14 +26,14 @@ world:
                 length: 0.01
               translation: [0, 0, 60]
               material: G4_Ta
-              colour: [1, 0, 0, 0.25]
+              colour: [0.2, 1, 0.2, 0.5]
             lower_scatter:
               cylinder:
                 radius: 30
                 length: 0.01
               translation: [0, 0, 20]
               material: G4_Al
-              colour: [1, 0, 0, 0.25]  
+              colour: [0.2, 1, 0.2, 0.5]
             
     app1:
       subtractionSlab:
@@ -43,7 +43,7 @@ world:
       translation: [0, 0, 449]
       rotation: [0, 0, 0]
       material: G4_Fe
-      colour: [0, 0, 1, 0.25]
+      colour: [0, 0, 1, 0.5]
       
     app2:
       subtractionSlab:
@@ -53,7 +53,7 @@ world:
       translation: [0, 0, 269]
       rotation: [0, 0, 0]
       material: G4_Fe
-      colour: [0, 0, 1, 0.25]
+      colour: [0, 0, 1, 0.5]
       
     app3:
       subtractionSlab:
@@ -63,7 +63,7 @@ world:
       translation: [0, 0, 140]
       rotation: [0, 0, 0]
       material: G4_Fe
-      colour: [0, 0, 1, 0.25]
+      colour: [0, 0, 1, 0.5]
       
     app4:
       subtractionSlab:
@@ -73,7 +73,7 @@ world:
       translation: [0, 0, 59]
       rotation: [0, 0, 0]
       material: G4_Fe
-      colour: [0, 0, 1, 0.25]
+      colour: [0, 0, 1, 0.5]
       
     cutout:
       subtractionSlab:
@@ -83,7 +83,7 @@ world:
       translation: [0, 0, 53]
       rotation: [0, 0, 0]
       material: G4_Fe
-      colour: [0, 0, 1, 0.25]
+      colour: [0, 0, 1, 0.5]
 
 
 

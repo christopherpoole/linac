@@ -141,7 +141,7 @@ class Simulation(object):
         self.detector_construction.HideCT(hide)
 
     def use_phantom(self, use):
-        """Nide the voxel data from the navigator.
+        """Hide the voxel data from the navigator.
         """
         self.detector_construction.UsePhantom(use)
 
