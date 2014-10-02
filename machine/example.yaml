@@ -19,9 +19,7 @@ world:
           translation: [0, 0, 100]
           material: G4_Galactic
           rotation: [0, 0, 0]
-          colour: [1, 1, 0, 0.1]
-
-            
+          colour: [1, 1, 0, 0.1]          
 
       
     app2:
@@ -44,6 +42,7 @@ world:
       material: G4_Fe
       colour: [0, 0, 1, 0.5]
       
+   
 
 
 gun:
@@ -52,3 +51,25 @@ gun:
   recycling_number: 1
   
   
+      
+phasespaces:
+  exitwindow1:
+    z_position: 0 
+    radius: 1000
+    material: G4_AIR
+    redistribute: false
+    kill: false 
+
+  exitwindow2:
+    z_position: -300 
+    radius: 1000
+    material: G4_AIR
+    redistribute: false
+    kill: true 
+
+  iso:
+    z_position: -500
+    radius: 1000
+    material: G4_AIR
+    redistribute: false
+    kill: true
