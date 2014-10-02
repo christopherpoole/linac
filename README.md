@@ -3,6 +3,8 @@ My aim is to have a ready working easy to use non-real linear accelerator with m
 
 Eventually I will write a beginner friendly installation guide assuming someone has just produced a fresh install of Ubuntu 14.04 LTS inside virtual box.
 
+It is not yet at a useful state.
+
 # Details 
 The real hard work given here has been done by Christopher Poole, his more powerful linac platform can be found [here](https://github.com/christopherpoole/linac).
 
