@@ -18,99 +18,37 @@ world:
             length: 320
           translation: [0, 0, 100]
           material: G4_Galactic
+          rotation: [0, 0, 0]
           colour: [1, 1, 0, 0.1]
-          daughters:
-            upper_scatter:
-              cylinder:
-                radius: 10
-                length: 0.01
-              translation: [0, 0, 60]
-              material: G4_Ta
-              colour: [0.2, 1, 0.2, 0.5]
-            lower_scatter:
-              cylinder:
-                radius: 30
-                length: 0.01
-              translation: [0, 0, 20]
-              material: G4_Al
-              colour: [0.2, 1, 0.2, 0.5]
+
             
-    app1:
-      subtractionSlab:
-        inner_side: 142
-        outer_side: 182
-        thickness: 6
-      translation: [0, 0, 449]
-      rotation: [0, 0, 0]
-      material: G4_Fe
-      colour: [0, 0, 1, 0.5]
+
       
     app2:
-      subtractionSlab:
-        inner_side: 130
-        outer_side: 220
-        thickness: 12
-      translation: [0, 0, 269]
+      tube:
+        inner_radius: 1400
+        outer_radius: 1500
+        length: 100
+      translation: [0, 0, 300]
       rotation: [0, 0, 0]
       material: G4_Fe
       colour: [0, 0, 1, 0.5]
       
     app3:
-      subtractionSlab:
-        inner_side: 110
-        outer_side: 180
-        thickness: 12
-      translation: [0, 0, 140]
+      tube:
+        inner_radius: 1400
+        outer_radius: 1500
+        length: 100
+      translation: [0, 0, 150]
       rotation: [0, 0, 0]
       material: G4_Fe
       colour: [0, 0, 1, 0.5]
       
-    app4:
-      subtractionSlab:
-        inner_side: 100
-        outer_side: 140
-        thickness: 12
-      translation: [0, 0, 59]
-      rotation: [0, 0, 0]
-      material: G4_Fe
-      colour: [0, 0, 1, 0.5]
-      
-    cutout:
-      subtractionSlab:
-        inner_side: 100
-        outer_side: 120
-        thickness: 6
-      translation: [0, 0, 53]
-      rotation: [0, 0, 0]
-      material: G4_Fe
-      colour: [0, 0, 1, 0.5]
-
 
 
 gun:
   spot_size: 1
   fwhm: 2
-  recycling_number: 10
-      
-phasespaces:
-  exitwindow1:
-    z_position: 0 
-    radius: 1000
-    material: G4_AIR
-    redistribute: false
-    kill: false 
-
-  exitwindow2:
-    z_position: -300 
-    radius: 1000
-    material: G4_AIR
-    redistribute: false
-    kill: true 
-
-  iso:
-    z_position: -500
-    radius: 1000
-    material: G4_AIR
-    redistribute: false
-    kill: true
-
+  recycling_number: 1
+  
+  

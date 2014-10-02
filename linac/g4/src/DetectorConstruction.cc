@@ -34,6 +34,7 @@
 #include "G4RunManager.hh"
 
 
+
 DetectorConstruction::DetectorConstruction()
 {
     verbose = 4;
@@ -168,10 +169,10 @@ void DetectorConstruction::SetupPhantom()
                                        "phantom_physical", world_logical, false, 0);
     phantom_logical->SetVisAttributes(new G4VisAttributes(G4Colour(0, 0.6, 0.9, 1))); 
 
-//    if (!this->detector)
-//        detector = new SensitiveDetector("phantom_detector");
+    if (!this->detector)
+        detector = new SensitiveDetector("phantom_detector");
 
-    detector = new SensitiveDetector("phantom_detector");
+//    detector = new SensitiveDetector("phantom_detector");
 
     G4SDManager* sd_manager = G4SDManager::GetSDMpointer();
     sd_manager->AddNewDetector(detector);
@@ -267,14 +268,13 @@ G4VPhysicalVolume* DetectorConstruction::AddSubtractionSlab(char* name,
     rot->rotateY(rotation.y()*deg);
     rot->rotateZ(rotation.z()*deg);
     
-    char inner_name[100], outer_name[100];
-    strcpy(inner_name,  "inner_");
-    strcpy(outer_name,  "outer_");
+    std::string inner_name = "inner_";
+    std::string outer_name = "outer_";
     
-    strcat(inner_name, name);
-    strcat(outer_name, name);
-
-    G4Box* inner_solid = new G4Box(inner_name, inner_side/2., inner_side/2., thickness/2.);
+    inner_name += name;
+    outer_name += name;
+    
+    G4Box* inner_solid = new G4Box(inner_name, inner_side/2., inner_side/2., thickness/2. + 1.);
     G4Box* outer_solid = new G4Box(outer_name, outer_side/2., outer_side/2., thickness/2.);
     
     G4SubtractionSolid* solid = new G4SubtractionSolid(name,outer_solid,inner_solid);
@@ -288,6 +288,7 @@ G4VPhysicalVolume* DetectorConstruction::AddSubtractionSlab(char* name,
 
     return physical;
 }
+
 
 
 void DetectorConstruction::SetupCT()
