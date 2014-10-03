@@ -48,32 +48,10 @@
 
 #include "G4RotationMatrix.hh"
 
-// G4VoxelData//
-#include "G4VoxelData.hh"
-#include "G4VoxelArray.hh"
-#include "G4VoxelDataParameterisation.hh"
-#include "DicomDataIO.hh"
-#include "NumpyDataIO.hh"
-
 // BOOST/PYTHON //
 #include "boost/python.hpp"
 //#include "pyublas/numpy.hpp"
 
-
-// Simple data structure for setpoints in hounsfiled -> G4Material ramp
-class Hounsfield{
-  public:
-    Hounsfield(int value, G4String material_name, G4double density) {
-        this->value = value;
-        this->material_name = material_name;
-        this->density = density;
-    };
-
-  public:
-    G4int value;
-    G4String material_name;
-    G4double density;
-};
 
 
 class DetectorConstruction : public G4VUserDetectorConstruction
@@ -127,7 +105,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
         this->world_material = nist_manager->FindOrBuildMaterial(name);
     };
 
-    void SetWorldColour(G4Color colour) {
+    void SetWorldColour(G4Colour colour) {
         this->world_colour = colour;
     };
 
@@ -154,68 +132,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     void UsePhantom(G4bool use) {
         use_phantom = use;
     }
-
-
-    G4ThreeVector GetCTOrigin() {
-        return G4ThreeVector(this->data->origin[0],
-                this->data->origin[1],
-                this->data->origin[2]);
-    }
-
-    void SetCTPosition(G4ThreeVector ct_position) {
-        this->ct_position = ct_position;
-    }
-
-    void UseCT(G4String ct_directory, G4int acquisition_number) {
-        this->use_ct = true;
-        this->ct_directory = ct_directory;
-
-        DicomDataIO* reader = new DicomDataIO();
-        reader->SetAcquisitionNumber(acquisition_number);
-        
-        this->data = reader->ReadDirectory(this->ct_directory);
-        this->array = new G4VoxelArray<int16_t>(this->data);
-        this->array->Merge(2, 2, 2);
-
-        G4int increment = 25;
-        materials = MakeMaterialsMap(increment);
-    }
-
-    void UseArray(G4String filename, G4double x, G4double y, G4double z) {
-        this->use_ct = true;
-
-        NumpyDataIO* reader = new NumpyDataIO();
-        
-        this->data = reader->Read(filename);
-        this->array = new G4VoxelArray<int16_t>(this->data);
-
-        std::vector<double> spacing;
-        spacing.push_back(x); spacing.push_back(y); spacing.push_back(z);
-        //this->array->SetSpacing(spacing);
-
-        G4int increment = 25;
-        materials = MakeMaterialsMap(increment);
-    };
-
-    void HideCT(G4bool hide) {
-        this->use_ct = !hide;
-    };
-
-    void CropX(G4int xmin, G4int xmax) {
-        this->array->CropX(xmin, xmax);
-    };
-
-    void CropY(G4int ymin, G4int ymax) {
-        this->array->CropY(ymin, ymax);
-    };
-
-    void CropZ(G4int zmin, G4int zmax) {
-        this->array->CropZ(zmin, zmax);
-    };
-
-    void CropCT(G4int xmin, G4int xmax, G4int ymin, G4int ymax, G4int zmin, G4int zmax) {
-        this->array->Crop(xmin, xmax, ymin, ymax, zmin, zmax);
-    }
+    
 
     pyublas::numpy_vector<float> GetEnergyHistogram() {
         return detector->GetEnergyHistogram();
@@ -277,7 +194,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
     G4ThreeVector world_size;
     G4Material* world_material;
-    G4Color world_colour;
+    G4Colour world_colour;
 
     G4Box* phantom_solid;
     G4LogicalVolume* phantom_logical;
@@ -313,22 +230,13 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4double vacuum_length;
 
     G4bool use_phantom;
-    G4bool use_ct;
-    G4bool ct_built;
     
     char* phantom_filename;
     G4ThreeVector phantom_offset;    
 
-    G4String ct_directory;
-    G4ThreeVector ct_position;
-
     G4bool headless;
 
-    G4VoxelData* data;
-    G4VoxelArray<int16_t>* array;
-    G4VoxelDataParameterisation<int16_t>* voxeldata_param;
-    std::map<int16_t, G4Material*> materials;
-    std::vector<Hounsfield> hounsfield;
+    std::map<int16_t, G4Material*> materials; // Not sure if I need this... probs not
 
     G4int verbose;
 };

@@ -29,9 +29,6 @@ include_directories(${PYTHON_INCLUDE_DIRS})
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(/usr/local/include)
 
-# G4VoxelData with DICIOM
-find_package(G4VoxelData)
-
 # User code
 file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cc)
 file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
@@ -43,5 +40,3 @@ target_link_libraries(g4 ${Geant4_LIBRARIES})
 target_link_libraries(g4 ${Boost_LIBRARIES})
 target_link_libraries(g4 ${Python_LIBRARIES})
 target_link_libraries(g4 cnpy)
-target_link_libraries(g4 ${G4VOXELDATA_DICOM_LIBRARIES})
-

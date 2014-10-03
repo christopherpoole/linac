@@ -96,49 +96,9 @@ class Simulation(object):
         the simulation geometry.
         """
         self.physics_list.OverrideCuts(gamma, electron)
-
-    ## Voxelised phantom data ##
-
-    def set_ct(self, directory, acquisition=1):
-        """Nominate a DICOM directory as acquisition to load as voxelised geometry.
-        """
-        self.detector_construction.UseCT(directory, acquisition)
-
-    def set_array(self, filename, x=1., y=1., z=1.):
-        """Use a `numpy` array as voxelised geometry.
-        """
-        self.detector_construction.UseArray(filename, x, y, z)
-
-    def set_ct_position(self, position):
-        """Coerce the loaded voxel data to the specified origin.
-        """
-        pos = G4ThreeVector(*position)
-        self.detector_construction.SetCTPosition(pos)
-
-    def crop_ct_x(self, xmin, xmax):
-        """Crop the voxel data in the x-direction.
-        """
-        self.detector_construction.CropX(xmin, xmax)
-
-    def crop_ct_y(self, ymin, ymax):
-        """Crop the voxel data in the y-direction.
-        """
-        self.detector_construction.CropY(ymin, ymax)
-
-    def crop_ct_z(self, zmin, zmax):
-        """Crop the voxel data in the z-direction.
-        """
-        self.detector_construction.CropZ(zmin, zmax)
-
-    def get_ct_origin(self):
-        """Get the voxel data origin (usually reported for DICOM-CT unless otherwise set).
-        """
-        return self.detector_construction.GetCTOrigin()
-
-    def hide_ct(self, hide):
-        """Hide the voxel data from the viewer.
-        """
-        self.detector_construction.HideCT(hide)
+        
+        
+    ## Phantom ##
 
     def use_phantom(self, use):
         """Hide the voxel data from the navigator.

@@ -42,14 +42,6 @@ DetectorConstruction::DetectorConstruction()
     if (verbose >= 4)
         G4cout << "DetectorConstruction::DetectorConstruction" << G4endl;
 
-    // Setpoints we will interpolate between for
-    // our materials ramp.
-    hounsfield.push_back(Hounsfield(-1050, "G4_AIR", 0.001 ));
-    hounsfield.push_back(Hounsfield(-950,"G4_AIR", 0.044));
-    hounsfield.push_back(Hounsfield(-700,"G4_LUNG_ICRP", 0.302));
-    hounsfield.push_back(Hounsfield(125,"G4_TISSUE_SOFT_ICRP", 1.101));
-    hounsfield.push_back(Hounsfield(2500,"G4_BONE_CORTICAL_ICRP", 2.088));
-
     world_size = G4ThreeVector(3*m, 3*m, 3*m);
 
     nist_manager = G4NistManager::Instance();
@@ -57,13 +49,10 @@ DetectorConstruction::DetectorConstruction()
 
     use_phantom = false;
     region = NULL;
-    use_ct = false;
-    ct_built = false;
 
     headless = false;
 
     detector = NULL;
-    voxeldata_param = NULL;
 
     RegisterParallelWorld(new ParallelDetectorConstruction("parallel_world"));
 }
@@ -171,8 +160,6 @@ void DetectorConstruction::SetupPhantom()
 
     if (!this->detector)
         detector = new SensitiveDetector("phantom_detector");
-
-//    detector = new SensitiveDetector("phantom_detector");
 
     G4SDManager* sd_manager = G4SDManager::GetSDMpointer();
     sd_manager->AddNewDetector(detector);
@@ -289,80 +276,6 @@ G4VPhysicalVolume* DetectorConstruction::AddSubtractionSlab(char* name,
     return physical;
 }
 
-
-
-void DetectorConstruction::SetupCT()
-{
-    if (verbose >= 4)
-        G4cout << "DetectorConstruction::SetupCT" << G4endl;
-
-    if (!voxeldata_param) {
-        voxeldata_param =
-            new G4VoxelDataParameterisation<int16_t>(array, materials, world_physical );
-
-        G4RotationMatrix* rotation = new G4RotationMatrix();
-        rotation->rotateZ(90*deg);
-        rotation->rotateX(-90*deg);
-
-        voxeldata_param->Construct(ct_position, rotation);
-        voxeldata_param->SetRounding(25, -1000, 2000);
-
-        std::map<int16_t, G4Colour*> colours;
-        for (int i=-2500; i<5000; i++) {
-            double gray = (double) (i + 2500) / 7500.;
-            double alpha = 1;
-
-            if (i < -500) {
-                gray = 0;
-                alpha = 0;
-            }
-
-            if (gray > 1)
-                gray = 1;
-
-            colours[i] = new G4Colour(gray, gray, gray, alpha);
-        }
-        voxeldata_param->SetColourMap(colours);
-        voxeldata_param->SetVisibility(false);
-
-        detector = new SensitiveDetector("ct_detector");
-
-        G4SDManager* sd_manager = G4SDManager::GetSDMpointer();
-        sd_manager->AddNewDetector(detector);
-        voxeldata_param->GetLogicalVolume()->SetSensitiveDetector(detector);
-        
-        G4RunManager::GetRunManager()->GeometryHasBeenModified();
-    }
-}
-
-
-std::map<int16_t, G4Material*> DetectorConstruction::MakeMaterialsMap(G4int increment)
-{
-    if (verbose >= 4)
-        G4cout << "DetectorConstruction::MakeMaterialsMap" << G4endl;
-
-    // Our materials map or ramp
-    std::map<int16_t, G4Material*> ramp;
-    
-    // Calculate intermediate points in each segment
-    for (unsigned int i=0; i <hounsfield.size()-1; i++) { 
-        G4double hounsfield_rise = hounsfield[i+1].density - hounsfield[i].density;
-        G4double density_run = hounsfield[i+1].value - hounsfield[i].value;
-        G4double gradient = hounsfield_rise / density_run;
-
-        // Add each increment in the current segment to the ramp  
-        int count = 0;
-        for (int hf=hounsfield[i].value; hf<hounsfield[i+1].value; hf+=increment) {
-            G4double density = count*increment*gradient + hounsfield[i].density;
-            ramp[hf] = MakeNewMaterial(hounsfield[i].material_name, density);            
-            count++;
-        }
-    } 
-    // Add the last setpoint to the ramp
-    ramp[hounsfield.back().value] = MakeNewMaterial(hounsfield.back().material_name, 
-                                                    hounsfield.back().density);
-    return ramp;
-}
 
 
 G4Material* DetectorConstruction::MakeNewMaterial(G4String base_material_name, G4double density)

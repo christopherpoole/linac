@@ -12,6 +12,12 @@ Eventually I will write a beginner friendly installation guide assuming someone 
 # Details 
 The real hard work given here has been done by Christopher Poole, his more powerful linac platform can be found [here](https://github.com/christopherpoole/linac).
 
-CADMesh has been removed due to inability to create a working install. Will eventually also remove G4VoxelData.
+Both CADMesh and G4VoxelData have been removed from the original code. They are no longer required in order to install.
 
 An example of the notebook code running the simulation can be viewed [here](http://nbviewer.ipython.org/github/SimonBiggs/linac/blob/master/main.ipynb).
+
+
+# Dependencies
+ * GEANT4 with python environment installed -- will provide details soon
+ * Python with pylab packages and yaml
+ * Boost and PyUblas -- difficult to install will provide details soon
