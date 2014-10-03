@@ -1,6 +1,6 @@
 # Current problem
 
-At the moment there is a problem with asymetry when "applicator like" GEANT4 shapes are entered into the beam. A simplification of the geometry that replicated the issue is given [here](https://github.com/SimonBiggs/linac/blob/master/machine/asymmetricProblem.yaml). An overview of the distributions scored as a result of this geometry can be seen [here](http://nbviewer.ipython.org/github/SimonBiggs/linac/blob/master/figures.ipynb).
+At the moment there is a problem with asymmetry when "applicator like" GEANT4 shapes are entered into the beam. A simplification of the geometry that replicated the issue is given [here](https://github.com/SimonBiggs/linac/blob/master/machine/asymmetricProblem.yaml). An overview of the distributions scored as a result of this geometry can be seen [here](http://nbviewer.ipython.org/github/SimonBiggs/linac/blob/master/figures.ipynb).
 
 
 # The aim
