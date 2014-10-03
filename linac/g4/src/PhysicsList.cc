@@ -23,12 +23,12 @@
 #include "PhysicsList.hh"
 
 // GEANT4 //
-//#include "G4EmStandardPhysics_option1.hh"
+#include "G4EmStandardPhysics_option1.hh"
 //#include "G4EmStandardPhysics_option2.hh"
 //#include "G4EmStandardPhysics_option3.hh"
 //#include "G4EmDNAPhysics.hh"
 //#include "G4EmLivermorePhysics.hh"
-#include "G4EmPenelopePhysics.hh"
+//#include "G4EmPenelopePhysics.hh"
 
 #include "G4RegionStore.hh"
 
@@ -103,11 +103,11 @@ PhysicsList::PhysicsList()
     gamma_cuts = 0.1*mm; // was default cuts
     e_cuts = 0.001*mm; // was default cuts
 
-    //RegisterPhysics(new G4EmStandardPhysics_option1());
+    RegisterPhysics(new G4EmStandardPhysics_option1());
     //RegisterPhysics(new G4EmStandardPhysics_option2());
     //RegisterPhysics(new G4EmStandardPhysics_option3());
     //RegisterPhysics(new G4EmLivermorePhysics());
-    RegisterPhysics(new G4EmPenelopePhysics());
+    //RegisterPhysics(new G4EmPenelopePhysics());
 }
 
 PhysicsList::~PhysicsList()
