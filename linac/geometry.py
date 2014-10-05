@@ -91,7 +91,7 @@ class Volume(object):
 
         self.tessellated = True
        
-        for key, val in kwargs.iteritems():
+        for key, val in kwargs.items():
             if hasattr(self, key):
                 setattr(self, key, val)
 
@@ -120,7 +120,7 @@ class Volume(object):
                 self.thickness = val["thickness"]
 
         self.daughters = {}
-        if kwargs.has_key("daughters"):
+        if "daughters" in kwargs:
             self._init_daughters(**kwargs)
 
     ## Language mappings ##
@@ -221,8 +221,8 @@ class Volume(object):
         """If a `Volume` has daugther volumes, iterativley initialise them and
         unpack repeats of the same volume if required.
         """
-        for name, daughter in kwargs['daughters'].iteritems():
-            if daughter.has_key('inherit'):
+        for name, daughter in kwargs['daughters'].items():
+            if 'inherit' in daughter:
                 d = copy.deepcopy(kwargs['daughters'][daughter['inherit']])
                 d.update(daughter)
                 del d['inherit']
@@ -253,8 +253,8 @@ class Volume(object):
         """
         
         multiples = {}
-        for m, default in default_multiples.iteritems():
-            if not daughter.has_key(m):
+        for m, default in default_multiples.items():
+            if m not in daughter:
                 multiples[m] = list(repeat(default, repeats))
                 continue
 
@@ -286,7 +286,7 @@ class Volume(object):
         daughters = []
         for i in range(repeats):
             d = copy.deepcopy(daughter)
-            for k, v in multiples.iteritems():
+            for k, v in multiples.items():
                 d[k] = copy.deepcopy(multiples[k][i])
             n = "%s_%i" % (name, i)
             daughters.append((n, Volume(n, **d)))
@@ -305,7 +305,8 @@ class Linac(object):
         gun: The particle gun configuration
     """
     def __init__(self, filename):
-        self.config = yaml.load(file(filename))
+        stream = open(filename, 'r')
+        self.config = yaml.load(stream)
           
         self.world = Volume('world', **self.config['world'])
         self.phasespaces = self.config['phasespaces']

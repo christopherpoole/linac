@@ -10,7 +10,7 @@ import numpy
 import pyublas
 
 # User
-import g4
+from . import g4
 
 
 class Simulation(object):
@@ -153,7 +153,7 @@ class Simulation(object):
         """Recursively build the user defined geometry.
         """
         def build(volume, mother): 
-            for name, params in volume.daughters.iteritems():
+            for name, params in volume.daughters.items():
 
                 if hasattr(params, "solid"):
                     if params.solid == "cylinder":
@@ -193,7 +193,7 @@ class Simulation(object):
         """Recursively update the user defined geometry.
         """
         def update(volume):
-            for name, params in volume.daughters.iteritems():
+            for name, params in volume.daughters.items():
                 physical = self.geometry[name]
 
                 physical.SetRotation(params.rotation_matrix)
@@ -225,7 +225,7 @@ class Simulation(object):
         self.phasespaces.remove(name)
 
     def disable_all_phasespaces(self):
-        map(self.disable_phasespace, self.phasespaces)
+        list(map(self.disable_phasespace, self.phasespaces))
 
     def build_phasespaces(self):
         """Create an empty phasespace file to write into, and insert it into the geometry.
