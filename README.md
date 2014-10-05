@@ -1,3 +1,8 @@
+# How to install
+A draft step by step installation guide can be found [here](https://docs.google.com/document/d/1C7NnQnLXT3J0htc3Dydl5AKgCg1zmKH_7tMMMPN-YvQ/edit?usp=sharing). Eventually I will turn this into an installer script, but for now you need to copy and paste commands into terminal. It assumes a fresh [Ubuntu 14.04 64bit LTS](http://www.ubuntu.com/download/desktop/thank-you?version=14.04.1&architecture=amd64) installed within [virtual box](https://www.virtualbox.org/wiki/Downloads).
+
+
+
 # Current problem
 
 At the moment there is a problem with asymmetry when "applicator like" GEANT4 shapes are entered into the beam. A simplification of the geometry that replicated the issue is given [here](https://github.com/SimonBiggs/linac/blob/master/machine/asymmetricProblem.yaml). An overview of the distributions scored as a result of this geometry can be seen [here](http://nbviewer.ipython.org/github/SimonBiggs/linac/blob/master/figures.ipynb).
@@ -15,9 +20,3 @@ The real hard work given here has been done by Christopher Poole, his more power
 Both CADMesh and G4VoxelData have been removed from the original code. They are no longer required in order to install.
 
 An example of the notebook code running the simulation can be viewed [here](http://nbviewer.ipython.org/github/SimonBiggs/linac/blob/master/main.ipynb).
-
-
-# Dependencies
- * GEANT4 with python environment installed -- will provide details soon
- * Python with pylab packages and yaml
- * Boost and PyUblas -- difficult to install will provide details soon
