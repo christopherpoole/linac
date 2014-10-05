@@ -2,7 +2,7 @@
 *.swp
 *.so
 *.phsp
+*~
 
 linac/g4/build/*
-utils/phsp_inspector/build/*
-machines/*
+.ipynb_checkpoints/*

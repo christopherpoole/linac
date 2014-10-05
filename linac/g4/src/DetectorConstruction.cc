@@ -22,9 +22,6 @@
 // USER //
 #include "DetectorConstruction.hh"
 
-// CADMesh //
-#include "CADMesh.hh"
-
 // GEANT4 //
 #include "globals.hh"
 #include "G4Material.hh"
@@ -37,6 +34,7 @@
 #include "G4RunManager.hh"
 
 
+
 DetectorConstruction::DetectorConstruction()
 {
     verbose = 4;
@@ -44,29 +42,17 @@ DetectorConstruction::DetectorConstruction()
     if (verbose >= 4)
         G4cout << "DetectorConstruction::DetectorConstruction" << G4endl;
 
-    // Setpoints we will interpolate between for
-    // our materials ramp.
-    hounsfield.push_back(Hounsfield(-1050, "G4_AIR", 0.001 ));
-    hounsfield.push_back(Hounsfield(-950,"G4_AIR", 0.044));
-    hounsfield.push_back(Hounsfield(-700,"G4_LUNG_ICRP", 0.302));
-    hounsfield.push_back(Hounsfield(125,"G4_TISSUE_SOFT_ICRP", 1.101));
-    hounsfield.push_back(Hounsfield(2500,"G4_BONE_CORTICAL_ICRP", 2.088));
-
     world_size = G4ThreeVector(3*m, 3*m, 3*m);
 
     nist_manager = G4NistManager::Instance();
     world_material = nist_manager->FindOrBuildMaterial("G4_AIR");
 
     use_phantom = false;
-    use_cad_phantom = false;
     region = NULL;
-    use_ct = false;
-    ct_built = false;
 
     headless = false;
 
     detector = NULL;
-    voxeldata_param = NULL;
 
     RegisterParallelWorld(new ParallelDetectorConstruction("parallel_world"));
 }
@@ -168,9 +154,9 @@ void DetectorConstruction::SetupPhantom()
 
     phantom_solid = new G4Box("phantom_solid", 200*mm, 200*mm, 200*mm);
     phantom_logical = new G4LogicalVolume(phantom_solid, water, "phantom_logical", 0, 0, 0);
-    phantom_physical = new G4PVPlacement(0, G4ThreeVector(0, 0, -150*mm), phantom_logical, 
+    phantom_physical = new G4PVPlacement(0, G4ThreeVector(0, 0, -200*mm), phantom_logical, 
                                        "phantom_physical", world_logical, false, 0);
-//    phantom_logical->SetVisAttributes(new G4VisAttributes(G4Colour(0, 0.6, 0.9, 1))); 
+    phantom_logical->SetVisAttributes(new G4VisAttributes(G4Colour(0, 0.6, 0.9, 1))); 
 
     if (!this->detector)
         detector = new SensitiveDetector("phantom_detector");
@@ -178,35 +164,6 @@ void DetectorConstruction::SetupPhantom()
     G4SDManager* sd_manager = G4SDManager::GetSDMpointer();
     sd_manager->AddNewDetector(detector);
     phantom_logical->SetSensitiveDetector(detector);
-}
-
-void DetectorConstruction::SetupCADPhantom(char* filename, G4ThreeVector offset)
-{
-    if (verbose >= 4)
-        G4cout << "DetectorConstruction::SetupCADPhantom" << G4endl;
-
-    G4Material* water = nist_manager->FindOrBuildMaterial("G4_WATER");
-
-    G4RotationMatrix* rot = new G4RotationMatrix();
-    rot->rotateZ(90*deg);
-    rot->rotateY(-90*deg);
-
-    CADMesh* mesh = new CADMesh(filename, (char*) "STL", 1, offset, false);
-    G4VSolid* solid = mesh->TessellatedMesh();
-    G4LogicalVolume* logical = new G4LogicalVolume(solid, water, filename, 0, 0, 0);
-
-    G4VPhysicalVolume* physical = new G4PVPlacement(rot, G4ThreeVector(),
-                                                    logical, filename, world_logical,
-                                                    false, 0);
-
-    if (!this->detector)
-        detector = new SensitiveDetector("phantom_detector");
-
-    G4SDManager* sd_manager = G4SDManager::GetSDMpointer();
-    sd_manager->AddNewDetector(detector);
-    logical->SetSensitiveDetector(detector);
-
-    G4RunManager::GetRunManager()->GeometryHasBeenModified();
 }
 
 
@@ -280,123 +237,45 @@ G4VPhysicalVolume* DetectorConstruction::AddSlab(char* name,
 }
 
 
-G4VPhysicalVolume* DetectorConstruction::AddCADComponent(char* name,
-                                                   char* filename,
-                                                   char* material,
-                                                   double scale,
-                                                   G4ThreeVector translation,
-                                                   G4ThreeVector rotation,
-                                                   G4Colour colour,
-                                                   G4bool tessellated,
-                                                   G4LogicalVolume* mother_logical)
+G4VPhysicalVolume* DetectorConstruction::AddSubtractionSlab(char* name,
+                                  double inner_side, double outer_side, double thickness,
+                                  char* material,
+                                  G4ThreeVector translation,
+                                  G4ThreeVector rotation,
+                                  G4Colour colour,
+                                  G4LogicalVolume* mother_logical)
 {
     if (verbose >= 4)
-        G4cout << "DetectorConstruction::AddCADComponent" << G4endl;
+        G4cout << "DetectorConstruction::AddSubtractionSlab" << G4endl;
 
     G4Material* mat = nist_manager->FindOrBuildMaterial(material);
-
+    
     G4RotationMatrix* rot = new G4RotationMatrix();
     rot->rotateX(rotation.x()*deg);
     rot->rotateY(rotation.y()*deg);
     rot->rotateZ(rotation.z()*deg);
-
-    if (tessellated) {
-        CADMesh* mesh = new CADMesh(filename, (char*) "STL", scale, G4ThreeVector(), false);
-        G4VSolid* solid = mesh->TessellatedMesh();
-        G4LogicalVolume* logical = new G4LogicalVolume(solid, mat, name, 0, 0, 0);
-        logical->SetVisAttributes(new G4VisAttributes(colour)); 
-
-        G4VPhysicalVolume* physical = new G4PVPlacement(rot, translation,
-                                                        logical, name, mother_logical,
-                                                        false, 0);
-        return physical;
-
-    } else {
-        CADMesh * mesh = new CADMesh(filename, (char*) "PLY", mat);
-        G4AssemblyVolume* assembly = mesh->TetrahedralMesh();
-        G4Translate3D trans(translation.x(), translation.y(), translation.z());
-        G4Transform3D rotation = G4Rotate3D(*rot);
-        G4Transform3D transform = trans*rotation;
-        assembly->MakeImprint(mother_logical, transform, 0, 0);
-    }
-
-    G4RunManager::GetRunManager()->GeometryHasBeenModified();
-    return NULL;
-}
-
-
-void DetectorConstruction::SetupCT()
-{
-    if (verbose >= 4)
-        G4cout << "DetectorConstruction::SetupCT" << G4endl;
-
-    if (!voxeldata_param) {
-        voxeldata_param =
-            new G4VoxelDataParameterisation<int16_t>(array, materials, world_physical );
-
-        G4RotationMatrix* rotation = new G4RotationMatrix();
-        rotation->rotateZ(90*deg);
-        rotation->rotateX(-90*deg);
-
-        voxeldata_param->Construct(ct_position, rotation);
-        voxeldata_param->SetRounding(25, -1000, 2000);
-
-        std::map<int16_t, G4Colour*> colours;
-        for (int i=-2500; i<5000; i++) {
-            double gray = (double) (i + 2500) / 7500.;
-            double alpha = 1;
-
-            if (i < -500) {
-                gray = 0;
-                alpha = 0;
-            }
-
-            if (gray > 1)
-                gray = 1;
-
-            colours[i] = new G4Colour(gray, gray, gray, alpha);
-        }
-        voxeldata_param->SetColourMap(colours);
-        voxeldata_param->SetVisibility(false);
-
-        detector = new SensitiveDetector("ct_detector");
-
-        G4SDManager* sd_manager = G4SDManager::GetSDMpointer();
-        sd_manager->AddNewDetector(detector);
-        voxeldata_param->GetLogicalVolume()->SetSensitiveDetector(detector);
-        
-        G4RunManager::GetRunManager()->GeometryHasBeenModified();
-    }
-}
-
-
-std::map<int16_t, G4Material*> DetectorConstruction::MakeMaterialsMap(G4int increment)
-{
-    if (verbose >= 4)
-        G4cout << "DetectorConstruction::MakeMaterialsMap" << G4endl;
-
-    // Our materials map or ramp
-    std::map<int16_t, G4Material*> ramp;
     
-    // Calculate intermediate points in each segment
-    for (unsigned int i=0; i <hounsfield.size()-1; i++) { 
-        G4double hounsfield_rise = hounsfield[i+1].density - hounsfield[i].density;
-        G4double density_run = hounsfield[i+1].value - hounsfield[i].value;
-        G4double gradient = hounsfield_rise / density_run;
+    std::string inner_name = "inner_";
+    std::string outer_name = "outer_";
+    
+    inner_name += name;
+    outer_name += name;
+    
+    G4Box* inner_solid = new G4Box(inner_name, inner_side/2., inner_side/2., thickness/2. + 1.);
+    G4Box* outer_solid = new G4Box(outer_name, outer_side/2., outer_side/2., thickness/2.);
+    
+    G4SubtractionSolid* solid = new G4SubtractionSolid(name,outer_solid,inner_solid);
+    
+    G4LogicalVolume* logical = new G4LogicalVolume(solid, mat, name, 0, 0, 0);
+    logical->SetVisAttributes(new G4VisAttributes(colour)); 
 
-        // Add each increment in the current segment to the ramp  
-        int count = 0;
-        for (int hf=hounsfield[i].value; hf<hounsfield[i+1].value; hf+=increment) {
-            G4double density = count*increment*gradient + hounsfield[i].density;
-            ramp[hf] = MakeNewMaterial(hounsfield[i].material_name, density);            
-            count++;
-        }
-    } 
-    // Add the last setpoint to the ramp
-    ramp[hounsfield.back().value] = MakeNewMaterial(hounsfield.back().material_name, 
-                                                    hounsfield.back().density);
-    return ramp;
+    G4VPhysicalVolume* physical = new G4PVPlacement(rot, translation,
+                                                    logical, name, mother_logical,
+                                                    false, 0);
+
+    return physical;
 }
+
 
 
 G4Material* DetectorConstruction::MakeNewMaterial(G4String base_material_name, G4double density)

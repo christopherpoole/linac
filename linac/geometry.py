@@ -65,11 +65,6 @@ class Volume(object):
 
     A solid can be any GEANT4 primitive.
     
-    CAD Files:
-    Using CADMesh a CAD file is loaded into the geometry as a G4TessellatedSolid,
-    the user can specify if the volume is left as a normal tessellated solid or
-    loaded as a tetrahedral mesh (for fast/er navigation).
-
     Attributes:
         name: The desired name of the solid
         translation: G4ThreeVector position of the solid within its mother volume
@@ -96,7 +91,7 @@ class Volume(object):
 
         self.tessellated = True
        
-        for key, val in kwargs.iteritems():
+        for key, val in kwargs.items():
             if hasattr(self, key):
                 setattr(self, key, val)
 
@@ -117,9 +112,15 @@ class Volume(object):
                 self.solid = "slab"
                 self.side = val["side"]
                 self.thickness = val["side"]
+                
+            if key == "subtractionSlab":
+                self.solid = "subtractionSlab"
+                self.inner_side = val["inner_side"]
+                self.outer_side = val["outer_side"]
+                self.thickness = val["thickness"]
 
         self.daughters = {}
-        if kwargs.has_key("daughters"):
+        if "daughters" in kwargs:
             self._init_daughters(**kwargs)
 
     ## Language mappings ##
@@ -220,8 +221,8 @@ class Volume(object):
         """If a `Volume` has daugther volumes, iterativley initialise them and
         unpack repeats of the same volume if required.
         """
-        for name, daughter in kwargs['daughters'].iteritems():
-            if daughter.has_key('inherit'):
+        for name, daughter in kwargs['daughters'].items():
+            if 'inherit' in daughter:
                 d = copy.deepcopy(kwargs['daughters'][daughter['inherit']])
                 d.update(daughter)
                 del d['inherit']
@@ -252,8 +253,8 @@ class Volume(object):
         """
         
         multiples = {}
-        for m, default in default_multiples.iteritems():
-            if not daughter.has_key(m):
+        for m, default in default_multiples.items():
+            if m not in daughter:
                 multiples[m] = list(repeat(default, repeats))
                 continue
 
@@ -285,7 +286,7 @@ class Volume(object):
         daughters = []
         for i in range(repeats):
             d = copy.deepcopy(daughter)
-            for k, v in multiples.iteritems():
+            for k, v in multiples.items():
                 d[k] = copy.deepcopy(multiples[k][i])
             n = "%s_%i" % (name, i)
             daughters.append((n, Volume(n, **d)))
@@ -304,7 +305,8 @@ class Linac(object):
         gun: The particle gun configuration
     """
     def __init__(self, filename):
-        self.config = yaml.load(file(filename))
+        stream = open(filename, 'r')
+        self.config = yaml.load(stream)
           
         self.world = Volume('world', **self.config['world'])
         self.phasespaces = self.config['phasespaces']

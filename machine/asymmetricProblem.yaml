@@ -1,0 +1,75 @@
+world:
+  cube:
+    side: 4000 
+  material: G4_AIR
+  colour: [0, 0, 0, 0]
+  daughters:
+    head: 
+      cylinder:
+        radius: 250
+        length: 696
+      translation: [0, 0, 800]
+      rotation: [0, 0, 0]
+      colour: [0, 1, 0, 0.05]
+      daughters:
+        vacuum:
+          cylinder:
+            radius: 200
+            length: 320
+          translation: [0, 0, 100]
+          material: G4_Galactic
+          rotation: [0, 0, 0]
+          colour: [1, 1, 0, 0.1]          
+
+      
+    app2:
+      tube:
+        inner_radius: 1400
+        outer_radius: 1500
+        length: 100
+      translation: [0, 0, 300]
+      rotation: [0, 0, 0]
+      material: G4_Fe
+      colour: [0, 0, 1, 0.5]
+      
+    app3:
+      tube:
+        inner_radius: 1400
+        outer_radius: 1500
+        length: 100
+      translation: [0, 0, 150]
+      rotation: [0, 0, 0]
+      material: G4_Fe
+      colour: [0, 0, 1, 0.5]
+      
+   
+
+
+gun:
+  spot_size: 1
+  fwhm: 2
+  recycling_number: 1
+  
+  
+      
+phasespaces:
+  exitwindow1:
+    z_position: 0 
+    radius: 1000
+    material: G4_AIR
+    redistribute: false
+    kill: false 
+
+  exitwindow2:
+    z_position: -300 
+    radius: 1000
+    material: G4_AIR
+    redistribute: false
+    kill: true 
+
+  iso:
+    z_position: -500
+    radius: 1000
+    material: G4_AIR
+    redistribute: false
+    kill: true

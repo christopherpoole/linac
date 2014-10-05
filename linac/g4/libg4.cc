@@ -62,8 +62,6 @@ using namespace boost::python;
 
 
 // Members with default kwargs ..
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(_AddCADComponent,
-                                       DetectorConstruction::AddCADComponent, 3, 8)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(_SetupHead,
                                        DetectorConstruction::SetupHead, 6, 6)
 
@@ -78,29 +76,18 @@ BOOST_PYTHON_MODULE(libg4) {
         .def("AddPhasespace", &DetectorConstruction::AddPhasespace,
             return_internal_reference<>())
         .def("RemovePhasespace", &DetectorConstruction::RemovePhasespace)
-        .def("AddCADComponent", &DetectorConstruction::AddCADComponent,
-            return_internal_reference<>())
         .def("AddTube", &DetectorConstruction::AddTube,
             return_internal_reference<>())
         .def("AddSlab", &DetectorConstruction::AddSlab,
             return_internal_reference<>())
+        .def("AddSubtractionSlab", &DetectorConstruction::AddSubtractionSlab,
+            return_internal_reference<>())
         .def("ClosePhasespace", &DetectorConstruction::ClosePhasespace)
         .def("UsePhantom", &DetectorConstruction::UsePhantom)
-        .def("UseCADPhantom", &DetectorConstruction::UseCADPhantom)
+        .def("SetupPhantom", &DetectorConstruction::SetupPhantom)
         .def("GetEnergyHistogram", &DetectorConstruction::GetEnergyHistogram)
         .def("GetEnergySqHistogram", &DetectorConstruction::GetEnergySqHistogram)
         .def("GetCountsHistogram", &DetectorConstruction::GetCountsHistogram)
-        .def("GetCTOrigin", &DetectorConstruction::GetCTOrigin)
-        .def("ZeroHistograms", &DetectorConstruction::ZeroHistograms)
-        .def("UseCT", &DetectorConstruction::UseCT)
-        .def("SetupCT", &DetectorConstruction::SetupCT)
-        .def("UseArray", &DetectorConstruction::UseArray)
-        .def("HideCT", &DetectorConstruction::HideCT)
-        .def("CropCT", &DetectorConstruction::CropCT)
-        .def("CropX", &DetectorConstruction::CropX)
-        .def("CropY", &DetectorConstruction::CropY)
-        .def("CropZ", &DetectorConstruction::CropZ)
-        .def("SetCTPosition", &DetectorConstruction::SetCTPosition)
         .def("GetWorld", &DetectorConstruction::GetWorld,
             return_internal_reference<>())
         .def("SetWorldMaterial", &DetectorConstruction::SetWorldMaterial)

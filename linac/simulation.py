@@ -10,7 +10,7 @@ import numpy
 import pyublas
 
 # User
-import g4
+from . import g4
 
 
 class Simulation(object):
@@ -96,54 +96,19 @@ class Simulation(object):
         the simulation geometry.
         """
         self.physics_list.OverrideCuts(gamma, electron)
-
-    ## Voxelised phantom data ##
-
-    def set_ct(self, directory, acquisition=1):
-        """Nominate a DICOM directory as acquisition to load as voxelised geometry.
-        """
-        self.detector_construction.UseCT(directory, acquisition)
-
-    def set_array(self, filename, x=1., y=1., z=1.):
-        """Use a `numpy` array as voxelised geometry.
-        """
-        self.detector_construction.UseArray(filename, x, y, z)
-
-    def set_ct_position(self, position):
-        """Coerce the loaded voxel data to the specified origin.
-        """
-        pos = G4ThreeVector(*position)
-        self.detector_construction.SetCTPosition(pos)
-
-    def crop_ct_x(self, xmin, xmax):
-        """Crop the voxel data in the x-direction.
-        """
-        self.detector_construction.CropX(xmin, xmax)
-
-    def crop_ct_y(self, ymin, ymax):
-        """Crop the voxel data in the y-direction.
-        """
-        self.detector_construction.CropY(ymin, ymax)
-
-    def crop_ct_z(self, zmin, zmax):
-        """Crop the voxel data in the z-direction.
-        """
-        self.detector_construction.CropZ(zmin, zmax)
-
-    def get_ct_origin(self):
-        """Get the voxel data origin (usually reported for DICOM-CT unless otherwise set).
-        """
-        return self.detector_construction.GetCTOrigin()
-
-    def hide_ct(self, hide):
-        """Hide the voxel data from the viewer.
-        """
-        self.detector_construction.HideCT(hide)
+        
+        
+    ## Phantom ##
 
     def use_phantom(self, use):
-        """Nide the voxel data from the navigator.
+        """Hide the voxel data from the navigator.
         """
         self.detector_construction.UsePhantom(use)
+        
+    def setup_phantom(self):
+        """Hide the voxel data from the navigator.
+        """
+        self.detector_construction.SetupPhantom()
 
     ## Scoring ##
 
@@ -188,11 +153,8 @@ class Simulation(object):
         """Recursively build the user defined geometry.
         """
         def build(volume, mother): 
-            for name, params in volume.daughters.iteritems():
-                if params.filename != "":
-                    physical = self.detector_construction.AddCADComponent(name, params.filename,
-                        params.material, params.scale, params.translation_vector, params.rotation_vector,
-                        params.color, params.tessellated, mother)
+            for name, params in volume.daughters.items():
+
                 if hasattr(params, "solid"):
                     if params.solid == "cylinder":
                         physical = self.detector_construction.AddTube(name,
@@ -207,6 +169,12 @@ class Simulation(object):
                     if params.solid == "slab":
                         physical = self.detector_construction.AddSlab(name, params.side,
                                 params.thickness, params.material, params.translation_vector,
+                                params.rotation_vector, params.color, mother) 
+                                
+                    if params.solid == "subtractionSlab":
+                        physical = self.detector_construction.AddSubtractionSlab(name, 
+                                params.inner_side, params.outer_side, params.thickness, 
+                                params.material, params.translation_vector,
                                 params.rotation_vector, params.color, mother) 
 
                 if params.scorer == "StopKillSheild":
@@ -225,7 +193,7 @@ class Simulation(object):
         """Recursively update the user defined geometry.
         """
         def update(volume):
-            for name, params in volume.daughters.iteritems():
+            for name, params in volume.daughters.items():
                 physical = self.geometry[name]
 
                 physical.SetRotation(params.rotation_matrix)
@@ -257,7 +225,7 @@ class Simulation(object):
         self.phasespaces.remove(name)
 
     def disable_all_phasespaces(self):
-        map(self.disable_phasespace, self.phasespaces)
+        list(map(self.disable_phasespace, self.phasespaces))
 
     def build_phasespaces(self):
         """Create an empty phasespace file to write into, and insert it into the geometry.

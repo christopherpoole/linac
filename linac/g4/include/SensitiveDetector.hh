@@ -56,13 +56,13 @@ public:
         z_dim = z;
     };
 
-    void SetMinimumCutoff(G4int x, G4int y, G4int z) {
+    void SetMinimumCutoff(G4float x, G4float y, G4float z) {
         x_min = x;
         y_min = y;
         z_min = z;
     };
 
-    void SetMaximumCutoff(G4int x, G4int y, G4int z) {
+    void SetMaximumCutoff(G4float x, G4float y, G4float z) {
         x_max = x;
         y_max = y;
         z_max = z;
@@ -101,12 +101,12 @@ public:
     G4int x_dim;
     G4int y_dim;
     G4int z_dim;
-    G4int x_min;
-    G4int y_min;
-    G4int z_min;
-    G4int x_max;
-    G4int y_max;
-    G4int z_max;
+    G4float x_min;
+    G4float y_min;
+    G4float z_min;
+    G4float x_max;
+    G4float y_max;
+    G4float z_max;
 
     G4float x_res;
     G4float y_res;
